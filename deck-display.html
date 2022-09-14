@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Yu-Gi-Oh! Deck Display</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
+      * {
+        padding: 0%;
+        margin: 0%;
+      }
+      body {
+        background: #1b1329;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: "Montserrat";
+        color: white;
+        text-align: justify;
+        text-decoration: none;
+      }
+      h1 {
+        margin: 10px;
+      }
+      button {
+        font-size: 18px;
+        font-family: "Montserrat";
+        font-weight: bold;
+        margin: 2px;
+        padding: 2px;
+      }
+      #form {
+        margin: 20px;
+      }
+      .flexdiv {
+        display: flex;
+      }
+      .flexdivc {
+        display: flex;
+        justify-content: center;
+      }
+      #cardinfo {
+        margin: 20px;
+        padding: 10px;
+        background-color: black;
+        font-size: 15px;
+        font-weight: normal;
+        width: 400px;
+      }
+      #cardinfo img {
+        width: 200px;
+      }
+      #cardinfo p {
+        margin: 3px;
+      }
+      #cardinfoName {
+        font-size: 18px;
+      }
+      #divDeck {
+        width: min-content;
+      }
+      #cnvDeck {
+        margin: 10px;
+        background-color: black;
+      }
+      #cnvExDeck {
+        margin: 10px;
+        background-color: black;
+      }
+      #imgs {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <h1>Yu-Gi-Oh! Deck Display</h1>
+    </div>
+    <form id="form">
+      <label for="loaddeck">Import deck by deck code:</label>
+      <input type="text" name="loaddeck" id="loaddeck" autocomplete="off" />
+      <button id="btnLoad" type="button" onclick="loadDeck()">Load</button>
+    </form>
+    <div class="flexdiv">
+      <div id="divDeck">
+        <canvas id="cnvDeck" onclick="selectDeckCard(event)"></canvas>
+        <canvas id="cnvExDeck" onclick="selectExDeckCard(event)"></canvas>
+      </div>
+      <div>
+        <div class="flexdivc">
+          <div id="cardinfo">
+            <div class="flexdivc">
+              <img
+                id="cardinfoImg"
+                src="https://images.ygoprodeck.com/images/cards/55144522.jpg"
+              />
+            </div>
+            <div class="flexdivc">
+              <p id="cardinfoName">Pot of Greed</p>
+            </div>
+            <div class="flexdiv">
+              <p id="cardinfoRace">What does it do?</p>
+              <p id="cardinfoAttribute"></p>
+              <p id="cardinfoLevel"></p>
+            </div>
+            <p id="cardinfoRarity"></p>
+            <p id="cardinfoEffect"></p>
+            <div class="flexdiv">
+              <p id="cardinfoAtk"></p>
+              <p id="cardinfoDef"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="imgs"></div>
+  </body>
+  <script>
+    var cardData;
+    var deckcodeArray = [];
+    var deckArray = [];
+    var deckCardSize = 0.2;
+    var deckImgPerRow = 10;
+    var sortDeckBy = "dl";
+    const loaddeck = document.getElementById("loaddeck");
+    const btnLoad = document.getElementById("btnLoad");
+    const cnvDeck = document.getElementById("cnvDeck");
+    const ctxDeck = cnvDeck.getContext("2d");
+    const cnvExDeck = document.getElementById("cnvExDeck");
+    const ctxExDeck = cnvExDeck.getContext("2d");
+    const cardinfoImg = document.getElementById("cardinfoImg");
+    const cardinfoName = document.getElementById("cardinfoName");
+    const cardinfoRace = document.getElementById("cardinfoRace");
+    const cardinfoAttribute = document.getElementById("cardinfoAttribute");
+    const cardinfoLevel = document.getElementById("cardinfoLevel");
+    const cardinfoRarity = document.getElementById("cardinfoRarity");
+    const cardinfoEffect = document.getElementById("cardinfoEffect");
+    const cardinfoAtk = document.getElementById("cardinfoAtk");
+    const cardinfoDef = document.getElementById("cardinfoDef");
+    const imgs = document.getElementById("imgs");
+    cnvDeck.height = cnvExDeck.height = 0;
+    cnvDeck.width = cnvExDeck.width = (421 * deckCardSize + 1) * deckImgPerRow;
+    class Card {
+      constructor(
+        id,
+        name,
+        race,
+        attribute,
+        level,
+        rarity,
+        effect,
+        atk,
+        def,
+        dlpriority,
+        mdpriority
+      ) {
+        this.id = id;
+        this.name = name;
+        this.race = race;
+        this.attribute = attribute;
+        this.level = level;
+        this.rarity = rarity;
+        this.effect = effect;
+        this.atk = atk;
+        this.def = def;
+        this.dlpriority = dlpriority;
+        this.mdpriority = mdpriority;
+      }
+    }
+    //import deck
+    async function loadDeck() {
+      if (btnLoad.innerHTML == "Load") {
+        btnLoad.innerHTML = "Loading...";
+        imgs.innerHTML = "";
+        deckArray = [];
+        cnvDeck.height = cnvExDeck.height = 0;
+        //split deck code into individual cards
+        deckcodeArray = loaddeck.value.match(/.{1,15}/g);
+        for (let c = 0; c < deckcodeArray.length; c++) {
+          //fetch from api
+          let apiResponse = await fetch(
+            "https://dl-card-api.herokuapp.com/data?konamiID=" +
+              (deckcodeArray[c] % 10000000000)
+          );
+          cardData = await apiResponse.json();
+          //store information
+          deckArray[c] = new Card(
+            cardData[0].konamiID,
+            cardData[0].name,
+            cardData[0].race,
+            cardData[0].attribute,
+            cardData[0].level,
+            cardData[0].rarity,
+            cardData[0].description,
+            cardData[0].atk,
+            cardData[0].def,
+            dlCardPriority(
+              cardData[0].konamiID,
+              cardData[0].monsterType,
+              cardData[0].type,
+              cardData[0].rarity,
+              cardData[0].level,
+              cardData[0].link
+            ),
+            deckcodeArray[c]
+          );
+          btnLoad.innerHTML =
+            "Loading card data (" + c + "/" + deckcodeArray.length + ")...";
+        }
+        //append card image if it is not a duplicate
+        let imgCount = 0;
+        let imgLoadedCount = 0;
+        for (let c = 0; c < deckArray.length; c++) {
+          if (document.getElementById("deckimg" + deckArray[c].id) == null) {
+            let img = document.createElement("img");
+            img.id = "deckimg" + deckArray[c].id;
+            img.src =
+              "https://images.ygoprodeck.com/images/cards/" +
+              deckArray[c].id +
+              ".jpg";
+            imgs.appendChild(img);
+            imgCount++;
+          }
+        }
+        for (let c = 0; c < deckArray.length; c++) {
+          document.getElementById("deckimg" + deckArray[c].id).onload =
+            function () {
+              imgLoadedCount++;
+              if (imgLoadedCount == imgCount) {
+                refreshDeck();
+              }
+            };
+        }
+        btnLoad.innerHTML = "Loaded!";
+        setTimeout(function () {
+          btnLoad.innerHTML = "Load";
+        }, 2000);
+      }
+    }
+    //sort priority function (etrlldddddddddd)(15 char)
+    //e: extra deck card type
+    //t: card type (monster, spell, trap)
+    //r: rarity
+    //l: level/link
+    //d: card id
+    function dlCardPriority(id, monstertype, type, rarity, level, link) {
+      let priority = 100000000000000;
+      let levellink = 0;
+      if (level) {
+        levellink = level;
+      } else if (link) {
+        levellink = link;
+      }
+      if (monstertype.includes("Fusion")) {
+        priority = 500000000000000;
+      } else if (monstertype.includes("Synchro")) {
+        priority = 400000000000000;
+      } else if (monstertype.includes("XYZ")) {
+        priority = 300000000000000;
+      } else if (monstertype.includes("Link")) {
+        priority = 200000000000000;
+      }
+      if (rarity == "UR") {
+        priority += 4000000000000;
+      } else if (rarity == "SR") {
+        priority += 3000000000000;
+      } else if (rarity == "R") {
+        priority += 2000000000000;
+      } else if (rarity == "N") {
+        priority += 1000000000000;
+      }
+      if (type.includes("Monster")) {
+        if (monstertype.includes("Ritual")) {
+          priority += 50000000000000 + levellink * 10000000000;
+        } else if (monstertype.includes("Normal")) {
+          priority += 30000000000000 + levellink * 10000000000;
+        } else {
+          priority += 40000000000000 + levellink * 10000000000;
+        }
+      } else if (type.includes("Spell")) {
+        priority += 20000000000000;
+      } else if (type.includes("Trap")) {
+        priority += 10000000000000;
+      }
+      priority += Number(id);
+      return priority;
+    }
+    //draw all cards in array to deck canvas
+    function refreshDeck() {
+      //sort deck
+      switch (sortDeckBy) {
+        case "dl":
+          deckArray.sort(function (a, b) {
+            return b.dlpriority - a.dlpriority;
+          });
+          break;
+        case "md":
+          deckArray.sort(function (a, b) {
+            return b.mdpriority - a.mdpriority;
+          });
+          break;
+      }
+      let indexmain = 0;
+      cnvDeck.height =
+        (614 * deckCardSize + 1) *
+        Math.ceil(
+          deckArray.filter(function (a) {
+            return a.dlpriority < 200000000000000;
+          }).length / deckImgPerRow
+        );
+      cnvExDeck.height =
+        (614 * deckCardSize + 1) *
+        Math.ceil(
+          deckArray.filter(function (a) {
+            return a.dlpriority > 200000000000000;
+          }).length / deckImgPerRow
+        );
+      //draw
+      for (let c = 0; c < deckArray.length; c++) {
+        if (deckArray[c].dlpriority > 200000000000000) {
+          ctxExDeck.drawImage(
+            document.getElementById("deckimg" + deckArray[c].id),
+            (421 * deckCardSize + 1) * (c % deckImgPerRow),
+            (614 * deckCardSize + 1) * Math.floor(c / deckImgPerRow),
+            421 * deckCardSize,
+            614 * deckCardSize
+          );
+        } else {
+          ctxDeck.drawImage(
+            document.getElementById("deckimg" + deckArray[c].id),
+            (421 * deckCardSize + 1) * (indexmain % deckImgPerRow),
+            (614 * deckCardSize + 1) * Math.floor(indexmain / deckImgPerRow),
+            421 * deckCardSize,
+            614 * deckCardSize
+          );
+          indexmain++;
+        }
+      }
+    }
+    //show info when a card in deck is clicked
+    function selectDeckCard(e) {
+      //click location detection
+      const rect = cnvDeck.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      displayCard(
+        Math.floor(y / (614 * deckCardSize + 1)) * deckImgPerRow +
+          Math.floor(x / (421 * deckCardSize + 1)) +
+          deckArray.filter(function (a) {
+            return a.dlpriority > 200000000000000;
+          }).length
+      );
+    }
+    //show info when a card in extra deck is clicked
+    function selectExDeckCard(e) {
+      //click location detection
+      const rect = cnvExDeck.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      displayCard(
+        Math.floor(y / (614 * deckCardSize + 1)) * deckImgPerRow +
+          Math.floor(x / (421 * deckCardSize + 1))
+      );
+    }
+    //display card info in dom
+    function displayCard(index) {
+      cardinfoImg.src = document.getElementById(
+        "deckimg" + deckArray[index].id
+      ).src;
+      cardinfoName.innerHTML = deckArray[index].name;
+      cardinfoRace.innerHTML = "Type: " + deckArray[index].race;
+      if (deckArray[index].attribute == null) {
+        cardinfoAttribute.innerHTML = "";
+      } else {
+        cardinfoAttribute.innerHTML =
+          "Attribute: " + deckArray[index].attribute;
+      }
+      if (deckArray[index].level == null) {
+        cardinfoLevel.innerHTML = "";
+      } else {
+        cardinfoLevel.innerHTML = "Level/Rank: " + deckArray[index].level;
+      }
+      if (deckArray[index].rarity == null) {
+        cardinfoRarity.innerHTML = "";
+      } else {
+        cardinfoRarity.innerHTML =
+          "Rarity (Duel Links): " + deckArray[index].rarity;
+      }
+      cardinfoEffect.innerHTML = deckArray[index].effect
+        .replace(/\r\n----------------------------------------\r\n/g, "<br>")
+        .replace(/\n/g, "<br>");
+      if (deckArray[index].atk == null) {
+        cardinfoAtk.innerHTML = "";
+      } else {
+        cardinfoAtk.innerHTML = "ATK: " + deckArray[index].atk;
+      }
+      if (deckArray[index].def == null) {
+        cardinfoDef.innerHTML = "";
+      } else {
+        cardinfoDef.innerHTML = "DEF: " + deckArray[index].def;
+      }
+    }
+  </script>
+</html>
