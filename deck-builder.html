@@ -1,7 +1,8 @@
 <html>
   <head>
-    <title>HTML Deck Builder</title>
+    <title>Yu-Gi-Oh! Deck Builder</title>
     <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
@@ -18,6 +19,9 @@
         color: white;
         text-align: justify;
         text-decoration: none;
+      }
+      h1 {
+        margin: 10px;
       }
       button {
         font-size: 18px;
@@ -77,6 +81,9 @@
     </style>
   </head>
   <body>
+    <div class="flexdivc">
+      <h1>Yu-Gi-Oh! Deck Builder</h1>
+    </div>
     <form id="form">
       <label for="searchname">Search by card name:</label>
       <input type="text" name="searchname" id="searchname" autocomplete="off" />
@@ -113,6 +120,11 @@
         <div class="flexdivc">
           <button type="button" onclick="addCard()">Add to Deck</button>
           <button type="button" onclick="clearDeck()">Clear Deck</button>
+          <button id="btnSortBy" type="button" onclick="sortBy()">
+            Sort: Duel Links
+          </button>
+        </div>
+        <div class="flexdivc">
           <button type="button" onclick="copyDeck()">Copy Deck Code</button>
         </div>
         <div class="flexdivc">
@@ -145,6 +157,7 @@
     var deckIndex = 0;
     var deckCardSize = 0.15;
     var deckImgPerRow = 8;
+    var sortDeckBy = "dl";
     const cnvResults = document.getElementById("cnvResults");
     const ctxResults = cnvResults.getContext("2d");
     const cardinfoImg = document.getElementById("cardinfoImg");
@@ -155,6 +168,7 @@
     const cardinfoEffect = document.getElementById("cardinfoEffect");
     const cardinfoAtk = document.getElementById("cardinfoAtk");
     const cardinfoDef = document.getElementById("cardinfoDef");
+    const btnSortBy = document.getElementById("btnSortBy");
     const autoadd = document.getElementById("autoadd");
     const cnvDeck = document.getElementById("cnvDeck");
     const ctxDeck = cnvDeck.getContext("2d");
@@ -165,9 +179,10 @@
     cnvDeck.height = cnvExDeck.height = 0;
     cnvDeck.width = cnvExDeck.width = (421 * deckCardSize + 1) * deckImgPerRow;
     class Card {
-      constructor(id, priority) {
+      constructor(id, dlpriority, mdpriority) {
         this.id = id;
-        this.priority = priority;
+        this.dlpriority = dlpriority;
+        this.mdpriority = mdpriority;
       }
     }
     //card searching
@@ -268,26 +283,27 @@
         //add card id to array, then draw image
         let newcard = new Card(
           cardData.data[cardSelected].id,
-          cardPriority(
+          dlCardPriority(
             cardData.data[cardSelected].id,
             cardData.data[cardSelected].type,
             cardData.data[cardSelected].level,
             cardData.data[cardSelected].linkval
+          ),
+          mdCardPriority(
+            cardData.data[cardSelected].id,
+            cardData.data[cardSelected].type,
+            cardData.data[cardSelected].level,
+            cardData.data[cardSelected].linkval,
+            cardData.data[cardSelected].race
           )
         );
         if (
           deckArray.filter(function (a) {
             return a.id == newcard.id;
           }).length < 3 &&
-          checkDeckSpace(newcard.priority)
+          checkDeckSpace(newcard.dlpriority)
         ) {
           deckArray[deckIndex] = newcard;
-          //sort deck
-          if (deckIndex > 0) {
-            deckArray.sort(function (a, b) {
-              return b.priority - a.priority;
-            });
-          }
           //append card image if it is not a duplicate
           if (
             document.getElementById(
@@ -307,13 +323,53 @@
         }
       }
     }
-    //sort priority function (etlldddddddddd)
+    //sort priority function (etrlldddddddddd)(15 char)
     //e: extra deck card type
     //t: card type (monster, spell, trap)
-    //l: 99 - level/link
+    //r: rarity
+    //l: level/link
     //d: card id
-    function cardPriority(id, type, level, link) {
-      let priority = 10000000000000;
+    function dlCardPriority(id, type, level, link) {
+      let priority = 100000000000000;
+      let levellink = 0;
+      if (level) {
+        levellink = level;
+      } else if (link) {
+        levellink = link;
+      }
+      if (type.includes("Fusion")) {
+        priority = 500000000000000;
+      } else if (type.includes("Synchro")) {
+        priority = 400000000000000;
+      } else if (type.includes("XYZ")) {
+        priority = 300000000000000;
+      } else if (type.includes("Link")) {
+        priority = 200000000000000;
+      }
+      if (type.includes("Monster")) {
+        if (type.includes("Ritual")) {
+          priority += 50000000000000 + levellink * 10000000000;
+        } else if (type.includes("Normal")) {
+          priority += 30000000000000 + levellink * 10000000000;
+        } else {
+          priority += 40000000000000 + levellink * 10000000000;
+        }
+      } else if (type.includes("Spell")) {
+        priority += 20000000000000;
+      } else if (type.includes("Trap")) {
+        priority += 10000000000000;
+      }
+      priority += id;
+      return priority;
+    }
+    //master duel sort priority function (etrlldddddddddd)
+    //e: extra deck card type
+    //t: card type (monster, spell, trap)
+    //r: rarity (always 0)
+    //l: 99 - level/link or spell/trap type ranking
+    //d: card id
+    function mdCardPriority(id, type, level, link, race) {
+      let priority = 100000000000000;
       let levellink = 0;
       if (level) {
         levellink = 99 - level;
@@ -321,36 +377,54 @@
         levellink = 99 - link;
       }
       if (type.includes("Fusion")) {
-        priority = 50000000000000;
+        priority = 500000000000000;
       } else if (type.includes("Synchro")) {
-        priority = 40000000000000;
+        priority = 400000000000000;
       } else if (type.includes("XYZ")) {
-        priority = 30000000000000;
+        priority = 300000000000000;
       } else if (type.includes("Link")) {
-        priority = 20000000000000;
+        priority = 200000000000000;
       }
       if (type.includes("Monster")) {
         if (type.includes("Ritual")) {
-          priority += 3000000000000 + levellink * 10000000000;
+          priority += 30000000000000 + levellink * 10000000000;
         } else if (type.includes("Normal")) {
-          priority += 5000000000000 + levellink * 10000000000;
+          priority += 50000000000000 + levellink * 10000000000;
         } else {
-          priority += 4000000000000 + levellink * 10000000000;
+          priority += 40000000000000 + levellink * 10000000000;
         }
       } else if (type.includes("Spell")) {
-        priority += 2000000000000;
+        if (race.includes("Normal")) {
+          priority += 20060000000000;
+        } else if (race.includes("Equip")) {
+          priority += 20050000000000;
+        } else if (race.includes("Field")) {
+          priority += 20040000000000;
+        } else if (race.includes("Ritual")) {
+          priority += 20030000000000;
+        } else if (race.includes("Continuous")) {
+          priority += 20020000000000;
+        } else if (race.includes("Quick-Play")) {
+          priority += 20010000000000;
+        }
       } else if (type.includes("Trap")) {
-        priority += 1000000000000;
+        if (race.includes("Normal")) {
+          priority += 10030000000000;
+        } else if (race.includes("Counter")) {
+          priority += 10020000000000;
+        } else if (race.includes("Continuous")) {
+          priority += 10010000000000;
+        }
       }
       priority += id;
       return priority;
     }
     //checks if deck has space
     function checkDeckSpace(priority) {
-      if (priority > 20000000000000) {
+      if (priority > 200000000000000) {
         if (
           deckArray.filter(function (a) {
-            return a.priority > 20000000000000;
+            return a.dlpriority > 200000000000000;
           }).length < 15
         ) {
           return true;
@@ -360,7 +434,7 @@
       } else {
         if (
           deckArray.filter(function (a) {
-            return a.priority < 20000000000000;
+            return a.dlpriority < 200000000000000;
           }).length < 60
         ) {
           return true;
@@ -379,7 +453,7 @@
         Math.floor(y / (614 * deckCardSize + 1)) * deckImgPerRow +
         Math.floor(x / (421 * deckCardSize + 1)) +
         deckArray.filter(function (a) {
-          return a.priority > 20000000000000;
+          return a.dlpriority > 200000000000000;
         }).length;
       //shift all elements
       if (index < deckArray.length) {
@@ -410,25 +484,51 @@
         refreshDeck();
       }
     }
+    //sort mode toggle
+    function sortBy() {
+      if (sortDeckBy == "dl") {
+        sortDeckBy = "md";
+        btnSortBy.innerHTML = "Sort: Master Duel";
+      } else {
+        sortDeckBy = "dl";
+        btnSortBy.innerHTML = "Sort: Duel Links";
+      }
+      refreshDeck();
+    }
     //draw all cards in array to deck canvas
     function refreshDeck() {
+      //sort deck
+      if (deckIndex > 0) {
+        switch (sortDeckBy) {
+          case "dl":
+            deckArray.sort(function (a, b) {
+              return b.dlpriority - a.dlpriority;
+            });
+            break;
+          case "md":
+            deckArray.sort(function (a, b) {
+              return b.mdpriority - a.mdpriority;
+            });
+            break;
+        }
+      }
       let indexmain = 0;
       cnvDeck.height =
         (614 * deckCardSize + 1) *
         Math.ceil(
           deckArray.filter(function (a) {
-            return a.priority < 20000000000000;
+            return a.dlpriority < 200000000000000;
           }).length / deckImgPerRow
         );
       cnvExDeck.height =
         (614 * deckCardSize + 1) *
         Math.ceil(
           deckArray.filter(function (a) {
-            return a.priority > 20000000000000;
+            return a.dlpriority > 200000000000000;
           }).length / deckImgPerRow
         );
       for (let c = 0; c < deckArray.length; c++) {
-        if (deckArray[c].priority > 20000000000000) {
+        if (deckArray[c].dlpriority > 200000000000000) {
           ctxExDeck.drawImage(
             document.getElementById("deckimg" + deckArray[c].id),
             (421 * deckCardSize + 1) * (c % deckImgPerRow),
@@ -459,9 +559,9 @@
     function copyDeck() {
       let deckcode = "";
       for (let c = 0; c < deckArray.length; c++) {
-        deckcode += deckArray[c].priority + "+";
+        deckcode += deckArray[c].mdpriority;
       }
-      if (copy(deckcode.slice(0, -1))) {
+      if (copy(deckcode)) {
         alert("Copied to clipboard!");
       }
     }
