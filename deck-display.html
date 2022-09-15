@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>Yu-Gi-Oh! Deck Display</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
@@ -104,7 +105,6 @@
               <p id="cardinfoAttribute"></p>
               <p id="cardinfoLevel"></p>
             </div>
-            <p id="cardinfoRarity"></p>
             <p id="cardinfoEffect"></p>
             <div class="flexdiv">
               <p id="cardinfoAtk"></p>
@@ -114,7 +114,13 @@
         </div>
       </div>
     </div>
-    <div id="imgs"></div>
+    <div id="imgs">
+      <img id="tagUR" src="images/tagUR.png" />
+      <img id="tagSR" src="images/tagSR.png" />
+      <img id="tagR" src="images/tagR.png" />
+      <img id="tagN" src="images/tagN.png" />
+      <div id="imgsDeck"></div>
+    </div>
   </body>
   <script>
     var cardData;
@@ -134,13 +140,12 @@
     const cardinfoRace = document.getElementById("cardinfoRace");
     const cardinfoAttribute = document.getElementById("cardinfoAttribute");
     const cardinfoLevel = document.getElementById("cardinfoLevel");
-    const cardinfoRarity = document.getElementById("cardinfoRarity");
     const cardinfoEffect = document.getElementById("cardinfoEffect");
     const cardinfoAtk = document.getElementById("cardinfoAtk");
     const cardinfoDef = document.getElementById("cardinfoDef");
-    const imgs = document.getElementById("imgs");
+    const imgsDeck = document.getElementById("imgsDeck");
+    cnvDeck.width = cnvExDeck.width = 0;
     cnvDeck.height = cnvExDeck.height = 0;
-    cnvDeck.width = cnvExDeck.width = (421 * deckCardSize + 1) * deckImgPerRow;
     class Card {
       constructor(
         id,
@@ -172,7 +177,7 @@
     async function loadDeck() {
       if (btnLoad.innerHTML == "Load") {
         btnLoad.innerHTML = "Loading...";
-        imgs.innerHTML = "";
+        imgsDeck.innerHTML = "";
         deckArray = [];
         cnvDeck.height = cnvExDeck.height = 0;
         //split deck code into individual cards
@@ -201,7 +206,7 @@
               cardData[0].type,
               cardData[0].rarity,
               cardData[0].level,
-              cardData[0].link
+              cardData[0].linkRating
             ),
             deckcodeArray[c]
           );
@@ -219,7 +224,7 @@
               "https://images.ygoprodeck.com/images/cards/" +
               deckArray[c].id +
               ".jpg";
-            imgs.appendChild(img);
+            imgsDeck.appendChild(img);
             imgCount++;
           }
         }
@@ -256,7 +261,7 @@
         priority = 500000000000000;
       } else if (monstertype.includes("Synchro")) {
         priority = 400000000000000;
-      } else if (monstertype.includes("XYZ")) {
+      } else if (monstertype.includes("Xyz")) {
         priority = 300000000000000;
       } else if (monstertype.includes("Link")) {
         priority = 200000000000000;
@@ -302,15 +307,19 @@
           break;
       }
       let indexmain = 0;
+      cnvDeck.width = cnvExDeck.width =
+        (421 * deckCardSize + 1) * deckImgPerRow;
       cnvDeck.height =
-        (614 * deckCardSize + 1) *
+        688 *
+        deckCardSize *
         Math.ceil(
           deckArray.filter(function (a) {
             return a.dlpriority < 200000000000000;
           }).length / deckImgPerRow
         );
       cnvExDeck.height =
-        (614 * deckCardSize + 1) *
+        688 *
+        deckCardSize *
         Math.ceil(
           deckArray.filter(function (a) {
             return a.dlpriority > 200000000000000;
@@ -322,18 +331,40 @@
           ctxExDeck.drawImage(
             document.getElementById("deckimg" + deckArray[c].id),
             (421 * deckCardSize + 1) * (c % deckImgPerRow),
-            (614 * deckCardSize + 1) * Math.floor(c / deckImgPerRow),
+            688 * deckCardSize * Math.floor(c / deckImgPerRow) +
+              74 * deckCardSize,
             421 * deckCardSize,
             614 * deckCardSize
           );
+          if (deckArray[c].rarity) {
+            ctxExDeck.drawImage(
+              document.getElementById("tag" + deckArray[c].rarity),
+              (421 * deckCardSize + 1) * (c % deckImgPerRow) +
+                125 * deckCardSize,
+              688 * deckCardSize * Math.floor(c / deckImgPerRow),
+              296 * deckCardSize,
+              74 * deckCardSize
+            );
+          }
         } else {
           ctxDeck.drawImage(
             document.getElementById("deckimg" + deckArray[c].id),
             (421 * deckCardSize + 1) * (indexmain % deckImgPerRow),
-            (614 * deckCardSize + 1) * Math.floor(indexmain / deckImgPerRow),
+            688 * deckCardSize * Math.floor(indexmain / deckImgPerRow) +
+              74 * deckCardSize,
             421 * deckCardSize,
             614 * deckCardSize
           );
+          if (deckArray[c].rarity) {
+            ctxDeck.drawImage(
+              document.getElementById("tag" + deckArray[c].rarity),
+              (421 * deckCardSize + 1) * (indexmain % deckImgPerRow) +
+                125 * deckCardSize,
+              688 * deckCardSize * Math.floor(indexmain / deckImgPerRow),
+              296 * deckCardSize,
+              74 * deckCardSize
+            );
+          }
           indexmain++;
         }
       }
@@ -344,13 +375,13 @@
       const rect = cnvDeck.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      displayCard(
-        Math.floor(y / (614 * deckCardSize + 1)) * deckImgPerRow +
-          Math.floor(x / (421 * deckCardSize + 1)) +
-          deckArray.filter(function (a) {
-            return a.dlpriority > 200000000000000;
-          }).length
-      );
+      const index =
+        Math.floor(y / (688 * deckCardSize)) * deckImgPerRow +
+        Math.floor(x / (421 * deckCardSize + 1)) +
+        deckArray.filter(function (a) {
+          return a.dlpriority > 200000000000000;
+        }).length;
+      displayCard(index);
     }
     //show info when a card in extra deck is clicked
     function selectExDeckCard(e) {
@@ -358,10 +389,12 @@
       const rect = cnvExDeck.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      displayCard(
-        Math.floor(y / (614 * deckCardSize + 1)) * deckImgPerRow +
-          Math.floor(x / (421 * deckCardSize + 1))
-      );
+      const index =
+        Math.floor(y / (688 * deckCardSize)) * deckImgPerRow +
+        Math.floor(x / (421 * deckCardSize + 1));
+      if (deckArray[index].dlpriority > 200000000000000) {
+        displayCard(index);
+      }
     }
     //display card info in dom
     function displayCard(index) {
@@ -380,12 +413,6 @@
         cardinfoLevel.innerHTML = "";
       } else {
         cardinfoLevel.innerHTML = "Level/Rank: " + deckArray[index].level;
-      }
-      if (deckArray[index].rarity == null) {
-        cardinfoRarity.innerHTML = "";
-      } else {
-        cardinfoRarity.innerHTML =
-          "Rarity (Duel Links): " + deckArray[index].rarity;
       }
       cardinfoEffect.innerHTML = deckArray[index].effect
         .replace(/\r\n----------------------------------------\r\n/g, "<br>")
