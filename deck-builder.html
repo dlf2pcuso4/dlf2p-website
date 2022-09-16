@@ -149,14 +149,9 @@
     </div>
   </body>
   <script>
-    var jsonDataDl,
-      cardData,
-      cardQuery,
-      imgPerRow,
-      imgCount,
-      imgLoadedCount,
-      cardSelected;
+    var jsonDataDl, cardData, cardQuery, imgCount, imgLoadedCount, cardSelected;
     var cardSize = 0.3;
+    var imgPerRow = 6;
     var deckArray = [];
     var deckIndex = 0;
     var deckCardSize = 0.15;
@@ -191,6 +186,11 @@
     }
     window.onload = async function () {
       btnSearch.innerHTML = "Pending...";
+      if (window.innerWidth < 1080) {
+        imgPerRow = 5;
+        cardSize = 0.2;
+        deckImgPerRow = 6;
+      }
       cnvDeck.height = cnvExDeck.height = 0;
       cnvDeck.width = cnvExDeck.width =
         (421 * deckCardSize + 1) * deckImgPerRow;
@@ -230,8 +230,7 @@
         } else {
           cnvResults.style.display = "block";
         }
-        cnvResults.width = 850;
-        imgPerRow = Math.floor(cnvResults.width / (421 * cardSize + 10));
+        cnvResults.width = imgPerRow * (421 * cardSize + 10);
         cnvResults.height =
           (614 * cardSize + 10) * Math.ceil(cardData.length / imgPerRow);
         imgCount = cardData.length;
