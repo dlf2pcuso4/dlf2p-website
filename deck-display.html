@@ -189,6 +189,9 @@
       btnLoad.innerHTML = "Pending...";
       cnvDeck.width = cnvExDeck.width = 0;
       cnvDeck.height = cnvExDeck.height = 0;
+      if (window.innerWidth < 1080) {
+        deckImgPerRow = 6;
+      }
       let jsonResponseDl = await fetch(
         "https://dlf2pcuso4.github.io/ygo-deck-builder/carddb-dl.json"
       );
