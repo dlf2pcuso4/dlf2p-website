@@ -99,7 +99,7 @@
             <div class="flexdivc">
               <img
                 id="cardinfoImg"
-                src="https://images.ygoprodeck.com/images/cards/55144522.jpg"
+                src="https://dlf2pcuso4.github.io/ygo-deck-builder/images/cards/55144522.jpg"
               />
             </div>
             <div class="flexdivc">
@@ -132,6 +132,8 @@
     </div>
   </body>
   <script>
+    const params = new URL(document.location).searchParams;
+    const paramDeckcode = params.get("deckcode");
     var jsonDataDl, jsonDataDlFiltered, jsonDataMd, jsonDataMdFiltered;
     var deckcodeArray = [];
     var deckArray = [];
@@ -196,6 +198,10 @@
       );
       jsonDataMd = await jsonResponseMd.json();
       btnLoad.innerHTML = "Load";
+      if (paramDeckcode) {
+        loaddeck.value = paramDeckcode;
+        loadDeck();
+      }
     };
     //import deck
     function loadDeck() {
@@ -244,7 +250,7 @@
             let img = document.createElement("img");
             img.id = "deckimg" + deckArray[c].id;
             img.src =
-              "https://images.ygoprodeck.com/images/cards/" +
+              "https://dlf2pcuso4.github.io/ygo-deck-builder/images/cards/" +
               deckArray[c].id +
               ".jpg";
             imgsDeck.appendChild(img);
