@@ -131,6 +131,8 @@
       <div id="imgsDeck"></div>
     </div>
   </body>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
   <script>
     const params = new URL(document.location).searchParams;
     const paramDeckcode = params.get("deckcode");
@@ -214,115 +216,82 @@
         deckArray = [];
         cnvDeck.height = cnvExDeck.height = 0;
         //split deck code into individual cards
-        deckcodeArray = loaddeck.value.match(/.{1,15}/g);
+        deckcodeArray = decodeDeck(loaddeck.value).match(/.{1,10}/g);
         for (let c = 0; c < deckcodeArray.length; c++) {
           jsonDataDlFiltered = jsonDataDl.filter(function (a) {
-            return a.konamiID == deckcodeArray[c] % 10000000000;
+            return a.konamiID == Number(deckcodeArray[c]);
           });
           jsonDataMdFiltered = jsonDataMd.filter(function (a) {
-            return a.konamiID == deckcodeArray[c] % 10000000000;
+            return a.konamiID == Number(deckcodeArray[c]);
           });
           //store information
-          deckArray[c] = new Card(
-            jsonDataDlFiltered[0].konamiID,
-            jsonDataDlFiltered[0].name,
-            jsonDataDlFiltered[0].race,
-            jsonDataDlFiltered[0].attribute,
-            jsonDataDlFiltered[0].level,
-            jsonDataDlFiltered[0].rarity,
-            jsonDataMdFiltered[0].rarity,
-            jsonDataDlFiltered[0].description,
-            jsonDataDlFiltered[0].atk,
-            jsonDataDlFiltered[0].def,
-            dlCardPriority(
+          if (jsonDataDlFiltered[0]) {
+            deckArray[c] = new Card(
               jsonDataDlFiltered[0].konamiID,
-              jsonDataDlFiltered[0].monsterType,
-              jsonDataDlFiltered[0].type,
-              jsonDataDlFiltered[0].rarity,
+              jsonDataDlFiltered[0].name,
+              jsonDataDlFiltered[0].race,
+              jsonDataDlFiltered[0].attribute,
               jsonDataDlFiltered[0].level,
-              jsonDataDlFiltered[0].linkRating
-            ),
-            deckcodeArray[c]
-          );
-        }
-        //append card image if it is not a duplicate
-        let imgCount = 0;
-        let imgLoadedCount = 0;
-        for (let c = 0; c < deckArray.length; c++) {
-          if (document.getElementById("deckimg" + deckArray[c].id) == null) {
-            let img = document.createElement("img");
-            img.id = "deckimg" + deckArray[c].id;
-            img.src =
-              "https://dlf2pcuso4.github.io/ygo-deck-builder/images/cards/" +
-              deckArray[c].id +
-              ".jpg";
-            imgsDeck.appendChild(img);
-            imgCount++;
+              jsonDataDlFiltered[0].rarity,
+              jsonDataMdFiltered[0].rarity,
+              jsonDataDlFiltered[0].description,
+              jsonDataDlFiltered[0].atk,
+              jsonDataDlFiltered[0].def,
+              dlCardPriority(
+                jsonDataDlFiltered[0].konamiID,
+                jsonDataDlFiltered[0].monsterType,
+                jsonDataDlFiltered[0].type,
+                jsonDataDlFiltered[0].rarity,
+                jsonDataDlFiltered[0].level,
+                jsonDataDlFiltered[0].linkRating
+              ),
+              mdCardPriority(
+                jsonDataDlFiltered[0].konamiID,
+                jsonDataDlFiltered[0].monsterType,
+                jsonDataDlFiltered[0].type,
+                jsonDataDlFiltered[0].level,
+                jsonDataDlFiltered[0].linkRating,
+                jsonDataDlFiltered[0].race
+              )
+            );
+          } else {
+            btnLoad.innerHTML = "Invalid code";
+            break;
           }
         }
-        for (let c = 0; c < deckArray.length; c++) {
-          document.getElementById("deckimg" + deckArray[c].id).onload =
-            function () {
-              imgLoadedCount++;
-              if (imgLoadedCount == imgCount) {
-                refreshDeck();
-              }
-            };
+        //append card image if it is not a duplicate
+        if (btnLoad.innerHTML != "Invalid code") {
+          let imgCount = 0;
+          let imgLoadedCount = 0;
+          for (let c = 0; c < deckArray.length; c++) {
+            if (document.getElementById("deckimg" + deckArray[c].id) == null) {
+              let img = document.createElement("img");
+              img.id = "deckimg" + deckArray[c].id;
+              img.src =
+                "https://dlf2pcuso4.github.io/ygo-deck-builder/images/cards/" +
+                deckArray[c].id +
+                ".jpg";
+              imgsDeck.appendChild(img);
+              imgCount++;
+            }
+          }
+          for (let c = 0; c < deckArray.length; c++) {
+            document.getElementById("deckimg" + deckArray[c].id).onload =
+              function () {
+                imgLoadedCount++;
+                if (imgLoadedCount == imgCount) {
+                  refreshDeck();
+                }
+              };
+          }
+          btnLoad.innerHTML = "Loaded!";
         }
-        btnLoad.innerHTML = "Loaded!";
         setTimeout(function () {
           btnLoad.innerHTML = "Load";
         }, 2000);
       }
     }
-    //sort priority function (etrlldddddddddd)(15 char)
-    //e: extra deck card type
-    //t: card type (monster, spell, trap)
-    //r: rarity
-    //l: level/link
-    //d: card id
-    function dlCardPriority(id, monstertype, type, rarity, level, link) {
-      let priority = 100000000000000;
-      let levellink = 0;
-      if (level) {
-        levellink = level;
-      } else if (link) {
-        levellink = link;
-      }
-      if (monstertype.includes("Fusion")) {
-        priority = 500000000000000;
-      } else if (monstertype.includes("Synchro")) {
-        priority = 400000000000000;
-      } else if (monstertype.includes("Xyz") || monstertype.includes("XYZ")) {
-        priority = 300000000000000;
-      } else if (monstertype.includes("Link")) {
-        priority = 200000000000000;
-      }
-      if (rarity == "UR") {
-        priority += 4000000000000;
-      } else if (rarity == "SR") {
-        priority += 3000000000000;
-      } else if (rarity == "R") {
-        priority += 2000000000000;
-      } else if (rarity == "N") {
-        priority += 1000000000000;
-      }
-      if (type.includes("Monster")) {
-        if (monstertype.includes("Ritual")) {
-          priority += 50000000000000 + levellink * 10000000000;
-        } else if (monstertype.includes("Normal")) {
-          priority += 30000000000000 + levellink * 10000000000;
-        } else {
-          priority += 40000000000000 + levellink * 10000000000;
-        }
-      } else if (type.includes("Spell")) {
-        priority += 20000000000000;
-      } else if (type.includes("Trap")) {
-        priority += 10000000000000;
-      }
-      priority += Number(id);
-      return priority;
-    }
+    //sort by
     function sortBy() {
       if (sortDeckBy == "dl") {
         sortDeckBy = "md";
