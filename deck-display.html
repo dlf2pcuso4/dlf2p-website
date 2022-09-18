@@ -137,6 +137,10 @@
       <img id="mdtagSR" src="images/mdtagSR.png" />
       <img id="mdtagR" src="images/mdtagR.png" />
       <img id="mdtagN" src="images/mdtagN.png" />
+      <img id="Forbidden" src="images/forbidden.png" />
+      <img id="Limited 1" src="images/limit1.png" />
+      <img id="Limited 2" src="images/limit2.png" />
+      <img id="Limited 3" src="images/limit3.png" />
       <div id="imgsDeck"></div>
     </div>
   </body>
@@ -179,6 +183,8 @@
         effect,
         atk,
         def,
+        dlBanStatus,
+        mdBanStatus,
         dlpriority,
         mdpriority
       ) {
@@ -192,6 +198,8 @@
         this.effect = effect;
         this.atk = atk;
         this.def = def;
+        this.dlBanStatus = dlBanStatus;
+        this.mdBanStatus = mdBanStatus;
         this.dlpriority = dlpriority;
         this.mdpriority = mdpriority;
       }
@@ -248,6 +256,8 @@
               jsonDataDlFiltered[0].description,
               jsonDataDlFiltered[0].atk,
               jsonDataDlFiltered[0].def,
+              jsonDataDlFiltered[0].banStatus,
+              jsonDataMdFiltered[0].banStatus,
               dlCardPriority(
                 jsonDataDlFiltered[0].konamiID,
                 jsonDataDlFiltered[0].monsterType,
@@ -369,6 +379,16 @@
               296 * deckCardSize,
               74 * deckCardSize
             );
+            if (deckArray[c].dlBanStatus) {
+              ctxExDeck.drawImage(
+                document.getElementById(deckArray[c].dlBanStatus),
+                (421 * deckCardSize + 1) * (c % deckImgPerRow),
+                688 * deckCardSize * Math.floor(c / deckImgPerRow) +
+                  74 * deckCardSize,
+                110 * deckCardSize,
+                110 * deckCardSize
+              );
+            }
           } else if (sortDeckBy == "md" && deckArray[c].mdrarity) {
             ctxExDeck.drawImage(
               document.getElementById("mdtag" + deckArray[c].mdrarity),
@@ -379,6 +399,16 @@
               256 * deckCardSize,
               64 * deckCardSize
             );
+            if (deckArray[c].mdBanStatus) {
+              ctxExDeck.drawImage(
+                document.getElementById(deckArray[c].mdBanStatus),
+                (421 * deckCardSize + 1) * (c % deckImgPerRow),
+                688 * deckCardSize * Math.floor(c / deckImgPerRow) +
+                  74 * deckCardSize,
+                110 * deckCardSize,
+                110 * deckCardSize
+              );
+            }
           }
         } else {
           ctxDeck.drawImage(
@@ -398,6 +428,16 @@
               296 * deckCardSize,
               74 * deckCardSize
             );
+            if (deckArray[c].dlBanStatus) {
+              ctxDeck.drawImage(
+                document.getElementById(deckArray[c].dlBanStatus),
+                (421 * deckCardSize + 1) * (indexmain % deckImgPerRow),
+                688 * deckCardSize * Math.floor(indexmain / deckImgPerRow) +
+                  74 * deckCardSize,
+                110 * deckCardSize,
+                110 * deckCardSize
+              );
+            }
           } else if (sortDeckBy == "md" && deckArray[c].mdrarity) {
             ctxDeck.drawImage(
               document.getElementById("mdtag" + deckArray[c].mdrarity),
@@ -408,6 +448,16 @@
               256 * deckCardSize,
               64 * deckCardSize
             );
+            if (deckArray[c].mdBanStatus) {
+              ctxDeck.drawImage(
+                document.getElementById(deckArray[c].mdBanStatus),
+                (421 * deckCardSize + 1) * (indexmain % deckImgPerRow),
+                688 * deckCardSize * Math.floor(indexmain / deckImgPerRow) +
+                  74 * deckCardSize,
+                110 * deckCardSize,
+                110 * deckCardSize
+              );
+            }
           }
           indexmain++;
         }
