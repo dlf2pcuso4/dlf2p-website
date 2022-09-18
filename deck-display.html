@@ -83,9 +83,6 @@
         <label for="loaddeck">Import deck by deck code:</label>
         <input type="text" name="loaddeck" id="loaddeck" autocomplete="off" />
         <button id="btnLoad" type="button" onclick="loadDeck()"></button>
-        <button id="btnSortBy" type="button" onclick="sortBy()">
-          Sort: Duel Links
-        </button>
       </form>
     </div>
     <div class="flexdiv">
@@ -95,25 +92,37 @@
       </div>
       <div>
         <div class="flexdivc">
-          <div id="cardinfo">
-            <div class="flexdivc">
-              <img
-                id="cardinfoImg"
-                src="https://dlf2pcuso4.github.io/ygo-deck-builder/images/cards/55144522.jpg"
-              />
+          <div>
+            <div id="cardinfo">
+              <div class="flexdivc">
+                <img
+                  id="cardinfoImg"
+                  src="https://dlf2pcuso4.github.io/ygo-deck-builder/images/cards/55144522.jpg"
+                />
+              </div>
+              <div class="flexdivc">
+                <p id="cardinfoName">Pot of Greed</p>
+              </div>
+              <div class="flexdiv">
+                <p id="cardinfoRace">What does it do?</p>
+                <p id="cardinfoAttribute"></p>
+                <p id="cardinfoLevel"></p>
+              </div>
+              <p id="cardinfoEffect"></p>
+              <div class="flexdiv">
+                <p id="cardinfoAtk"></p>
+                <p id="cardinfoDef"></p>
+              </div>
             </div>
             <div class="flexdivc">
-              <p id="cardinfoName">Pot of Greed</p>
-            </div>
-            <div class="flexdiv">
-              <p id="cardinfoRace">What does it do?</p>
-              <p id="cardinfoAttribute"></p>
-              <p id="cardinfoLevel"></p>
-            </div>
-            <p id="cardinfoEffect"></p>
-            <div class="flexdiv">
-              <p id="cardinfoAtk"></p>
-              <p id="cardinfoDef"></p>
+              <button id="btnSortBy" type="button" onclick="sortBy()">
+                Sort: Duel Links
+              </button>
+              <button
+                id="btnDownload"
+                type="button"
+                onclick="download()"
+              ></button>
             </div>
           </div>
         </div>
@@ -144,6 +153,7 @@
     var sortDeckBy = "dl";
     const loaddeck = document.getElementById("loaddeck");
     const btnLoad = document.getElementById("btnLoad");
+    const btnDownload = document.getElementById("btnDownload");
     const cnvDeck = document.getElementById("cnvDeck");
     const ctxDeck = cnvDeck.getContext("2d");
     const cnvExDeck = document.getElementById("cnvExDeck");
@@ -189,6 +199,7 @@
     //onload setup + prepare json
     window.onload = async function () {
       btnLoad.innerHTML = "Pending...";
+      btnDownload.innerHTML = "Download Deck Image";
       cnvDeck.width = cnvExDeck.width = 0;
       cnvDeck.height = cnvExDeck.height = 0;
       if (window.innerWidth < 1080) {
@@ -459,6 +470,30 @@
         cardinfoDef.innerHTML = "";
       } else {
         cardinfoDef.innerHTML = "DEF: " + deckArray[index].def;
+      }
+    }
+    //download deck as png
+    function download() {
+      if (btnDownload.innerHTML == "Download Deck Image") {
+        btnDownload.innerHTML = "Downloading...";
+        const cnvTemp = document.createElement("canvas");
+        const ctxTemp = cnvTemp.getContext("2d");
+        cnvTemp.width = cnvDeck.width;
+        cnvTemp.height = cnvDeck.height + cnvExDeck.height;
+        document.body.appendChild(cnvTemp);
+        ctxTemp.drawImage(cnvDeck, 0, 0);
+        ctxTemp.drawImage(cnvExDeck, 0, cnvDeck.height);
+        const a = document.createElement("a");
+        a.href = cnvTemp.toDataURL("image/png");
+        a.download = "deck.png";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        document.body.removeChild(cnvTemp);
+        btnDownload.innerHTML = "Downloaded!";
+        setTimeout(function () {
+          btnDownload.innerHTML = "Download Deck Image";
+        }, 2000);
       }
     }
   </script>
