@@ -479,10 +479,10 @@
         const cnvTemp = document.createElement("canvas");
         const ctxTemp = cnvTemp.getContext("2d");
         cnvTemp.width = cnvDeck.width;
-        cnvTemp.height = cnvDeck.height + cnvExDeck.height;
+        cnvTemp.height = cnvDeck.height + cnvExDeck.height + 20;
         document.body.appendChild(cnvTemp);
         ctxTemp.drawImage(cnvDeck, 0, 0);
-        ctxTemp.drawImage(cnvExDeck, 0, cnvDeck.height);
+        ctxTemp.drawImage(cnvExDeck, 0, cnvDeck.height + 20);
         const a = document.createElement("a");
         a.href = cnvTemp.toDataURL("image/png");
         a.download = "deck.png";
