@@ -1,0 +1,71 @@
+* {
+  padding: 0%;
+  margin: 0%;
+}
+body {
+  background: #1b1329;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: "Montserrat";
+  color: white;
+  text-align: justify;
+  text-decoration: none;
+}
+h1 {
+  margin: 10px;
+}
+button {
+  font-size: 18px;
+  font-family: "Montserrat";
+  font-weight: bold;
+  margin: 2px;
+  padding: 2px;
+}
+#form {
+  margin: 20px;
+}
+.flexdiv {
+  display: flex;
+}
+.flexdivc {
+  display: flex;
+  justify-content: center;
+}
+#cnvResults {
+  margin: 20px;
+  display: none;
+}
+#cardinfo {
+  margin: 20px;
+  padding: 10px;
+  background-color: black;
+  font-size: 15px;
+  font-weight: normal;
+  width: 400px;
+}
+#cardinfo img {
+  width: 200px;
+}
+#cardinfo p {
+  margin: 3px;
+}
+#cardinfoName {
+  font-size: 18px;
+}
+#autoadd {
+  width: 30px;
+}
+#divDeck {
+  width: min-content;
+}
+#cnvDeck {
+  margin: 10px;
+  background-color: black;
+}
+#cnvExDeck {
+  margin: 10px;
+  background-color: black;
+}
+#imgs {
+  display: none;
+}
