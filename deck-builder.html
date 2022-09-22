@@ -8,6 +8,7 @@
     </style>
     <link rel="stylesheet" href="lib/stylesheet.css" />
     <script src="lib/carddb-dl.txt"></script>
+    <script src="lib/carddb-md.txt"></script>
   </head>
   <body>
     <div class="flexdivc">
@@ -17,6 +18,19 @@
       <label for="searchname">Search card:</label>
       <input type="text" name="searchname" id="searchname" autocomplete="off" />
       <button id="btnSearch" type="button" onclick="searchCard()"></button>
+      <br />
+      <label for="searchfrom">Search from:</label>
+      <select name="searchfrom" id="searchfrom">
+        <option value="dl">Duel Links</option>
+        <option value="md">Master Duel</option>
+      </select>
+      <br />
+      <label for="searchsort">Sort results by:</label>
+      <select name="searchsort" id="searchsort">
+        <option value="name">Name</option>
+        <option value="release">Release date</option>
+        <option value="popularity">Popularity</option>
+      </select>
     </form>
     <div class="flexdiv">
       <div>
