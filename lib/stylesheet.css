@@ -24,12 +24,25 @@ button {
 #form {
   margin: 20px;
 }
+#form2 {
+  margin: 20px;
+}
+#form2 select {
+  height: 30px;
+}
 .flexdiv {
   display: flex;
 }
 .flexdivc {
   display: flex;
   justify-content: center;
+}
+#skillbox {
+  margin: 10px;
+}
+#skillbox img {
+  width: 30px;
+  margin-right: 10px;
 }
 #cnvResults {
   margin: 20px;
