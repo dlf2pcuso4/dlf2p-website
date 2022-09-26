@@ -9,6 +9,7 @@
     </style>
     <link rel="stylesheet" href="lib/stylesheet.css" />
     <script src="lib/carddb-dl.txt"></script>
+    <script src="lib/skilldb-dl.txt"></script>
     <script src="lib/carddb-md.txt"></script>
   </head>
   <body>
@@ -21,6 +22,12 @@
         <input type="text" name="loaddeck" id="loaddeck" autocomplete="off" />
         <button id="btnLoad" type="button" onclick="loadDeck()"></button>
       </form>
+    </div>
+    <div id="skillbox" onclick="selectSkill()">
+      <div class="flexdiv">
+        <img src="images/skill.png" />
+        <p id="deckSkill"></p>
+      </div>
     </div>
     <div class="flexdiv">
       <div id="divDeck">
