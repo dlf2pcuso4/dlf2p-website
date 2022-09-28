@@ -21,10 +21,7 @@ button {
   margin: 2px;
   padding: 2px;
 }
-#form {
-  margin: 20px;
-}
-#form2 {
+form {
   margin: 20px;
 }
 #form2 select {
