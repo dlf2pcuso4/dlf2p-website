@@ -47,6 +47,11 @@
       <select name="skillresults" id="skillresults"></select>
       <button type="button" onclick="addSkill()">Set skill</button>
     </form>
+    <form id="form3">
+      <label for="importdeck">Import deck by deck code:</label>
+      <input type="text" name="importdeck" id="importdeck" autocomplete="off" />
+      <button id="btnImport" type="button" onclick="importDeck()"></button>
+    </form>
     <div class="flexdiv">
       <div>
         <canvas id="cnvResults" onclick="selectCard(event)"></canvas>
