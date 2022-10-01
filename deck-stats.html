@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Deck Stats</title>
+    <meta charset="utf-8" />
+    <style>
+      * {
+        padding: 0%;
+        margin: 0%;
+      }
+      body {
+        background: #1b1329;
+      }
+      #img {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div id="img">
+      <img id="statbg" src="images/statbg.png" />
+    </div>
+  </body>
+  <script>
+    const params = new URL(document.location).searchParams;
+    const data = params.get("data").split("");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const statbg = document.getElementById("statbg");
+    canvas.width = 553;
+    canvas.height = 1080;
+    statbg.onload = function () {
+      ctx.drawImage(statbg, 0, 0, 1920, 1080);
+      ctx.fillStyle = "#380176E0";
+      ctx.beginPath(); //mid pt: 276 443
+      ctx.moveTo(276, 443 - 33.5 * data[0]);
+      ctx.lineTo(276 + 28.7 * data[1], 443 - 16.8 * data[1]);
+      ctx.lineTo(276 + 28.7 * data[2], 443 + 17.6 * data[2]);
+      ctx.lineTo(276, 443 + 33.5 * data[3]);
+      ctx.lineTo(276 - 28.7 * data[4], 443 + 17.6 * data[4]);
+      ctx.lineTo(276 - 28.7 * data[5], 443 - 16.8 * data[5]);
+      ctx.closePath();
+      ctx.fill();
+    };
+  </script>
+</html>
