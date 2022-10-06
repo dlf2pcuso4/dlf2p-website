@@ -1,0 +1,114 @@
+<html>
+  <head>
+    <title>Small World Calculator</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <link rel="stylesheet" href="lib/stylesheet.css" />
+    <style>
+      .cardImgGlow {
+        margin: 20px;
+        padding: 5px;
+      }
+      .cardImg {
+        width: 150px;
+      }
+    </style>
+    <script src="lib/carddb-md.txt"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <h1>Yu-Gi-Oh! Small World Calculator</h1>
+    </div>
+    <form id="form">
+      <label for="searchname">Search card:</label>
+      <input type="text" name="searchname" id="searchname" autocomplete="off" />
+      <button id="btnSearch" type="button" onclick="searchCard()"></button>
+      <br />
+      <label for="searchsort">Sort results by:</label>
+      <select name="searchsort" id="searchsort">
+        <option value="name">Name</option>
+        <option value="release">Release date</option>
+        <option value="popularity">Popularity</option>
+      </select>
+      <br />
+      <button type="button" onclick="removeCard()">Remove Card</button>
+      <button id="btnCalculate" type="button" onclick="calculate()"></button>
+    </form>
+    <div class="flexdiv">
+      <div id="cardImgGlow1" class="cardImgGlow">
+        <img
+          id="cardImg1"
+          class="cardImg"
+          src="images/noimage.jpg"
+          onclick="selectSlot(1)"
+        />
+      </div>
+      <div id="cardImgGlow2" class="cardImgGlow">
+        <img
+          id="cardImg2"
+          class="cardImg"
+          src="images/noimage.jpg"
+          onclick="selectSlot(2)"
+        />
+      </div>
+      <div id="cardImgGlow3" class="cardImgGlow">
+        <img
+          id="cardImg3"
+          class="cardImg"
+          src="images/noimage.jpg"
+          onclick="selectSlot(3)"
+        />
+      </div>
+    </div>
+    <div class="flexdiv">
+      <div>
+        <canvas id="cnvResults" onclick="selectCard(event)"></canvas>
+      </div>
+      <div>
+        <div class="flexdivc">
+          <div id="cardinfo">
+            <div class="flexdivc">
+              <img id="cardinfoImg" src="images/cards/89558743.jpg" />
+            </div>
+            <div class="flexdivc">
+              <p id="cardinfoName">Small World</p>
+            </div>
+            <div class="flexdiv">
+              <p id="cardinfoRace">Type: Normal</p>
+              <p id="cardinfoAttribute"></p>
+              <p id="cardinfoLevel"></p>
+            </div>
+            <p id="cardinfoEffect">
+              Reveal 1 monster in your hand, choose 1 monster from your Deck
+              that has exactly 1 of the same Type, Attribute, Level, ATK or DEF,
+              and banish the revealed monster from your hand face-down. Then
+              add, from the Deck to your hand, 1 monster that has exactly 1 of
+              the same Type, Attribute, Level, ATK or DEF as the monster chosen
+              from your Deck, and banish the card chosen from the Deck
+              face-down. You can only activate 1 "Small World" per turn.
+            </p>
+            <div class="flexdiv">
+              <p id="cardinfoAtk"></p>
+              <p id="cardinfoDef"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="imgs">
+      <img id="mdtagUR" src="images/mdtagUR.png" />
+      <img id="mdtagSR" src="images/mdtagSR.png" />
+      <img id="mdtagR" src="images/mdtagR.png" />
+      <img id="mdtagN" src="images/mdtagN.png" />
+      <img id="Forbidden" src="images/forbidden.png" />
+      <img id="Limited 1" src="images/limit1.png" />
+      <img id="Limited 2" src="images/limit2.png" />
+      <img id="Limited 3" src="images/limit3.png" />
+      <div id="imgsResults"></div>
+    </div>
+  </body>
+  <script src="lib/small-world-calculator-js.js"></script>
+</html>
