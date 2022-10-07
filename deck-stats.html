@@ -22,25 +22,30 @@
     </div>
   </body>
   <script>
+    const statbg = document.getElementById("statbg");
     const params = new URL(document.location).searchParams;
-    const data = params.get("data").split("");
+    if (params.get("data")) {
+      var data = params.get("data").split("");
+      statbg.src = "images/statbg2.png";
+    }
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    const statbg = document.getElementById("statbg");
-    canvas.width = 553;
+    canvas.width = 1920; //553
     canvas.height = 1080;
     statbg.onload = function () {
       ctx.drawImage(statbg, 0, 0, 1920, 1080);
-      ctx.fillStyle = "#380176E0";
-      ctx.beginPath(); //mid pt: 276 443
-      ctx.moveTo(276, 443 - 33.5 * data[0]);
-      ctx.lineTo(276 + 28.7 * data[1], 443 - 16.8 * data[1]);
-      ctx.lineTo(276 + 28.7 * data[2], 443 + 17.6 * data[2]);
-      ctx.lineTo(276, 443 + 33.5 * data[3]);
-      ctx.lineTo(276 - 28.7 * data[4], 443 + 17.6 * data[4]);
-      ctx.lineTo(276 - 28.7 * data[5], 443 - 16.8 * data[5]);
-      ctx.closePath();
-      ctx.fill();
+      if (data) {
+        ctx.fillStyle = "#380176E0";
+        ctx.beginPath(); //mid pt: 276 443
+        ctx.moveTo(276, 443 - 33.5 * data[0]);
+        ctx.lineTo(276 + 28.7 * data[1], 443 - 16.8 * data[1]);
+        ctx.lineTo(276 + 28.7 * data[2], 443 + 17.6 * data[2]);
+        ctx.lineTo(276, 443 + 33.5 * data[3]);
+        ctx.lineTo(276 - 28.7 * data[4], 443 + 17.6 * data[4]);
+        ctx.lineTo(276 - 28.7 * data[5], 443 - 16.8 * data[5]);
+        ctx.closePath();
+        ctx.fill();
+      }
     };
   </script>
 </html>
