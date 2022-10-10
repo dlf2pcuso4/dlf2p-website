@@ -15,83 +15,69 @@
     <div class="flexdivc">
       <h1>Yu-Gi-Oh! Deck Builder</h1>
     </div>
-    <form id="form">
-      <label for="searchname">Search card:</label>
-      <input type="text" name="searchname" id="searchname" autocomplete="off" />
-      <button id="btnSearch" type="button" onclick="searchCard()"></button>
-      <br />
-      <label for="searchfrom">Search from:</label>
-      <select name="searchfrom" id="searchfrom">
-        <option value="dl">Duel Links</option>
-        <option value="md">Master Duel</option>
-      </select>
-      <br />
-      <label for="searchsort">Sort results by:</label>
-      <select name="searchsort" id="searchsort">
-        <option value="name">Name</option>
-        <option value="release">Release date</option>
-        <option value="popularity">Popularity</option>
-      </select>
-    </form>
-    <form id="form2">
-      <label for="searchskill">Search skill:</label>
-      <input
-        type="text"
-        name="searchskill"
-        id="searchskill"
-        autocomplete="off"
-      />
-      <button type="button" onclick="searchSkill()">Search</button>
-      <br />
-      <label for="skillresults">Skill search results:</label>
-      <select name="skillresults" id="skillresults"></select>
-      <button type="button" onclick="addSkill()">Set skill</button>
-    </form>
-    <form id="form3">
-      <label for="importdeck">Import deck by deck code:</label>
-      <input type="text" name="importdeck" id="importdeck" autocomplete="off" />
-      <button id="btnImport" type="button" onclick="importDeck()"></button>
-    </form>
-    <div class="flexdiv">
+    <div id="controls">
       <div>
-        <canvas id="cnvResults" onclick="selectCard(event)"></canvas>
-      </div>
-      <div>
-        <div class="flexdivc">
-          <div id="cardinfo">
-            <div class="flexdivc">
-              <img id="cardinfoImg" src="images/cards/55144522.jpg" />
-            </div>
-            <div class="flexdivc">
-              <p id="cardinfoName">Pot of Greed</p>
-            </div>
-            <div class="flexdiv">
-              <p id="cardinfoRace">What does it do?</p>
-              <p id="cardinfoAttribute"></p>
-              <p id="cardinfoLevel"></p>
-            </div>
-            <p id="cardinfoEffect"></p>
-            <div class="flexdiv">
-              <p id="cardinfoAtk"></p>
-              <p id="cardinfoDef"></p>
-            </div>
-          </div>
-        </div>
-        <div class="flexdivc">
-          <button type="button" onclick="addCard()">Add to Deck</button>
-          <button type="button" onclick="clearDeck()">Clear Deck</button>
+        <form id="form">
+          <label for="searchname">Search card:</label>
+          <input
+            type="text"
+            name="searchname"
+            id="searchname"
+            autocomplete="off"
+          />
+          <button id="btnSearch" type="button" onclick="searchCard()"></button>
+          <br />
+          <label for="searchfrom">Search from:</label>
+          <select name="searchfrom" id="searchfrom">
+            <option value="dl">Duel Links</option>
+            <option value="md">Master Duel</option>
+          </select>
+          <br />
+          <label for="searchsort">Sort results by:</label>
+          <select name="searchsort" id="searchsort">
+            <option value="name">Name</option>
+            <option value="release">Release date</option>
+            <option value="popularity">Popularity</option>
+          </select>
+        </form>
+        <form id="form2">
+          <label for="searchskill">Search skill:</label>
+          <input
+            type="text"
+            name="searchskill"
+            id="searchskill"
+            autocomplete="off"
+          />
+          <button type="button" onclick="searchSkill()">Search</button>
+          <br />
+          <label for="skillresults">Skill search results:</label>
+          <select name="skillresults" id="skillresults"></select>
+          <button type="button" onclick="addSkill()">Set skill</button>
+        </form>
+        <form id="form3">
+          <label for="importdeck">Import deck by deck code:</label>
+          <input
+            type="text"
+            name="importdeck"
+            id="importdeck"
+            autocomplete="off"
+          />
+          <button id="btnImport" type="button" onclick="importDeck()"></button>
+        </form>
+        <div class="flexdiv20">
           <button id="btnSortBy" type="button" onclick="sortBy()">
             Sort: Duel Links
           </button>
-        </div>
-        <div class="flexdivc">
+          <button type="button" onclick="clearDeck()">Clear Deck</button>
           <button id="btnCopy" type="button" onclick="copyDeck()"></button>
           <button type="button" onclick="sendDeck()">Create Deck</button>
         </div>
-        <div class="flexdivc">
+        <div class="flexdiv20">
           <label for="autoadd">Auto-add:</label>
           <input id="autoadd" type="checkbox" name="autoadd" />
         </div>
+      </div>
+      <div>
         <div class="flexdivc">
           <h2>Deck Preview</h2>
         </div>
@@ -105,6 +91,36 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="flexdivc">
+      <div>
+        <canvas id="cnvResults" onclick="selectCard(event)"></canvas>
+      </div>
+    </div>
+    <div id="_popup">
+      <div class="flexdivc">
+        <div id="cardinfo">
+          <div class="flexdivc">
+            <img id="cardinfoImg" src="images/cards/55144522.jpg" />
+          </div>
+          <div class="flexdivc">
+            <p id="cardinfoName">Pot of Greed</p>
+          </div>
+          <div class="flexdiv">
+            <p id="cardinfoRace">What does it do?</p>
+            <p id="cardinfoAttribute"></p>
+            <p id="cardinfoLevel"></p>
+          </div>
+          <p id="cardinfoEffect"></p>
+          <div class="flexdiv">
+            <p id="cardinfoAtk"></p>
+            <p id="cardinfoDef"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="_notification">
+      <img id="notificationImg" src="images/cards/55144522.jpg" />
     </div>
     <div id="imgs">
       <img id="dltagUR" src="images/dltagUR.png" />
@@ -125,5 +141,6 @@
   </body>
   <script src="lib/priority-handler.js"></script>
   <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
   <script src="lib/deck-builder-js.js"></script>
 </html>
