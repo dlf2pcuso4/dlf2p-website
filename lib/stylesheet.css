@@ -14,15 +14,23 @@ body {
 h1 {
   margin: 10px;
 }
+#controls {
+  background-color: #00000080;
+  min-width: 505px;
+}
 button {
   font-size: 18px;
   font-family: "Montserrat";
   font-weight: bold;
   margin: 2px;
   padding: 2px;
+  cursor: pointer;
 }
 form {
   margin: 20px;
+}
+select {
+  cursor: pointer;
 }
 #form2 select {
   height: 30px;
@@ -34,6 +42,10 @@ form {
   display: flex;
   justify-content: center;
 }
+.flexdiv20 {
+  display: flex;
+  margin: 20px;
+}
 #skillbox {
   margin: 10px;
 }
@@ -44,6 +56,7 @@ form {
 #cnvResults {
   margin: 20px;
   display: none;
+  cursor: pointer;
 }
 #cardinfo {
   margin: 20px;
@@ -62,8 +75,12 @@ form {
 #cardinfoName {
   font-size: 18px;
 }
+#notificationImg {
+  width: 200px;
+}
 #autoadd {
   width: 30px;
+  cursor: pointer;
 }
 #divDeck {
   width: min-content;
@@ -71,10 +88,12 @@ form {
 #cnvDeck {
   margin: 10px;
   background-color: black;
+  cursor: pointer;
 }
 #cnvExDeck {
   margin: 10px;
   background-color: black;
+  cursor: pointer;
 }
 #imgs {
   display: none;
