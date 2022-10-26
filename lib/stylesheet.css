@@ -46,6 +46,9 @@ select {
   display: flex;
   margin: 20px;
 }
+.m20 {
+  margin: 20px;
+}
 #skillbox {
   margin: 10px;
 }
@@ -68,7 +71,6 @@ select {
 }
 #cardinfo img {
   width: 200px;
-  user-select: none;
 }
 #cardinfo p {
   margin: 3px;
@@ -78,7 +80,6 @@ select {
 }
 #notificationImg {
   width: 200px;
-  user-select: none;
 }
 #autoadd {
   width: 30px;
