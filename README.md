@@ -22,3 +22,5 @@ V1.0:
   - guides (temporary)
   - best-techs
 - Navigation menu in all pages
+- Duel Links exclusive cards can now be added to a deck
+- Changes to url parameters ("x" replaced with "_", and DL exclusives being added at the end of URL)
