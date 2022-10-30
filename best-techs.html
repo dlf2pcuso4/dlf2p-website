@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Best F2P Techs</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <link rel="stylesheet" href="lib/stylesheet.css" />
+    <script src="lib/carddb-dl.txt"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div style="text-align: center; width: min-content">
+        <h1>Best F2P Duel Links Techs</h1>
+        <p>
+          A list of the best F2P techs and staples in Duel Links to be used in
+          any deck
+        </p>
+        <table>
+          <tr>
+            <th>Card</th>
+            <th>Effect</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div id="_navtgl">
+      <img src="images/navtgl.png" />
+    </div>
+    <div id="_navbar">
+      <a href="index.html">
+        <p>Homepage</p>
+      </a>
+      <a href="f2p-decks.html">
+        <p>F2P Decks</p>
+      </a>
+      <a href="kog-decks.html">
+        <p>KOG Decks</p>
+      </a>
+      <a href="guides.html">
+        <p>Duel Links Guides</p>
+      </a>
+      <a href="best-techs.html">
+        <p>Best F2P Techs</p>
+      </a>
+      <a href="deck-builder.html">
+        <p>Deck Builder</p>
+      </a>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
+  <script>
+    var cardcode =
+      "h3764719d8130397i8045062i7120394d74534ma58p454i3236l0e6830749b57m157a3210191i5376428f16501men07825d8015q1a8k4794i84275qc8143903i9735427i4561645i2512625g5902s8em41729d3959432i64748ti2080692h8789641h148s39f7234805f0743819cr91741c1849106b9876529d326l73";
+    var cardArray = decodeDeck(cardcode).match(/.{1,10}/g);
+    for (let i = 0; i < cardArray.length; i++) {
+      document.getElementsByTagName("table")[0].innerHTML +=
+        '<tr><td><img src="images/cards/' +
+        Number(cardArray[i]) +
+        '.jpg"></td><td>' +
+        jsonResponseDl.filter((a) => a.konamiID == Number(cardArray[i]))[0]
+          .name +
+        "<br><br>" +
+        jsonResponseDl.filter((a) => a.konamiID == Number(cardArray[i]))[0]
+          .description +
+        "</td></tr>";
+    }
+  </script>
+</html>
