@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Yu-Gi-Oh! Deck Builder</title>
+    <title>Deck Builder</title>
     <meta charset="utf-8" />
     <link rel="icon" type="image/x-icon" href="images/logo.png" />
     <style>
@@ -13,7 +13,7 @@
   </head>
   <body>
     <div class="flexdivc">
-      <h1>Yu-Gi-Oh! Deck Builder</h1>
+      <h1>Deck Builder</h1>
     </div>
     <div id="controls">
       <div>
@@ -102,6 +102,29 @@
         <canvas id="cnvResults" onclick="selectCard(event)"></canvas>
       </div>
     </div>
+    <div id="_navtgl">
+      <img src="images/navtgl.png" />
+    </div>
+    <div id="_navbar">
+      <a href="index">
+        <p>Homepage</p>
+      </a>
+      <a href="f2p-decks">
+        <p>F2P Decks</p>
+      </a>
+      <a href="kog-decks">
+        <p>KOG Decks</p>
+      </a>
+      <a href="guides">
+        <p>Duel Links Guides</p>
+      </a>
+      <a href="best-techs">
+        <p>Best F2P Techs</p>
+      </a>
+      <a href="deck-builder">
+        <p>Deck Builder</p>
+      </a>
+    </div>
     <div id="_popup">
       <div class="flexdivc">
         <div id="cardinfo">
@@ -146,6 +169,7 @@
   </body>
   <script src="lib/priority-handler.js"></script>
   <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/navbar-handler.js"></script>
   <script src="lib/popup-handler.js"></script>
   <script src="lib/deck-builder-js.js"></script>
 </html>
