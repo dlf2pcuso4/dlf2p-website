@@ -14,6 +14,33 @@ body {
 h1 {
   margin: 10px;
 }
+a {
+  text-decoration: none;
+  color: #ffffff;
+}
+table {
+  width: 800px;
+  max-width: 90vw;
+  margin: 20px;
+  border-spacing: 0px;
+}
+th {
+  background-color: #604978;
+  padding: 5px;
+}
+td {
+  background-color: #00000060;
+  padding: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: lighter;
+}
+tr:hover {
+  background-color: #604978;
+}
+table img {
+  width: 150px;
+}
 #controls {
   background-color: #00000080;
   min-width: 505px;
@@ -48,6 +75,13 @@ select {
 }
 .m20 {
   margin: 20px;
+}
+#_navbar p {
+  margin: 15px;
+}
+.banner {
+  margin-top: 20px;
+  max-width: 90vw;
 }
 #skillbox {
   margin: 10px;
