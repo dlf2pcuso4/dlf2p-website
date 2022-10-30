@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title>Top F2P Text Template</title>
+    <meta charset="utf-8" />
+    <style>
+      * {
+        padding: 0%;
+        margin: 0%;
+      }
+      body {
+        background: #1b1329;
+      }
+      #img {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+    <div id="img">
+      <img id="deckbg" src="images/topf2pbg.png" />
+      <img id="deckstat" src="images/topf2pstat.png" />
+    </div>
+  </body>
+  <script>
+    var txtbr = "";
+    var txtbrIndex = 0;
+    var txtbrRow = 0;
+    const params = new URL(document.location).searchParams;
+    const deckname = params.get("n");
+    const description = params.get("d");
+    const descriptionTextArray = description.split(" ");
+    const stats = params.get("s").split("");
+    const canvas = document.getElementById("canvas"); //width 552
+    const ctx = canvas.getContext("2d");
+    const deckbg = document.getElementById("deckbg");
+    const deckstat = document.getElementById("deckstat");
+    window.onload = function () {
+      //bg, deckstat, deckname
+      ctx.drawImage(deckbg, 0, 0, 1920, 1080);
+      ctx.drawImage(deckstat, -33, 606, 612, 493);
+      ctx.font = "40px Comic Sans MS";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText(deckname, 268, 60);
+
+      //description  text (auto line break)
+      ctx.font = "26px Comic Sans MS";
+      ctx.textAlign = "left";
+      while (descriptionTextArray[txtbrIndex] != null) {
+        while (
+          ctx.measureText(txtbr + descriptionTextArray[txtbrIndex]).width <
+            520 &&
+          descriptionTextArray[txtbrIndex] != null
+        ) {
+          txtbr = txtbr + descriptionTextArray[txtbrIndex] + " ";
+          txtbrIndex++;
+        }
+        ctx.fillText(txtbr, 15, 110 + 38 * txtbrRow);
+        txtbr = "";
+        txtbrRow++;
+      }
+
+      //deck stat filling
+      setTimeout(function () {
+        ctx.fillStyle = "#380176E0";
+        ctx.beginPath(); //mid pt: 270 847
+        ctx.moveTo(270, 847 - 32.9 * stats[0]);
+        ctx.lineTo(270 + 28.3 * stats[1], 847 - 16.6 * stats[1]);
+        ctx.lineTo(270 + 28.3 * stats[2], 847 + 17.3 * stats[2]);
+        ctx.lineTo(270, 847 + 32.9 * stats[3]);
+        ctx.lineTo(270 - 28.3 * stats[4], 847 + 17.3 * stats[4]);
+        ctx.lineTo(270 - 28.3 * stats[5], 847 - 16.6 * stats[5]);
+        ctx.closePath();
+        ctx.fill();
+      }, 50);
+    };
+  </script>
+</html>
