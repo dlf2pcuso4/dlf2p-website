@@ -8,13 +8,20 @@
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
     <link rel="stylesheet" href="lib/stylesheet.css" />
+    <script src="lib/guidesdb.js"></script>
   </head>
   <body>
     <div class="flexdivc">
       <div style="text-align: center; width: min-content">
         <h1>Duel Links Guides</h1>
         <p>Guides for new players and card investments</p>
-        <div style="width: 500px"></div>
+        <table>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Date</th>
+          </tr>
+        </table>
       </div>
     </div>
     <div id="_navtgl">
@@ -42,4 +49,23 @@
     </div>
   </body>
   <script src="lib/navbar-handler.js"></script>
+  <script>
+    var sortedList = jsonResponseGuides.sort((a, b) =>
+      a.title.localeCompare(b.title)
+    );
+    for (let i = 0; i < sortedList.length; i++) {
+      document.getElementsByTagName("table")[0].innerHTML +=
+        '<tr onclick="window.location=' +
+        "'article?i=" +
+        i +
+        "'" +
+        ';"><td>' +
+        sortedList[i].title +
+        "</td><td>" +
+        sortedList[i].author +
+        "</td><td>" +
+        sortedList[i].date +
+        "</td></tr>";
+    }
+  </script>
 </html>

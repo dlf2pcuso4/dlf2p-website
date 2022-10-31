@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Duel Links Guides</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <link rel="stylesheet" href="lib/stylesheet.css" />
+    <style>
+      p {
+        font-size: 18px;
+        font-weight: lighter;
+        text-align: left;
+      }
+      img {
+        width: 150px;
+      }
+    </style>
+    <script src="lib/guidesdb.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div style="text-align: center; width: min-content">
+        <h1>Article</h1>
+        <p id="date"></p>
+        <p id="text" style="width: 800px; margin-top: 10px"></p>
+      </div>
+    </div>
+    <div id="_navtgl">
+      <img src="images/navtgl.png" />
+    </div>
+    <div id="_navbar">
+      <a href="/">
+        <p>Homepage</p>
+      </a>
+      <a href="f2p-decks">
+        <p>F2P Decks</p>
+      </a>
+      <a href="kog-decks">
+        <p>KOG Decks</p>
+      </a>
+      <a href="guides">
+        <p>Duel Links Guides</p>
+      </a>
+      <a href="best-techs">
+        <p>Best F2P Techs</p>
+      </a>
+      <a href="deck-builder">
+        <p>Deck Builder</p>
+      </a>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script>
+    const params = new URL(document.location).searchParams;
+    const i = params.get("i");
+    const src = document.createElement("script");
+    src.src = "lib/articles/article" + i + ".js";
+    src.onload = () => {
+      document.getElementsByTagName("title")[0].innerHTML =
+        jsonResponseArticle.title;
+      document.getElementsByTagName("h1")[0].innerHTML =
+        jsonResponseArticle.title + " by " + jsonResponseArticle.author;
+      document.getElementById("date").innerHTML = jsonResponseArticle.date;
+      let text = jsonResponseArticle.text;
+      if (text.includes("[") && text.includes("]")) {
+        text = text.split("[");
+        for (let c = 1; c < text.length; c++) {
+          text[c] = text[c].split("]");
+          text[c][0] =
+            '<br><br><img src="images/cards/' + text[c][0] + '.jpg"><br><br>';
+          text[c] = text[c].join("");
+        }
+        text = text.join("");
+      }
+      document.getElementById("text").innerHTML = text;
+    };
+    document.head.appendChild(src);
+  </script>
+</html>
