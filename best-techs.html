@@ -60,10 +60,10 @@
       document.getElementsByTagName("table")[0].innerHTML +=
         '<tr><td><img src="images/cards/' +
         Number(cardArray[i]) +
-        '.jpg"></td><td>' +
+        '.jpg"></td><td><span style="font-size:20px;font-weight:bold">' +
         jsonResponseDl.filter((a) => a.konamiID == Number(cardArray[i]))[0]
           .name +
-        "<br><br>" +
+        "</span><br><br>" +
         jsonResponseDl.filter((a) => a.konamiID == Number(cardArray[i]))[0]
           .description +
         "</td></tr>";
