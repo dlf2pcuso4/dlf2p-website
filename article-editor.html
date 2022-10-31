@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Article Editor</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
+      #txtbox {
+        width: 800px;
+        height: 60vh;
+        padding: 10px;
+        margin: 10px;
+        background-color: #00000080;
+        text-align: left;
+        font-size: 18px;
+        font-weight: lighter;
+        overflow: scroll;
+      }
+    </style>
+    <link rel="stylesheet" href="lib/stylesheet.css" />
+    <script src="lib/guidesdb.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div style="text-align: center; width: min-content">
+        <h1>DLF2P Article Editor</h1>
+        <div style="text-align: left; padding: 10px">
+          <label>Article name:</label>
+          <input id="name" type="text" autocomplete="off" />
+          <br />
+          <label>Author:</label>
+          <input id="author" type="text" autocomplete="off" />
+          <br />
+          <label>Date:</label>
+          <input
+            id="date"
+            type="text"
+            autocomplete="off"
+            placeholder="Jan 01, 2022"
+          />
+        </div>
+        <p id="txtbox" contenteditable="true">Type here...</p>
+        <button onclick="makeJs()">Download Article File</button>
+      </div>
+    </div>
+    <div id="_navtgl">
+      <img src="images/navtgl.png" />
+    </div>
+    <div id="_navbar">
+      <a href="/">
+        <p>Homepage</p>
+      </a>
+      <a href="f2p-decks">
+        <p>F2P Decks</p>
+      </a>
+      <a href="kog-decks">
+        <p>KOG Decks</p>
+      </a>
+      <a href="guides">
+        <p>Duel Links Guides</p>
+      </a>
+      <a href="best-techs">
+        <p>Best F2P Techs</p>
+      </a>
+      <a href="deck-builder">
+        <p>Deck Builder</p>
+      </a>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script>
+    function makeJs() {
+      let txt = document.getElementById("txtbox").innerHTML;
+      txt = txt
+        .replace(new RegExp("<div>", "g"), "")
+        .replace(new RegExp("</div>", "g"), "");
+      downloadTxt(
+        'var jsonResponseArticle={title:"' +
+          document.getElementById("name").value +
+          '",author:"' +
+          document.getElementById("author").value +
+          '",text:"' +
+          txt +
+          '",date:"' +
+          document.getElementById("date").value +
+          '",};',
+        "article.js"
+      );
+    }
+    function downloadTxt(text, filename) {
+      let tag = document.createElement("a");
+      tag.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+      );
+      tag.setAttribute("download", filename);
+      tag.style.display = "none";
+      document.body.appendChild(tag);
+      tag.click();
+      document.body.removeChild(tag);
+    }
+  </script>
+</html>

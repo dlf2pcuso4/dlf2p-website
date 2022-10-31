@@ -1,7 +1,9 @@
 # dlf2p.com
+
 Card searcher and deck builder for Yu-Gi-Oh!
 
 V0.1:
+
 - Card info now overlays the screen in deck builder to improve UI for mobile users
 - Multiple other size and position adjustments for improved mobile experience
 - Removed "Add Card" button in favour of the "Auto-add" feature
@@ -10,17 +12,21 @@ V0.1:
 - Bug fix: Cards without images no longer crash the webpage, and are now displayed with a default image instead
 
 V0.2:
+
 - Card info overlay added for deck display
 - Decks can now be renamed
 - Changes to url parameters ("deckcode" replaced with "d")
 
 V1.0:
+
 - Webpages made
   - index
   - f2p-decks
   - kog-decks
-  - guides (temporary)
+  - guides
   - best-techs
+  - articles
+  - article editor
 - Navigation menu in all pages
 - Duel Links exclusive cards can now be added to a deck
-- Changes to url parameters ("x" replaced with "_", and DL exclusives being added at the end of URL)
+- Changes to url parameters ("x" replaced with "\_", and DL exclusives being added at the end of URL)

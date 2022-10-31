@@ -9,7 +9,12 @@
     </style>
     <link rel="stylesheet" href="lib/stylesheet.css" />
     <style>
-      p {
+      #date {
+        text-align: left;
+      }
+      #text {
+        padding-top: 30px;
+        padding-bottom: 30px;
         font-size: 18px;
         font-weight: lighter;
         text-align: left;
@@ -19,6 +24,7 @@
       }
     </style>
     <script src="lib/guidesdb.js"></script>
+    <script src="lib/carddb-dl.txt"></script>
   </head>
   <body>
     <div class="flexdivc">
@@ -69,8 +75,18 @@
         text = text.split("[");
         for (let c = 1; c < text.length; c++) {
           text[c] = text[c].split("]");
-          text[c][0] =
-            '<br><br><img src="images/cards/' + text[c][0] + '.jpg"><br><br>';
+          let cardData = jsonResponseDl.filter((a) => a.name == text[c][0])[0];
+          if (cardData) {
+            if (cardData.konamiID) {
+              text[c][0] =
+                '<br><img src="images/cards/' +
+                cardData.konamiID +
+                '.jpg"><br>';
+            } else {
+              text[c][0] =
+                '<br><img src="images/cards/' + cardData.name + '.jpg"><br>';
+            }
+          }
           text[c] = text[c].join("");
         }
         text = text.join("");
