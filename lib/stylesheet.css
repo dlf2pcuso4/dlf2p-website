@@ -70,12 +70,19 @@ select {
 .m20 {
   margin: 20px;
 }
+#_navbar {
+  width: 250px;
+  max-width: 50%;
+}
 #_navbar p {
   margin: 15px;
 }
 .banner {
   margin-top: 20px;
   max-width: 90vw;
+}
+#skillresults {
+  height: 30px;
 }
 #skillbox {
   margin: 10px;

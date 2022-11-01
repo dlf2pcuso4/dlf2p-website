@@ -28,8 +28,12 @@ V1.0:
   - articles
   - article editor
 - Navigation menu in all pages
-- Duel Links exclusive cards can now be added to a deck
 - Changes to url parameters ("x" replaced with "\_", and DL exclusives being added at the end of URL)
+
+V1.1:
+
+- Duel Links exclusive cards can now be added to a deck
+- Changes to url parameters (DL exclusives being added at the end of URL)
 - Removed unnecessary form tags
 - Added filters for card searches (multiple filters can be added)
   - Card type (monster, spell, trap)
@@ -39,3 +43,4 @@ V1.0:
   - Link
   - Attribute
   - Type
+- Mobile UI scaling improvements

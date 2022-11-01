@@ -1,0 +1,147 @@
+* {
+  padding: 0%;
+  margin: 0%;
+}
+body {
+  background: #1b1329;
+  font-size: 26px;
+  font-weight: bold;
+  font-family: "Montserrat";
+  color: white;
+  text-align: justify;
+  text-decoration: none;
+}
+h1 {
+  margin: 15px;
+}
+a {
+  text-decoration: none;
+  color: #ffffff;
+}
+table {
+  width: 800px;
+  max-width: 90vw;
+  margin: 30px;
+  border-spacing: 0px;
+}
+th {
+  background-color: #604978;
+  padding: 8px;
+}
+td {
+  background-color: #00000060;
+  height: 60px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 24px;
+}
+tr:hover {
+  background-color: #604978;
+}
+table img {
+  width: 200px;
+}
+#f2pTable td {
+  font-size: 18px;
+}
+#controls {
+  background-color: #00000080;
+  min-width: 505px;
+}
+button {
+  font-size: 24px;
+  font-family: "Montserrat";
+  font-weight: bold;
+  margin: 3px;
+  padding: 3px;
+  cursor: pointer;
+}
+select {
+  cursor: pointer;
+}
+input {
+  height: 30px;
+}
+.flexdiv {
+  display: flex;
+}
+.flexdivc {
+  display: flex;
+  justify-content: center;
+}
+.flexdiv20 {
+  display: flex;
+  margin: 30px;
+}
+.m20 {
+  margin: 30px;
+}
+#_navbar {
+  width: 55%;
+}
+#_navbar p {
+  margin: 20px;
+  font-size: 34px;
+}
+#_navtgl img {
+  width: 12vw;
+  max-width: 100px;
+}
+.banner {
+  margin-top: 30px;
+  width: 90vw;
+}
+#skillresults {
+  height: 30px;
+}
+#skillbox {
+  margin: 10px;
+}
+#skillbox img {
+  width: 32px;
+  margin-right: 10px;
+}
+#cnvResults {
+  margin: 20px;
+  display: none;
+  cursor: pointer;
+}
+#cardinfo {
+  margin: 20px;
+  padding: 10px;
+  background-color: black;
+  font-size: 20px;
+  width: 50vw;
+}
+#cardinfo img {
+  width: 250px;
+}
+#cardinfo p {
+  margin: 3px;
+}
+#cardinfoName {
+  font-size: 24px;
+}
+#notificationImg {
+  width: 250px;
+}
+#autoadd {
+  width: 35px;
+  cursor: pointer;
+}
+#divDeck {
+  width: min-content;
+}
+#cnvDeck {
+  margin: 15px;
+  background-color: black;
+  cursor: pointer;
+}
+#cnvExDeck {
+  margin: 15px;
+  background-color: black;
+  cursor: pointer;
+}
+#imgs {
+  display: none;
+}

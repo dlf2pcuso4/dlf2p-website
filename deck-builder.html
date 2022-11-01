@@ -6,7 +6,7 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
-    <link rel="stylesheet" href="lib/stylesheet.css" />
+    <script src="lib/css-picker.js"></script>
     <script src="lib/carddb-dl.js"></script>
     <script src="lib/skilldb-dl.js"></script>
     <script src="lib/carddb-md.js"></script>
@@ -64,11 +64,7 @@
           <button type="button" onclick="searchSkill()">Search</button>
           <br />
           <label for="skillresults">Skill search results:</label>
-          <select
-            name="skillresults"
-            id="skillresults"
-            style="height: 30px"
-          ></select>
+          <select name="skillresults" id="skillresults"></select>
           <button type="button" onclick="addSkill()">Set skill</button>
         </div>
         <div class="m20">
