@@ -53,14 +53,8 @@ button {
   padding: 2px;
   cursor: pointer;
 }
-form {
-  margin: 20px;
-}
 select {
   cursor: pointer;
-}
-#form2 select {
-  height: 30px;
 }
 .flexdiv {
   display: flex;

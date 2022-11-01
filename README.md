@@ -30,3 +30,12 @@ V1.0:
 - Navigation menu in all pages
 - Duel Links exclusive cards can now be added to a deck
 - Changes to url parameters ("x" replaced with "\_", and DL exclusives being added at the end of URL)
+- Removed unnecessary form tags
+- Added filters for card searches (multiple filters can be added)
+  - Card type (monster, spell, trap)
+  - Monster type (normal, effect, fusion etc.)
+  - Spell/trap type (normal, continuous, quick-play etc.)
+  - Level/Rank
+  - Link
+  - Attribute
+  - Type

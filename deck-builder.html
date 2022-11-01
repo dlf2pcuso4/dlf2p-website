@@ -10,6 +10,7 @@
     <script src="lib/carddb-dl.js"></script>
     <script src="lib/skilldb-dl.js"></script>
     <script src="lib/carddb-md.js"></script>
+    <script src="lib/deck-builder-filters.js"></script>
   </head>
   <body>
     <div class="flexdivc">
@@ -22,7 +23,7 @@
           <input type="text" name="deckname" id="deckname" autocomplete="off" />
           <button type="button" onclick="changeName()">Save</button>
         </div>
-        <form id="form">
+        <div class="m20">
           <label for="searchname">Search card:</label>
           <input
             type="text"
@@ -44,8 +45,15 @@
             <option value="release">Release date</option>
             <option value="popularity">Popularity</option>
           </select>
-        </form>
-        <form id="form2">
+          <br />
+          <label for="searchfilter">Filter results by:</label>
+          <select name="searchfilter" id="searchfilter"></select>
+          <button id="btnFilter" type="button" onclick="addFilter()">
+            Add Filter
+          </button>
+          <div id="filterlist"></div>
+        </div>
+        <div class="m20">
           <label for="searchskill">Search skill:</label>
           <input
             type="text"
@@ -56,10 +64,14 @@
           <button type="button" onclick="searchSkill()">Search</button>
           <br />
           <label for="skillresults">Skill search results:</label>
-          <select name="skillresults" id="skillresults"></select>
+          <select
+            name="skillresults"
+            id="skillresults"
+            style="height: 30px"
+          ></select>
           <button type="button" onclick="addSkill()">Set skill</button>
-        </form>
-        <form id="form3">
+        </div>
+        <div class="m20">
           <label for="importdeck">Import deck by deck code:</label>
           <input
             type="text"
@@ -68,7 +80,7 @@
             autocomplete="off"
           />
           <button id="btnImport" type="button" onclick="importDeck()"></button>
-        </form>
+        </div>
         <div class="flexdiv20">
           <button id="btnSortBy" type="button" onclick="sortBy()">
             Sort: Duel Links
