@@ -19,7 +19,7 @@ V0.2:
 
 V1.0:
 
-- Webpages made
+- Webpages made:
   - index
   - f2p-decks
   - kog-decks
@@ -27,15 +27,13 @@ V1.0:
   - best-techs
   - articles
   - article editor
-- Navigation menu in all pages
-- Changes to url parameters ("x" replaced with "\_", and DL exclusives being added at the end of URL)
+- All pages: Added navigation menu
+- deck-builder.html & deck.html: Updated url parameters ("x" replaced with "\_")
 
-V1.1:
+V1.1 (Release Version):
 
-- Duel Links exclusive cards can now be added to a deck
-- Changes to url parameters (DL exclusives being added at the end of URL)
-- Removed unnecessary form tags
-- Added filters for card searches (multiple filters can be added)
+- General UI: Improved mobile UI scaling
+- deck-builder.html: Added filters for card searches (multiple filters can be added)
   - Card type (monster, spell, trap)
   - Monster type (normal, effect, fusion etc.)
   - Spell/trap type (normal, continuous, quick-play etc.)
@@ -43,4 +41,12 @@ V1.1:
   - Link
   - Attribute
   - Type
-- Mobile UI scaling improvements
+- deck-builder.html: Duel Links exclusive cards can now be added to a deck
+- deck-builder.html & deck.html: Added DL exclusives to url parameters
+- deck-builder.html & deck.html: Removed unnecessary form tags
+
+V1.2:
+
+- Card info popup: Added "how to obtain" information
+- best-techs.html: Added card info popup
+- best-techs.html: Replaced card effect column with card usage information
