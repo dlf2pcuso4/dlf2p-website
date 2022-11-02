@@ -47,6 +47,7 @@ V1.1 (Release Version):
 
 V1.2:
 
+- index.html: Added social links
 - Card info popup: Added "how to obtain" information
 - best-techs.html: Added card info popup
 - best-techs.html: Replaced card effect column with card usage information
