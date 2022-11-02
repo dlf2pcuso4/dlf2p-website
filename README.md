@@ -52,3 +52,4 @@ V1.2:
 - best-techs.html: Added card info popup
 - best-techs.html: Replaced card effect column with card usage information
 - deck.html: Added skill in downloaded image
+- Added utility page: deck-embed.html
