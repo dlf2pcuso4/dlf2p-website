@@ -8,21 +8,6 @@
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
     <script src="lib/css-picker.js"></script>
-    <style>
-      #date {
-        text-align: left;
-      }
-      #text {
-        padding-top: 30px;
-        padding-bottom: 30px;
-        font-size: 18px;
-        font-weight: lighter;
-        text-align: left;
-      }
-      #text img {
-        width: 150px;
-      }
-    </style>
     <script src="lib/guidesdb.js"></script>
     <script src="lib/carddb-dl.js"></script>
   </head>
@@ -31,7 +16,7 @@
       <div style="text-align: center; width: min-content">
         <h1>Article</h1>
         <p id="date"></p>
-        <p id="text" style="width: 800px; margin-top: 10px"></p>
+        <p id="text"></p>
       </div>
     </div>
     <div id="_navtgl">
@@ -60,17 +45,41 @@
   </body>
   <script src="lib/navbar-handler.js"></script>
   <script>
+    if (_isMobile == true) {
+      document.head.innerHTML +=
+        "<style>#text iframe{height:1450px;margin-bottom:-290px;}</style>";
+    } else {
+      document.head.innerHTML +=
+        "<style>#text iframe{height:650px;margin-bottom:-130px;}</style>";
+    }
     const params = new URL(document.location).searchParams;
     const i = params.get("i");
     const src = document.createElement("script");
     src.src = "lib/articles/article" + i + ".js";
     src.onload = () => {
+      //update DOM
       document.getElementsByTagName("title")[0].innerHTML =
         jsonResponseArticle.title;
       document.getElementsByTagName("h1")[0].innerHTML =
         jsonResponseArticle.title + " by " + jsonResponseArticle.author;
       document.getElementById("date").innerHTML = jsonResponseArticle.date;
       let text = jsonResponseArticle.text;
+      //create hyperlinks
+      if (text.includes("http")) {
+        text = text.split("http");
+        for (let c = 1; c < text.length; c++) {
+          text[c] = text[c].split(" ");
+          text[c][0] =
+            '<a href="http' +
+            text[c][0] +
+            '"style="color:#6496e8;">http' +
+            text[c][0] +
+            " </a>";
+          text[c] = text[c].join("");
+        }
+        text = text.join("");
+      }
+      //detect [cards] and [decks]
       if (text.includes("[") && text.includes("]")) {
         text = text.split("[");
         for (let c = 1; c < text.length; c++) {
@@ -79,13 +88,15 @@
           if (cardData) {
             if (cardData.konamiID) {
               text[c][0] =
-                '<br><img src="images/cards/' +
-                cardData.konamiID +
-                '.jpg"><br>';
+                '<img src="images/cards/' + cardData.konamiID + '.jpg">';
             } else {
-              text[c][0] =
-                '<br><img src="images/cards/' + cardData.name + '.jpg"><br>';
+              text[c][0] = '<img src="images/cards/' + cardData.name + '.jpg">';
             }
+          } else {
+            text[c][0] =
+              '<iframe src="https://dlf2p.com/deck-embed?d=' +
+              text[c][0] +
+              '"></iframe>';
           }
           text[c] = text[c].join("");
         }

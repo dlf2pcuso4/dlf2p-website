@@ -45,7 +45,7 @@ V1.1 (Release Version):
 - deck-builder.html & deck.html: Added DL exclusives to url parameters
 - deck-builder.html & deck.html: Removed unnecessary form tags
 
-V1.2:
+V1.2 (Public Announcement Version):
 
 - index.html: Added social links
 - Card info popup: Added "how to obtain" information
@@ -53,3 +53,13 @@ V1.2:
 - best-techs.html: Replaced card effect column with card usage information
 - deck.html: Added skill in downloaded image
 - Added utility page: deck-embed.html
+
+V1.3:
+
+- article.html: Added deck embeds and hyperlinks
+- article-editor.html: Fixed compilation error when styled div tag is used
+- stylesheet.css & stylesheet-mobile.css: Improved documentation and added styles from individual html pages
+
+To-do:
+
+- What's new tab in homepage to log updates

@@ -7,19 +7,6 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
-    <style>
-      #txtbox {
-        width: 800px;
-        height: 60vh;
-        padding: 10px;
-        margin: 10px;
-        background-color: #00000080;
-        text-align: left;
-        font-size: 18px;
-        font-weight: lighter;
-        overflow: scroll;
-      }
-    </style>
     <script src="lib/css-picker.js"></script>
     <script src="lib/guidesdb.js"></script>
   </head>
@@ -75,8 +62,15 @@
     function makeJs() {
       let txt = document.getElementById("txtbox").innerHTML;
       txt = txt
-        .replace(new RegExp("<div>", "g"), "")
-        .replace(new RegExp("</div>", "g"), "");
+        .replace(new RegExp("<div><br></div>", "g"), "<br>")
+        .replace(new RegExp("</div>", "g"), "")
+        .split("<");
+      for (let i = 0; i < txt.length; i++) {
+        txt[i] = txt[i].split(">");
+        txt[i][0] = "<br>";
+        txt[i] = txt[i].join("");
+      }
+      txt = txt.join("");
       downloadTxt(
         'var jsonResponseArticle={title:"' +
           document.getElementById("name").value +

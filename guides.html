@@ -50,11 +50,10 @@
   </body>
   <script src="lib/navbar-handler.js"></script>
   <script>
-    var sortedList = jsonResponseGuides.sort((a, b) =>
-      a.title.localeCompare(b.title)
-    );
+    var sortedList = jsonResponseGuides;
+    var appendedItems = "";
     for (let i = 0; i < sortedList.length; i++) {
-      document.getElementsByTagName("table")[0].innerHTML +=
+      appendedItems =
         '<tr onclick="window.location=' +
         "'article?i=" +
         i +
@@ -65,7 +64,9 @@
         sortedList[i].author +
         "</td><td>" +
         sortedList[i].date +
-        "</td></tr>";
+        "</td></tr>" +
+        appendedItems;
     }
+    document.getElementsByTagName("table")[0].innerHTML += appendedItems;
   </script>
 </html>

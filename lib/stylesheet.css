@@ -1,3 +1,4 @@
+/* General */
 * {
   padding: 0%;
   margin: 0%;
@@ -41,10 +42,6 @@ tr:hover {
 table img {
   width: 150px;
 }
-#controls {
-  background-color: #00000080;
-  min-width: 505px;
-}
 button {
   font-size: 18px;
   font-family: "Montserrat";
@@ -77,9 +74,10 @@ select {
 #_navbar p {
   margin: 15px;
 }
-.banner {
-  margin-top: 20px;
-  max-width: 90vw;
+/* deck-builder & deck-display */
+#controls {
+  background-color: #00000080;
+  min-width: 505px;
 }
 #skillresults {
   height: 30px;
@@ -135,4 +133,46 @@ select {
 }
 #imgs {
   display: none;
+}
+/* index */
+.banner {
+  margin-top: 20px;
+  max-width: 90vw;
+}
+/* article */
+#date {
+  text-align: left;
+}
+#text {
+  width: 80vw;
+  max-width: 800px;
+  margin-top: 10px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  font-size: 18px;
+  font-weight: lighter;
+  text-align: left;
+}
+#text img {
+  width: 150px;
+}
+#text iframe {
+  width: 125%;
+  border: 0px;
+  zoom: 0.8;
+  transform: scale(0.8);
+  transform-origin: 0 0;
+}
+/* article-editor */
+#txtbox {
+  width: 80vw;
+  max-width: 800px;
+  height: 60vh;
+  padding: 10px;
+  margin: 10px;
+  background-color: #00000080;
+  text-align: left;
+  font-size: 18px;
+  font-weight: lighter;
+  overflow: scroll;
 }
