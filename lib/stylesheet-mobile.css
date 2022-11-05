@@ -143,6 +143,7 @@ input {
 /* index */
 #whatsnew {
   padding: 10px;
+  font-size: 20px;
   text-align: left;
   background-color: #000000;
 }

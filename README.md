@@ -59,7 +59,4 @@ V1.3:
 - article.html: Added deck embeds and hyperlinks
 - article-editor.html: Fixed compilation error when styled div tag is used
 - stylesheet.css & stylesheet-mobile.css: Improved documentation and added styles from individual html pages
-
-To-do:
-
-- What's new tab in homepage to log updates
+- index.html: Added "What's new" section
