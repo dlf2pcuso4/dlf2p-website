@@ -135,6 +135,11 @@ select {
   display: none;
 }
 /* index */
+#whatsnew {
+  padding: 10px;
+  text-align: left;
+  background-color: #000000;
+}
 .banner {
   margin-top: 20px;
   max-width: 90vw;

@@ -141,6 +141,11 @@ input {
   display: none;
 }
 /* index */
+#whatsnew {
+  padding: 10px;
+  text-align: left;
+  background-color: #000000;
+}
 .banner {
   margin-top: 30px;
   width: 90vw;
