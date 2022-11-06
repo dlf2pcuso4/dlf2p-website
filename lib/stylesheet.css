@@ -70,9 +70,13 @@ select {
 #_navbar {
   width: 250px;
   max-width: 50%;
+  cursor: pointer;
 }
 #_navbar p {
   margin: 15px;
+}
+#_navtgl img {
+  cursor: pointer;
 }
 /* deck-builder & deck-display */
 #controls {

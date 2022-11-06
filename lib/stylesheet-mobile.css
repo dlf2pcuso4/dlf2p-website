@@ -72,6 +72,7 @@ input {
 }
 #_navbar {
   width: 55%;
+  cursor: pointer;
 }
 #_navbar p {
   margin: 20px;
@@ -84,6 +85,7 @@ input {
 #_navtgl img {
   width: 12vw;
   max-width: 100px;
+  cursor: pointer;
 }
 /* deck-builder & deck-display */
 #controls {
