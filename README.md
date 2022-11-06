@@ -60,3 +60,4 @@ V1.3:
 - article-editor.html: Fixed compilation error when styled div tag is used
 - stylesheet.css & stylesheet-mobile.css: Improved documentation and added styles from individual html pages
 - index.html: Added "What's new" section
+- All pages: Fixed navigation menu text height offset error

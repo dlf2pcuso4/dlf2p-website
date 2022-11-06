@@ -77,6 +77,10 @@ input {
   margin: 20px;
   font-size: 34px;
 }
+#_navbar img {
+  width: 12vw;
+  max-width: 100px;
+}
 #_navtgl img {
   width: 12vw;
   max-width: 100px;
