@@ -118,9 +118,10 @@ select {
 #notificationImg {
   width: 200px;
 }
-#autoadd {
+* [type="checkbox"] {
   width: 30px;
   cursor: pointer;
+  margin-right: 10px;
 }
 #divDeck {
   width: min-content;

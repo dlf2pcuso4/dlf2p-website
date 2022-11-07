@@ -126,9 +126,10 @@ input {
 #notificationImg {
   width: 250px;
 }
-#autoadd {
+* [type="checkbox"] {
   width: 35px;
   cursor: pointer;
+  margin-right: 12px;
 }
 #divDeck {
   width: min-content;

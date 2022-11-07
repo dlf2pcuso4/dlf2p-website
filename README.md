@@ -56,8 +56,13 @@ V1.2 (Public Announcement Version):
 
 V1.3:
 
+- All pages: Fixed navigation menu text height offset error
+- index.html: Added "What's new" section
+- stylesheet.css & stylesheet-mobile.css: Improved documentation and added styles from individual html pages
+- deck-builder.html:
+  - Added rarity filter
+  - Added toggle for unreleased cards
+  - Enter key now works for text inputs
+  - Limited maximum amount of search results to 300
 - article.html: Added deck embeds and hyperlinks
 - article-editor.html: Fixed compilation error when styled div tag is used
-- stylesheet.css & stylesheet-mobile.css: Improved documentation and added styles from individual html pages
-- index.html: Added "What's new" section
-- All pages: Fixed navigation menu text height offset error

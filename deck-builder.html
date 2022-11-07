@@ -20,7 +20,13 @@
       <div>
         <div class="m20">
           <label for="deckname">Deck name:</label>
-          <input type="text" name="deckname" id="deckname" autocomplete="off" />
+          <input
+            type="text"
+            name="deckname"
+            id="deckname"
+            autocomplete="off"
+            onkeydown="keydown(event,'changeName')"
+          />
           <button type="button" onclick="changeName()">Save</button>
         </div>
         <div class="m20">
@@ -30,6 +36,7 @@
             name="searchname"
             id="searchname"
             autocomplete="off"
+            onkeydown="keydown(event,'searchCard')"
           />
           <button id="btnSearch" type="button" onclick="searchCard()"></button>
           <br />
@@ -60,6 +67,7 @@
             name="searchskill"
             id="searchskill"
             autocomplete="off"
+            onkeydown="keydown(event,'searchSkill')"
           />
           <button type="button" onclick="searchSkill()">Search</button>
           <br />
@@ -74,6 +82,7 @@
             name="importdeck"
             id="importdeck"
             autocomplete="off"
+            onkeydown="keydown(event,'importDeck')"
           />
           <button id="btnImport" type="button" onclick="importDeck()"></button>
         </div>
@@ -88,6 +97,8 @@
         <div class="flexdiv20">
           <label for="autoadd">Auto-add:</label>
           <input id="autoadd" type="checkbox" name="autoadd" />
+          <label for="showunreleased">Show unreleased cards:</label>
+          <input id="showunreleased" type="checkbox" name="showunreleased" />
         </div>
       </div>
       <div>
