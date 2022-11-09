@@ -58,6 +58,7 @@ V1.3:
 
 - All pages: Fixed navigation menu text height offset error
 - index.html: Added "What's new" section
+- f2p-decks.html & kog-decks.html: Added deck sorting
 - stylesheet.css & stylesheet-mobile.css: Improved documentation and added styles from individual html pages
 - deck-builder.html:
   - Added rarity filter
@@ -65,4 +66,4 @@ V1.3:
   - Enter key now works for text inputs
   - Limited maximum amount of search results to 300
 - article.html: Added deck embeds and hyperlinks
-- article-editor.html: Fixed compilation error when styled div tag is used
+- article-editor.html: Fixed compilation error when styled tags are used

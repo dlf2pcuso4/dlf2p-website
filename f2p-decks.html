@@ -16,6 +16,9 @@
       <div style="text-align: center; width: min-content">
         <h1>Free to Play Decks</h1>
         <p>A list of decks that meet the DLF2P F2P requirements</p>
+        <div class="flexdivc">
+          <p id="btnSort" onclick="sortBy()">Sort decks by: Name</p>
+        </div>
         <table>
           <tr>
             <th>Archetype</th>
@@ -52,24 +55,55 @@
   </body>
   <script src="lib/navbar-handler.js"></script>
   <script>
-    var sortedList = jsonResponseF2pDecks.sort((a, b) =>
-      a.archetype.localeCompare(b.archetype)
-    );
-    for (let i = 0; i < sortedList.length; i++) {
-      document.getElementsByTagName("table")[0].innerHTML +=
-        '<tr onclick="window.location=' +
-        "'" +
-        sortedList[i].url +
-        "'" +
-        ';"><td>' +
-        sortedList[i].archetype +
-        "</td><td>" +
-        sortedList[i].user +
-        "</td><td>" +
-        jsonResponseSkill[sortedList[i].url.split("_")[1]].name +
-        "</td><td>" +
-        sortedList[i].date +
-        "</td></tr>";
+    var tbInnerHtml = document.getElementsByTagName("table")[0].innerHTML;
+    var sortedList = jsonResponseF2pDecks;
+    const mth = " Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+    function refreshTable() {
+      document.getElementsByTagName("table")[0].innerHTML = tbInnerHtml;
+      for (let i = 0; i < sortedList.length; i++) {
+        document.getElementsByTagName("table")[0].innerHTML +=
+          '<tr onclick="window.location=' +
+          "'" +
+          sortedList[i].url +
+          "'" +
+          ';"><td>' +
+          sortedList[i].archetype +
+          "</td><td>" +
+          sortedList[i].user +
+          "</td><td>" +
+          jsonResponseSkill[sortedList[i].url.split("_")[1]].name +
+          "</td><td>" +
+          sortedList[i].date +
+          "</td></tr>";
+      }
     }
+    function sortBy() {
+      switch (document.getElementById("btnSort").innerHTML) {
+        case "Sort decks by: Date":
+          sortedList = sortedList.sort((a, b) =>
+            a.archetype.localeCompare(b.archetype)
+          );
+          document.getElementById("btnSort").innerHTML = "Sort decks by: Name";
+          break;
+        case "Sort decks by: Name":
+          sortedList = sortedList.sort(
+            (a, b) =>
+              Number(
+                b.date.slice(b.date.length - 4) +
+                  mth.indexOf(b.date.slice(0, 3 - b.date.length)) +
+                  b.date.slice(4, b.date.length - 6)
+              ) -
+              Number(
+                a.date.slice(a.date.length - 4) +
+                  mth.indexOf(a.date.slice(0, 3 - a.date.length)) +
+                  a.date.slice(4, a.date.length - 6)
+              )
+          );
+          document.getElementById("btnSort").innerHTML = "Sort decks by: Date";
+          break;
+      }
+      refreshTable();
+    }
+    sortBy();
   </script>
 </html>

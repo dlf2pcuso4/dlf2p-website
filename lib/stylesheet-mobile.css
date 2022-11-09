@@ -158,6 +158,16 @@ input {
   margin-top: 30px;
   width: 90vw;
 }
+/* f2p-decks, kog-decks */
+#btnSort {
+  margin: 5px;
+  padding: 5px;
+  width: fit-content;
+  background-color: #604978;
+  font-weight: lighter;
+  font-size: 28px;
+  cursor: pointer;
+}
 /* best-techs */
 #f2pTable td {
   font-size: 18px;

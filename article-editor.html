@@ -65,9 +65,13 @@
         .replace(new RegExp("<div><br></div>", "g"), "<br>")
         .replace(new RegExp("</div>", "g"), "")
         .split("<");
-      for (let i = 0; i < txt.length; i++) {
+      for (let i = 1; i < txt.length; i++) {
         txt[i] = txt[i].split(">");
-        txt[i][0] = "<br>";
+        if (txt[i][0].includes("div")) {
+          txt[i][0] = "<br>";
+        } else {
+          txt[i][0] = "";
+        }
         txt[i] = txt[i].join("");
       }
       txt = txt.join("");

@@ -149,6 +149,16 @@ select {
   margin-top: 20px;
   max-width: 90vw;
 }
+/* f2p-decks, kog-decks */
+#btnSort {
+  margin: 5px;
+  padding: 5px;
+  width: fit-content;
+  background-color: #604978;
+  font-weight: lighter;
+  font-size: 18px;
+  cursor: pointer;
+}
 /* article */
 #date {
   text-align: left;
