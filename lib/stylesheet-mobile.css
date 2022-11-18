@@ -119,9 +119,10 @@ input {
 }
 #cardinfo p {
   margin: 3px;
-}
-#cardinfoName {
   font-size: 24px;
+}
+#cardinfo #cardinfoName {
+  font-size: 30px;
 }
 #notificationImg {
   width: 250px;
@@ -150,9 +151,11 @@ input {
 /* index */
 #whatsnew {
   padding: 10px;
-  font-size: 20px;
   text-align: left;
   background-color: #000000;
+}
+#whatsnew p {
+  font-size: 26px;
 }
 .banner {
   margin-top: 30px;

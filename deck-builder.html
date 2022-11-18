@@ -20,14 +20,7 @@
       <div>
         <div class="m20">
           <label for="deckname">Deck name:</label>
-          <input
-            type="text"
-            name="deckname"
-            id="deckname"
-            autocomplete="off"
-            onkeydown="keydown(event,'changeName')"
-          />
-          <button type="button" onclick="changeName()">Save</button>
+          <input type="text" name="deckname" id="deckname" autocomplete="off" />
         </div>
         <div class="m20">
           <label for="searchname">Search card:</label>
@@ -67,11 +60,9 @@
             name="searchskill"
             id="searchskill"
             autocomplete="off"
-            onkeydown="keydown(event,'searchSkill')"
+            onkeyup="searchSkill()"
           />
-          <button type="button" onclick="searchSkill()">Search</button>
           <br />
-          <label for="skillresults">Skill search results:</label>
           <select name="skillresults" id="skillresults"></select>
           <button type="button" onclick="addSkill()">Set skill</button>
         </div>

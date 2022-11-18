@@ -17,7 +17,7 @@ V0.2:
 - Decks can now be renamed
 - Changes to url parameters ("deckcode" replaced with "d")
 
-V1.0:
+V1.0.0:
 
 - Webpages made:
   - index
@@ -30,7 +30,7 @@ V1.0:
 - All pages: Added navigation menu
 - deck-builder.html & deck.html: Updated url parameters ("x" replaced with "\_")
 
-V1.1 (Release Version):
+V1.0 (Release Version):
 
 - General UI: Improved mobile UI scaling
 - deck-builder.html: Added filters for card searches (multiple filters can be added)
@@ -45,7 +45,7 @@ V1.1 (Release Version):
 - deck-builder.html & deck.html: Added DL exclusives to url parameters
 - deck-builder.html & deck.html: Removed unnecessary form tags
 
-V1.2 (Public Announcement Version):
+V1.1 (Public Announcement Version):
 
 - index.html: Added social links
 - Card info popup: Added "how to obtain" information
@@ -54,7 +54,7 @@ V1.2 (Public Announcement Version):
 - deck.html: Added skill in downloaded image
 - Added utility page: deck-embed.html
 
-V1.3:
+V1.1.1:
 
 - All pages: Fixed navigation menu text height offset error
 - index.html: Added "What's new" section
@@ -67,3 +67,11 @@ V1.3:
   - Limited maximum amount of search results to 300
 - article.html: Added deck embeds and hyperlinks
 - article-editor.html: Fixed compilation error when styled tags are used
+
+V1.1.2
+
+- Index: Fixed some text size issues
+- Card info popup: Fixed vertical center alignment bug on mobile
+- deck-builder.html:
+  - Deck name now saves automatically
+  - Skill now searches automatically on input
