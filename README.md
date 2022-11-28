@@ -68,10 +68,14 @@ V1.1.1:
 - article.html: Added deck embeds and hyperlinks
 - article-editor.html: Fixed compilation error when styled tags are used
 
-V1.1.2
+V1.1.2:
 
 - Index: Fixed some text size issues
 - Card info popup: Fixed vertical center alignment bug on mobile
 - deck-builder.html:
   - Deck name now saves automatically
   - Skill now searches automatically on input
+
+V1.2.1:
+
+- deck-builder.html & deck.html: Updated url parameter encoding algorithm with shorter length
