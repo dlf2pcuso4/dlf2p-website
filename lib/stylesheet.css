@@ -93,6 +93,9 @@ select {
   width: 30px;
   margin-right: 10px;
 }
+#swfilterbox img {
+  width: 70px;
+}
 #cnvResults {
   margin: 20px;
   display: none;
