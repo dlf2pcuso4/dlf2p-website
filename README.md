@@ -79,3 +79,7 @@ V1.1.2:
 V1.2.1:
 
 - deck-builder.html & deck.html: Updated url parameter encoding algorithm with shorter length
+
+V1.2.2:
+
+- deck-builder.html: Added Small World filter
