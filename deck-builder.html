@@ -31,7 +31,15 @@
             autocomplete="off"
             onkeydown="keydown(event,'searchCard')"
           />
-          <button id="btnSearch" type="button" onclick="searchCard()"></button>
+          <button
+            id="btnSearch"
+            type="button"
+            onclick="searchCard('all')"
+          ></button>
+          <br />
+          <button type="button" onclick="searchCard('deck')">
+            Search From Deck
+          </button>
           <br />
           <label for="searchfrom">Search from:</label>
           <select name="searchfrom" id="searchfrom">

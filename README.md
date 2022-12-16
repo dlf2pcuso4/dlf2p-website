@@ -80,6 +80,15 @@ V1.2.1:
 
 - deck-builder.html & deck.html: Updated url parameter encoding algorithm with shorter length
 
-V1.2.2:
+V1.3.1:
 
 - deck-builder.html: Added Small World filter
+
+V1.3.2:
+
+- deck-builder.html:
+  - Fixed Small World filter stuck in searching
+  - Added "Search From Deck" button
+  - Added param for default sorting (dl/md)
+  - Improved card search loading speed
+- deck.html: Skill hidden when sorting by Master Duel
