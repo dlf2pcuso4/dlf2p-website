@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>DLMeta Card Image Downloader</title>
+  </head>
+  <body>
+    <p id="txt">0</p>
+  </body>
+  <script src="lib/carddb-dl.js"></script>
+  <script>
+    var i = 1;
+    window.onload = async function () {
+      let jsonDataDl = jsonResponseDl;
+      let c = 0;
+      setInterval(function () {
+        if (c < jsonDataDl.length) {
+          checkDownload(
+            c,
+            jsonDataDl[c]._id,
+            jsonDataDl[c].konamiID,
+            jsonDataDl[c].name
+          );
+          c++;
+          document.getElementById("txt").innerHTML = c;
+        }
+      }, 10); //download speed (ms per image)
+    };
+    function checkDownload(c, id, konamiID, filename) {
+      checkImage("images/cards/" + konamiID + ".jpg", function () {
+        forceDownload(
+          "https://s3.duellinksmeta.com/cards/" + id + "_w360.webp",
+          padw(i) + ".jpg"
+        );
+        i++;
+      });
+    }
+    //image exists function (true if doesn't exist)
+    function checkImage(imageSrc, bad) {
+      var img = new Image();
+      img.onerror = bad;
+      img.src = imageSrc;
+    }
+    //download image general method
+    function forceDownload(url, fileName) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.responseType = "blob";
+      xhr.onload = function () {
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL(this.response);
+        var tag = document.createElement("a");
+        tag.href = imageUrl;
+        tag.download = fileName;
+        document.body.appendChild(tag);
+        tag.click();
+        document.body.removeChild(tag);
+      };
+      xhr.send();
+    }
+    const padw = (num) => ("wwwwwwwww" + num).substr(-10); //pad w function
+  </script>
+</html>
