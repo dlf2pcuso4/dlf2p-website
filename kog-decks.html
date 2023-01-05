@@ -89,13 +89,13 @@
           sortedList = sortedList.sort(
             (a, b) =>
               Number(
-                b.date.slice(b.date.length - 4) +
-                  mth.indexOf(b.date.slice(0, 3 - b.date.length)) +
+                b.date.slice(b.date.length - 4) * 10000 +
+                  mth.indexOf(b.date.slice(0, 3 - b.date.length)) * 100 +
                   b.date.slice(4, b.date.length - 6)
               ) -
               Number(
-                a.date.slice(a.date.length - 4) +
-                  mth.indexOf(a.date.slice(0, 3 - a.date.length)) +
+                a.date.slice(a.date.length - 4) * 10000 +
+                  mth.indexOf(a.date.slice(0, 3 - a.date.length)) * 100 +
                   a.date.slice(4, a.date.length - 6)
               )
           );
