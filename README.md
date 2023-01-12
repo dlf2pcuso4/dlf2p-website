@@ -92,3 +92,9 @@ V1.3.2:
   - Added param for default sorting (dl/md)
   - Improved card search loading speed
 - deck.html: Skill hidden when sorting by Master Duel
+
+V1.3.3:
+
+- deck.html:
+  - Skill hidden when sorting by Master Duel and downloading deck image
+  - Added "Download Card Images" button
