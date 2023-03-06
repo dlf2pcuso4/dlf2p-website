@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Record Canvas</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        background-color: #000000;
+        font-family: Comic Sans MS;
+        color: #ffffff;
+      }
+      img {
+        display: none;
+      }
+      canvas {
+        background-color: #111111;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="title">Title:</label>
+    <input id="title" name="title" type="text" />
+    <label for="desc">Description:</label>
+    <input id="desc" name="desc" type="text" />
+    <label for="stats">Stats:</label>
+    <input id="stats" name="stats" type="text" />
+    <label for="cardimg">Card:</label>
+    <input id="cardimg" name="cardimg" type="text" />
+    <button onclick="go()">Record</button>
+    <canvas></canvas>
+    <img id="statbg" src="images/topf2pstat.png" />
+    <img id="card" src="images/noimage.jpg" />
+    <img id="logo" src="images/nobglogo.png" />
+    <img id="bg" src="images/purpbg.jpg" />
+  </body>
+  <script>
+    //variables
+    const screenWidth = 1280;
+    const screenHeight = 720;
+    const fps = 30;
+    const duration = 4; //sec
+
+    let title = "RAIDRAPTOR";
+    let desc = "Raider's Requiem";
+    let data = [5, 4, 5, 2, 4, 2];
+
+    function record(canvas, time) {
+      var recordedChunks = [];
+      return new Promise(function (res, rej) {
+        var stream = canvas.captureStream(fps);
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: "video/webm; codecs=h264",
+        });
+        //ondataavailable will fire in interval of `time || 4000 ms`
+        mediaRecorder.start();
+        setTimeout(() => {
+          mediaRecorder.stop();
+        }, time);
+        mediaRecorder.ondataavailable = function (event) {
+          recordedChunks.push(event.data);
+          var blob = new Blob(recordedChunks, { type: "video/mp4" });
+          var url = URL.createObjectURL(blob);
+          res(url);
+        };
+      });
+    }
+    const cnv = document.getElementsByTagName("canvas")[0];
+    const ctx = cnv.getContext("2d");
+    cnv.width = screenWidth;
+    cnv.height = screenHeight;
+    function go() {
+      title = document.getElementById("title").value.toUpperCase();
+      desc = document.getElementById("desc").value;
+      data = document.getElementById("stats").value.split("");
+      document.getElementById("card").src = `images/cards/${
+        document.getElementById("cardimg").value
+      }.jpg`;
+      animate();
+      if (!window.location.href.includes("Desktop")) {
+        const recording = record(cnv, duration * 1000);
+        // download
+        var link$ = document.createElement("a");
+        link$.setAttribute("download", "intro");
+        recording.then((url) => {
+          link$.setAttribute("href", url);
+          link$.click();
+        });
+      }
+    }
+
+    //animation function
+    function animate() {
+      const card = document.getElementById("card");
+      const logo = document.getElementById("logo");
+      const statbg = document.getElementById("statbg");
+      const bg = document.getElementById("bg");
+      const statx = 300;
+      const staty = 450;
+      const statscale = 0.82;
+      data.forEach((d, i, a) => (a[i] = d * statscale));
+      const dvar = [0, 0, 0, 0, 0, 0];
+      let count = 0;
+      let enter = 0;
+      let fade = 0;
+      setInterval(() => {
+        count++;
+        ctx.clearRect(0, 0, cnv.width, cnv.height);
+        //bg
+        ctx.globalAlpha = 1;
+        ctx.drawImage(bg, 0, 0);
+        //text animation
+        ctx.globalAlpha = Math.min(count / 10, 1);
+        ctx.font = "bold 40px Times New Roman";
+        ctx.fillStyle = "white";
+        ctx.fillText("[DECK NAME]", 70, 100);
+        ctx.font = "bold 60px Times New Roman";
+        ctx.fillText(title, 70, 160);
+        ctx.font = "20px Bahnschrift";
+        ctx.fillText("[BOXES]", 75, 230);
+        ctx.font = "25px Bahnschrift";
+        ctx.fillText(desc, 75, 270);
+        //card animation
+        ctx.globalAlpha = Math.min(count / 15, 1);
+        enter = 600 * Math.tanh(0.1 * count);
+        ctx.drawImage(card, cnv.width - enter, 100);
+        //logo animation
+        ctx.globalAlpha = 1;
+        ctx.drawImage(logo, 1030, 5, 250, 173);
+        //stat animation
+        if (count <= 30) {
+          ctx.globalAlpha = Math.min(count / 30, 1);
+          ctx.drawImage(statbg, statx - 257, staty - 205);
+        }
+        if (count > 30) {
+          fade = Math.tanh(0.1 * (count - 30));
+          dvar.forEach((d, i, a) => (a[i] = data[i] * fade));
+          ctx.drawImage(statbg, statx - 257, staty - 205);
+          ctx.fillStyle = "#380176e0";
+          ctx.beginPath(); // pt: statx staty
+          ctx.moveTo(statx, staty - 33.5 * dvar[0]);
+          ctx.lineTo(statx + 28.7 * dvar[1], staty - 16.8 * dvar[1]);
+          ctx.lineTo(statx + 28.7 * dvar[2], staty + 17.6 * dvar[2]);
+          ctx.lineTo(statx, staty + 33.5 * dvar[3]);
+          ctx.lineTo(statx - 28.7 * dvar[4], staty + 17.6 * dvar[4]);
+          ctx.lineTo(statx - 28.7 * dvar[5], staty - 16.8 * dvar[5]);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }, 33);
+    }
+  </script>
+</html>
