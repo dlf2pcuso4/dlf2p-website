@@ -10,17 +10,23 @@
   <script src="lib/carddb-dl.js"></script>
   <script>
     var i = 1;
-    window.onload = async function () {
+    window.onload = function () {
       let jsonDataDl = jsonResponseDl;
       let c = 0;
       setInterval(function () {
         if (c < jsonDataDl.length) {
-          checkDownload(
-            c,
-            jsonDataDl[c]._id,
-            jsonDataDl[c].konamiID,
-            jsonDataDl[c].name
-          );
+          const idname =
+            jsonDataDl[c].konamiID == null
+              ? jsonDataDl[c].name
+              : jsonDataDl[c].konamiID;
+          checkImage("images/cards/" + idname + ".jpg", function () {
+            forceDownload(
+              "https://s3.duellinksmeta.com/cards/" +
+                jsonDataDl[c]._id +
+                "_w360.webp",
+              idname + ".jpg"
+            );
+          });
           c++;
           document.getElementById("txt").innerHTML = c;
         }
