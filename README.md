@@ -98,3 +98,12 @@ V1.3.3:
 - deck.html:
   - Skill hidden when sorting by Master Duel and downloading deck image
   - Added "Download Card Images" button
+
+V1.4:
+
+- Updated card images
+- deck-builder.html:
+  - Right clicking can now be used to add/remove cards to deck
+- deck.html:
+  - Removed "Download Card Images" button
+  - Added "Copy YDK" and "Download YDK" button

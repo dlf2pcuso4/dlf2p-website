@@ -94,7 +94,7 @@
           <button type="button" onclick="sendDeck()">Create Deck</button>
         </div>
         <div class="flexdiv20">
-          <label for="autoadd">Auto-add:</label>
+          <label for="autoadd">Add to deck:</label>
           <input id="autoadd" type="checkbox" name="autoadd" />
           <label for="showunreleased">Show unreleased cards:</label>
           <input id="showunreleased" type="checkbox" name="showunreleased" />
@@ -116,15 +116,27 @@
         </div>
         <div class="flexdivc">
           <div id="divDeck">
-            <canvas id="cnvDeck" onclick="selectDeckCard(event)"></canvas>
-            <canvas id="cnvExDeck" onclick="selectExDeckCard(event)"></canvas>
+            <canvas
+              id="cnvDeck"
+              onclick="selectDeckCard(event)"
+              oncontextmenu="javascript:selectDeckCard(event);return false;"
+            ></canvas>
+            <canvas
+              id="cnvExDeck"
+              onclick="selectExDeckCard(event)"
+              oncontextmenu="javascript:selectExDeckCard(event);return false;"
+            ></canvas>
           </div>
         </div>
       </div>
     </div>
     <div class="flexdivc">
       <div>
-        <canvas id="cnvResults" onclick="selectCard(event)"></canvas>
+        <canvas
+          id="cnvResults"
+          onclick="selectCard(event)"
+          oncontextmenu="javascript:addCard(event);return false;"
+        ></canvas>
       </div>
     </div>
     <div id="_navtgl">
