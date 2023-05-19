@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Random Deck Generator</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
+      #deck {
+        width: min-content;
+        height: 570px;
+        display: grid;
+        grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+      }
+      .carddiv {
+        width: min-content;
+        text-align: end;
+      }
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <h1>Random Deck Generator</h1>
+    </div>
+    <div class="flexdivc">
+      <div id="deck"></div>
+    </div>
+    <div class="flexdivc">
+      <button onclick="generate()">Regenerate</button>
+      <button onclick="edit()">Open in Editor</button>
+    </div>
+    <div id="_navtgl">
+      <img src="images/navtgl.png" />
+    </div>
+    <div id="_navbar">
+      <a href="/">
+        <p>Homepage</p>
+      </a>
+      <a href="f2p-decks">
+        <p>F2P Decks</p>
+      </a>
+      <a href="kog-decks">
+        <p>KOG Decks</p>
+      </a>
+      <a href="guides">
+        <p>Duel Links Guides</p>
+      </a>
+      <a href="best-techs">
+        <p>Best F2P Techs</p>
+      </a>
+      <a href="deck-builder">
+        <p>Deck Builder</p>
+      </a>
+    </div>
+    <div id="_popup">
+      <div class="flexdivc">
+        <div>
+          <div id="cardinfo">
+            <div class="flexdivc">
+              <img id="cardinfoImg" src="images/cards/55144522.jpg" />
+            </div>
+            <div class="flexdivc">
+              <p id="cardinfoName">Pot of Greed</p>
+            </div>
+            <div class="flexdiv">
+              <p id="cardinfoRace">What does it do?</p>
+              <p id="cardinfoAttribute"></p>
+              <p id="cardinfoLevel"></p>
+            </div>
+            <p id="cardinfoEffect"></p>
+            <div class="flexdiv">
+              <p id="cardinfoAtk"></p>
+              <p id="cardinfoDef"></p>
+            </div>
+            <div class="flexdiv">
+              <p id="cardinfoObtain"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script>
+    const db = jsonResponseDl;
+    var deck = [];
+    function isType(card, type) {
+      switch (type) {
+        case "m":
+          return (
+            card.type == "Monster" &&
+            !(
+              card.monsterType.includes("Fusion") ||
+              card.monsterType.includes("Synchro") ||
+              card.monsterType.includes("Xyz") ||
+              card.monsterType.includes("Link")
+            )
+          );
+        case "st":
+          return card.type == "Spell" || card.type == "Trap";
+        case "ed":
+          return (
+            card.monsterType.includes("Fusion") ||
+            card.monsterType.includes("Synchro") ||
+            card.monsterType.includes("Xyz") ||
+            card.monsterType.includes("Link")
+          );
+
+        default:
+          return false;
+      }
+    }
+    function displayCard(j) {
+      cardinfoImg.src = `images/cards/${
+        deck[j].konamiID ? deck[j].konamiID : deck[j].name
+      }.jpg`;
+      cardinfoName.innerHTML = deck[j].name;
+      cardinfoRace.innerHTML = "Type: " + deck[j].race;
+      if (deck[j].attribute == null) {
+        cardinfoAttribute.innerHTML = "";
+      } else {
+        cardinfoAttribute.innerHTML = "Attribute: " + deck[j].attribute;
+      }
+      if (deck[j].level == null) {
+        cardinfoLevel.innerHTML = "";
+      } else {
+        cardinfoLevel.innerHTML = "Level/Rank: " + deck[j].level;
+      }
+      cardinfoEffect.innerHTML = deck[j].description
+        .replace(/\r\n----------------------------------------\r\n/g, "<br>")
+        .replace(/\n/g, "<br>");
+      if (deck[j].atk == null) {
+        cardinfoAtk.innerHTML = "";
+      } else {
+        cardinfoAtk.innerHTML = "ATK: " + deck[j].atk;
+      }
+      if (deck[j].def == null) {
+        cardinfoDef.innerHTML = "";
+      } else {
+        cardinfoDef.innerHTML = "DEF: " + deck[j].def;
+      }
+      cardinfoObtain.innerHTML = "How to obtain: ";
+      for (let i = 0; i < deck[j].obtain.length; i++) {
+        cardinfoObtain.innerHTML += deck[j].obtain[i].source.name + ", ";
+      }
+      cardinfoObtain.innerHTML = cardinfoObtain.innerHTML.slice(0, -2);
+      showPopup();
+    }
+    function edit() {
+      let deckcode = "";
+      let specialCards = "";
+      console.log({ deck });
+      for (let i = 0; i < deck.length; i++) {
+        if (deck[i].konamiID) {
+          deckcode += pad10(deck[i].konamiID);
+        } else {
+          specialCards += deck[i].name + "-";
+        }
+      }
+      console.log(deckcode);
+      let link = encodeDeck(deckcode) + "_-1_Random%20Deck";
+      if (specialCards) {
+        link += "_" + specialCards.slice(0, -1);
+      }
+      window.location.href = "deck-builder?d=" + link;
+    }
+
+    //code onload
+    function generate() {
+      deck = [];
+      document.getElementById("deck").innerHTML = "";
+      for (let i = 0; i < 15; i++) {
+        let rnd = Math.floor(Math.random() * db.length);
+        while (
+          !isType(db[rnd], "m") ||
+          db[rnd].obtain.length == 0 ||
+          deck.includes(db[rnd])
+        ) {
+          rnd = Math.floor(Math.random() * db.length);
+        }
+        deck.push(db[rnd]);
+      }
+      for (let i = 0; i < 15; i++) {
+        let rnd = Math.floor(Math.random() * db.length);
+        while (
+          !isType(db[rnd], "st") ||
+          db[rnd].obtain.length == 0 ||
+          deck.includes(db[rnd])
+        ) {
+          rnd = Math.floor(Math.random() * db.length);
+        }
+        deck.push(db[rnd]);
+      }
+      for (let i = 0; i < 8; i++) {
+        let rnd = Math.floor(Math.random() * db.length);
+        while (
+          !isType(db[rnd], "ed") ||
+          db[rnd].obtain.length == 0 ||
+          deck.includes(db[rnd])
+        ) {
+          rnd = Math.floor(Math.random() * db.length);
+        }
+        deck.push(db[rnd]);
+      }
+      deck.sort(
+        (a, b) =>
+          dlCardPriority(
+            b.konamiID ? b.konamiID : 0,
+            b.monsterType,
+            b.type,
+            b.rarity,
+            b.level,
+            b.linkRating
+          ) -
+          dlCardPriority(
+            a.konamiID ? a.konamiID : 0,
+            a.monsterType,
+            a.type,
+            a.rarity,
+            a.level,
+            a.linkRating
+          )
+      );
+      for (let i = 0; i < deck.length; i++) {
+        const j = (i + 8) % 38;
+        const nameid = deck[j].konamiID ? deck[j].konamiID : deck[j].name;
+        const div = document.createElement("div");
+        div.classList.add("carddiv");
+        const tag = document.createElement("img");
+        tag.src = `images/dltag${deck[j].rarity}.png`;
+        tag.width = 50;
+        const img = document.createElement("img");
+        img.id = j;
+        img.onclick = () => displayCard(j);
+        img.src = `images/cards/${nameid}.jpg`;
+        img.width = 80;
+        img.style.marginTop = "-5px";
+        img.style.cursor = "pointer";
+        document.getElementById("deck").appendChild(div);
+        div.appendChild(tag);
+        div.appendChild(img);
+      }
+    }
+    generate();
+  </script>
+</html>
