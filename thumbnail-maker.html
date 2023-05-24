@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Thumbnail Maker</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
+      h2 {
+        text-align: center;
+        font-size: 45px;
+      }
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+  </head>
+  <body>
+    <div class="m20">
+      <h2>DLF2P Thumbnail Maker</h2>
+    </div>
+    <div class="m20">
+      <label for="tmcard">Thumbnail Main Card ID:</label>
+      <input type="text" name="tmcard" id="tmcard" />
+    </div>
+    <div class="m20">
+      <label for="tmtitle">Thumbnail Text:</label>
+      <input type="text" name="tmtitle" id="tmtitle" />
+    </div>
+    <div class="m20">
+      <button type="button" onclick="draw()">Generate Thumbnail</button>
+    </div>
+    <canvas id="thumbnail"></canvas>
+    <div style="display: none">
+      <div class="flexdivc">
+        <h1>Yu-Gi-Oh! Deck Display</h1>
+      </div>
+      <div class="flexdivc">
+        <div>
+          <div class="flexdiv" style="display: none">
+            <div class="m20">
+              <label for="loaddeck">Import deck by deck code:</label>
+              <input type="text" name="loaddeck" id="loaddeck" />
+              <button id="btnLoad" type="button" onclick="loadDeck()"></button>
+            </div>
+          </div>
+          <div id="skillbox" onclick="selectSkill()">
+            <div class="flexdiv">
+              <img id="skillstar" src="images/skill.png" />
+              <p id="deckSkill">Skill not set</p>
+            </div>
+          </div>
+          <div class="flexdiv">
+            <div id="divDeck">
+              <canvas id="cnvDeck" onclick="selectDeckCard(event)"></canvas>
+              <canvas id="cnvExDeck" onclick="selectExDeckCard(event)"></canvas>
+            </div>
+          </div>
+          <div class="flexdivc">
+            <button id="btnSortBy" type="button" onclick="sortBy()">
+              Sort: Duel Links
+            </button>
+            <button id="btnEdit" type="button" onclick="editDeck()">
+              Open In Editor
+            </button>
+            <button
+              id="btnDownload"
+              type="button"
+              onclick="download()"
+            ></button>
+            <button
+              type="button"
+              onclick="downloadCards()"
+              style="display: none"
+            >
+              Download Card Images
+            </button>
+            <button id="btnCopyYdk" type="button" onclick="copyYdk()">
+              Copy YDK
+            </button>
+            <button id="btnDownloadYdk" type="button" onclick="downloadYdk()">
+              Download YDK
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="_navtgl">
+      <img src="images/navtgl.png" />
+    </div>
+    <div id="_navbar">
+      <a href="/">
+        <p>Homepage</p>
+      </a>
+      <a href="f2p-decks">
+        <p>F2P Decks</p>
+      </a>
+      <a href="kog-decks">
+        <p>KOG Decks</p>
+      </a>
+      <a href="guides">
+        <p>Duel Links Guides</p>
+      </a>
+      <a href="best-techs">
+        <p>Best F2P Techs</p>
+      </a>
+      <a href="deck-builder">
+        <p>Deck Builder</p>
+      </a>
+    </div>
+    <div id="_popup">
+      <div class="flexdivc">
+        <div>
+          <div id="cardinfo">
+            <div class="flexdivc">
+              <img id="cardinfoImg" src="images/cards/55144522.jpg" />
+            </div>
+            <div class="flexdivc">
+              <p id="cardinfoName">Pot of Greed</p>
+            </div>
+            <div class="flexdiv">
+              <p id="cardinfoRace">What does it do?</p>
+              <p id="cardinfoAttribute"></p>
+              <p id="cardinfoLevel"></p>
+            </div>
+            <p id="cardinfoEffect"></p>
+            <div class="flexdiv">
+              <p id="cardinfoAtk"></p>
+              <p id="cardinfoDef"></p>
+            </div>
+            <div class="flexdiv">
+              <p id="cardinfoObtain"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="imgs">
+      <img id="dltagUR" src="images/dltagUR.png" />
+      <img id="dltagSR" src="images/dltagSR.png" />
+      <img id="dltagR" src="images/dltagR.png" />
+      <img id="dltagN" src="images/dltagN.png" />
+      <img id="mdtagUR" src="images/mdtagUR.png" />
+      <img id="mdtagSR" src="images/mdtagSR.png" />
+      <img id="mdtagR" src="images/mdtagR.png" />
+      <img id="mdtagN" src="images/mdtagN.png" />
+      <img id="Forbidden" src="images/forbidden.png" />
+      <img id="Limited 1" src="images/limit1.png" />
+      <img id="Limited 2" src="images/limit2.png" />
+      <img id="Limited 3" src="images/limit3.png" />
+      <img id="tmborder" src="images/tmborder.png" />
+      <img id="tmtextbox" src="images/tmtextbox.png" />
+      <img id="tmbg" src="images/tmbg.png" />
+      <div id="imgsDeck"></div>
+    </div>
+  </body>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-display-js.js"></script>
+  <script>
+    const cnv = document.getElementById("thumbnail");
+    const ctx = cnv.getContext("2d");
+    cnv.width = 1920;
+    cnv.height = 1080;
+    const draw = () => {
+      deckCardSize = 0.7;
+      deckImgPerRow = 6;
+      refreshDeck();
+      const tmcardimg = document.createElement("img");
+      tmcardimg.id = "tmcardimgid";
+      tmcardimg.src = `images/cards/${
+        document.getElementById("tmcard").value
+      }.jpg`;
+      document.getElementById("imgs").appendChild(tmcardimg);
+      ctx.drawImage(document.getElementById("tmbg"), 0, 0);
+      ctx.drawImage(cnvDeck, 60, 40);
+      ctx.drawImage(
+        document.getElementById("tmcardimgid"),
+        1259,
+        156,
+        525,
+        766
+      );
+      ctx.drawImage(document.getElementById("tmtextbox"), 0, 0);
+      ctx.font = "130px Comic Sans MS";
+      ctx.fillStyle = "#ffffff";
+      const tmtitle = document.getElementById("tmtitle").value;
+      ctx.fillText(tmtitle, 960 - ctx.measureText(tmtitle).width / 2, 960);
+      ctx.drawImage(document.getElementById("tmborder"), 0, 0);
+      const a = document.createElement("a");
+      a.href = cnv.toDataURL("image/jpg");
+      a.download = "Thumbnail.jpg";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
+  </script>
+</html>
