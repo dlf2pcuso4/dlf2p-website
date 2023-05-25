@@ -12,6 +12,17 @@
         text-align: center;
         font-size: 45px;
       }
+      #thumbnail {
+        width: 800px;
+      }
+      #imgsDeck {
+        display: flex;
+        overflow-x: scroll;
+        width: 500px;
+      }
+      #imgsDeck img {
+        width: 70px;
+      }
     </style>
     <script src="lib/css-picker.js"></script>
     <script src="lib/carddb-dl.js"></script>
@@ -23,12 +34,15 @@
       <h2>DLF2P Thumbnail Maker</h2>
     </div>
     <div class="m20">
-      <label for="tmcard">Thumbnail Main Card ID:</label>
-      <input type="text" name="tmcard" id="tmcard" />
-    </div>
-    <div class="m20">
-      <label for="tmtitle">Thumbnail Text:</label>
-      <input type="text" name="tmtitle" id="tmtitle" />
+      <label>Choose thumbnail card:</label>
+      <div class="flexdiv">
+        <div class="m20">
+          <img id="tmcard" src="images/noimage.jpg" style="width: 70px" />
+        </div>
+        <div class="m20">
+          <div id="imgsDeck"></div>
+        </div>
+      </div>
     </div>
     <div class="m20">
       <button type="button" onclick="draw()">Generate Thumbnail</button>
@@ -154,7 +168,6 @@
       <img id="tmborder" src="images/tmborder.png" />
       <img id="tmtextbox" src="images/tmtextbox.png" />
       <img id="tmbg" src="images/tmbg.png" />
-      <div id="imgsDeck"></div>
     </div>
   </body>
   <script src="lib/priority-handler.js"></script>
@@ -167,15 +180,21 @@
     const ctx = cnv.getContext("2d");
     cnv.width = 1920;
     cnv.height = 1080;
+    setInterval(() => {
+      let deckcardimages = document.getElementById("imgsDeck").childNodes;
+      for (let i = 0; i < deckcardimages.length; i++) {
+        deckcardimages[i].onclick = function () {
+          document.getElementById("tmcard").src = this.src;
+        };
+      }
+    }, 100);
     const draw = () => {
       deckCardSize = 0.7;
       deckImgPerRow = 6;
       refreshDeck();
       const tmcardimg = document.createElement("img");
       tmcardimg.id = "tmcardimgid";
-      tmcardimg.src = `images/cards/${
-        document.getElementById("tmcard").value
-      }.jpg`;
+      tmcardimg.src = document.getElementById("tmcard").src;
       document.getElementById("imgs").appendChild(tmcardimg);
       ctx.drawImage(document.getElementById("tmbg"), 0, 0);
       ctx.drawImage(cnvDeck, 60, 40);
@@ -189,7 +208,7 @@
       ctx.drawImage(document.getElementById("tmtextbox"), 0, 0);
       ctx.font = "130px Comic Sans MS";
       ctx.fillStyle = "#ffffff";
-      const tmtitle = document.getElementById("tmtitle").value;
+      const tmtitle = title.replace("F2P ", "");
       ctx.fillText(tmtitle, 960 - ctx.measureText(tmtitle).width / 2, 960);
       ctx.drawImage(document.getElementById("tmborder"), 0, 0);
       const a = document.createElement("a");
