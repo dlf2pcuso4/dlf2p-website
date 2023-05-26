@@ -212,7 +212,7 @@
       ctx.fillText(tmtitle, 960 - ctx.measureText(tmtitle).width / 2, 960);
       ctx.drawImage(document.getElementById("tmborder"), 0, 0);
       const a = document.createElement("a");
-      a.href = cnv.toDataURL("image/jpg");
+      a.href = cnv.toDataURL("image/jpeg");
       a.download = "Thumbnail.jpg";
       document.body.appendChild(a);
       a.click();
