@@ -13,7 +13,10 @@
         font-size: 45px;
       }
       #thumbnail {
-        width: 800px;
+        width: 600px;
+      }
+      #intro {
+        width: 600px;
       }
       #imgsDeck {
         display: flex;
@@ -31,7 +34,7 @@
   </head>
   <body>
     <div class="m20">
-      <h2>DLF2P Thumbnail Maker</h2>
+      <h2>DLF2P Video Asset Maker</h2>
     </div>
     <div class="m20">
       <label>Choose thumbnail card:</label>
@@ -45,9 +48,16 @@
       </div>
     </div>
     <div class="m20">
-      <button type="button" onclick="draw()">Generate Thumbnail</button>
+      <label for="stats">Stats:</label>
+      <input id="stats" name="stats" type="text" />
     </div>
-    <canvas id="thumbnail"></canvas>
+    <div class="m20">
+      <button type="button" onclick="draw()">Generate Assets</button>
+    </div>
+    <div class="flexdiv">
+      <canvas id="thumbnail"></canvas>
+      <canvas id="intro"></canvas>
+    </div>
     <div style="display: none">
       <div class="flexdivc">
         <h1>Yu-Gi-Oh! Deck Display</h1>
@@ -168,6 +178,10 @@
       <img id="tmborder" src="images/tmborder.png" />
       <img id="tmtextbox" src="images/tmtextbox.png" />
       <img id="tmbg" src="images/tmbg.png" />
+      <img id="statbg" src="images/topf2pstat.png" />
+      <img id="card" src="images/noimage.jpg" />
+      <img id="logo" src="images/nobglogo.png" />
+      <img id="bg" src="images/purpbg.jpg" />
     </div>
   </body>
   <script src="lib/priority-handler.js"></script>
@@ -176,19 +190,119 @@
   <script src="lib/popup-handler.js"></script>
   <script src="lib/deck-display-js.js"></script>
   <script>
-    const cnv = document.getElementById("thumbnail");
-    const ctx = cnv.getContext("2d");
-    cnv.width = 1920;
-    cnv.height = 1080;
+    var tmtitle = "TITLE";
+    var tmdesc = "desc";
+    var data = [5, 4, 5, 2, 4, 2];
+
+    const cnvThumbnail = document.getElementById("thumbnail");
+    const ctxThumbnail = cnvThumbnail.getContext("2d");
+    cnvThumbnail.width = 1920;
+    cnvThumbnail.height = 1080;
+
+    const cnvIntro = document.getElementById("intro");
+    const ctxIntro = cnvIntro.getContext("2d");
+    cnvIntro.width = 1280;
+    cnvIntro.height = 720;
+
     setInterval(() => {
       let deckcardimages = document.getElementById("imgsDeck").childNodes;
       for (let i = 0; i < deckcardimages.length; i++) {
         deckcardimages[i].onclick = function () {
           document.getElementById("tmcard").src = this.src;
+          for (let i = 0; i < deckArray.length; i++) {
+            if (deckArray[i].id == this.id.replace("deckimg", "")) {
+              tmdesc = deckArray[i].dlobtain[0].source.name;
+              break;
+            }
+          }
         };
       }
     }, 100);
-    const draw = () => {
+
+    function record(canvas, time) {
+      var recordedChunks = [];
+      return new Promise(function (res, rej) {
+        var stream = canvas.captureStream(30);
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: "video/webm; codecs=vp9",
+        });
+        //ondataavailable will fire in interval of `time || 4000 ms`
+        mediaRecorder.start();
+        setTimeout(() => {
+          mediaRecorder.stop();
+        }, time);
+        mediaRecorder.ondataavailable = function (event) {
+          recordedChunks.push(event.data);
+          var blob = new Blob(recordedChunks, { type: "video/webm" });
+          var url = URL.createObjectURL(blob);
+          res(url);
+        };
+      });
+    }
+
+    //animation function
+    function animate() {
+      const card = document.getElementById("tmcard");
+      const logo = document.getElementById("logo");
+      const statbg = document.getElementById("statbg");
+      const bg = document.getElementById("bg");
+      const statx = 300;
+      const staty = 450;
+      const statscale = 0.82;
+      data.forEach((d, i, a) => (a[i] = d * statscale));
+      const dvar = [0, 0, 0, 0, 0, 0];
+      let count = 0;
+      let enter = 0;
+      let fade = 0;
+      setInterval(() => {
+        count++;
+        ctxIntro.clearRect(0, 0, cnvIntro.width, cnvIntro.height);
+        //bg
+        ctxIntro.globalAlpha = 1;
+        ctxIntro.drawImage(bg, 0, 0);
+        //text animation
+        ctxIntro.globalAlpha = Math.min(count / 10, 1);
+        ctxIntro.font = "bold 40px Times New Roman";
+        ctxIntro.fillStyle = "white";
+        ctxIntro.fillText("[DECK NAME]", 70, 100);
+        ctxIntro.font = "bold 60px Times New Roman";
+        ctxIntro.fillText(title.toUpperCase(), 70, 160);
+        ctxIntro.font = "20px Bahnschrift";
+        ctxIntro.fillText("[BOXES]", 75, 230);
+        ctxIntro.font = "25px Bahnschrift";
+        ctxIntro.fillText(tmdesc, 75, 270);
+        //card animation
+        ctxIntro.globalAlpha = Math.min(count / 15, 1);
+        enter = 600 * Math.tanh(0.1 * count);
+        ctxIntro.drawImage(card, cnvIntro.width - enter, 100);
+        //logo animation
+        ctxIntro.globalAlpha = 1;
+        ctxIntro.drawImage(logo, 1030, 5, 250, 173);
+        //stat animation
+        if (count <= 30) {
+          ctxIntro.globalAlpha = Math.min(count / 30, 1);
+          ctxIntro.drawImage(statbg, statx - 257, staty - 205);
+        }
+        if (count > 30) {
+          fade = Math.tanh(0.1 * (count - 30));
+          dvar.forEach((d, i, a) => (a[i] = data[i] * fade));
+          ctxIntro.drawImage(statbg, statx - 257, staty - 205);
+          ctxIntro.fillStyle = "#380176e0";
+          ctxIntro.beginPath(); // pt: statx staty
+          ctxIntro.moveTo(statx, staty - 33.5 * dvar[0]);
+          ctxIntro.lineTo(statx + 28.7 * dvar[1], staty - 16.8 * dvar[1]);
+          ctxIntro.lineTo(statx + 28.7 * dvar[2], staty + 17.6 * dvar[2]);
+          ctxIntro.lineTo(statx, staty + 33.5 * dvar[3]);
+          ctxIntro.lineTo(statx - 28.7 * dvar[4], staty + 17.6 * dvar[4]);
+          ctxIntro.lineTo(statx - 28.7 * dvar[5], staty - 16.8 * dvar[5]);
+          ctxIntro.closePath();
+          ctxIntro.fill();
+        }
+      }, 33);
+    }
+
+    function draw() {
+      //thumbnail
       deckCardSize = 0.7;
       deckImgPerRow = 6;
       refreshDeck();
@@ -196,27 +310,47 @@
       tmcardimg.id = "tmcardimgid";
       tmcardimg.src = document.getElementById("tmcard").src;
       document.getElementById("imgs").appendChild(tmcardimg);
-      ctx.drawImage(document.getElementById("tmbg"), 0, 0);
-      ctx.drawImage(cnvDeck, 60, 40);
-      ctx.drawImage(
+      ctxThumbnail.drawImage(document.getElementById("tmbg"), 0, 0);
+      ctxThumbnail.drawImage(cnvDeck, 60, 40);
+      ctxThumbnail.drawImage(
         document.getElementById("tmcardimgid"),
         1259,
         156,
         525,
         766
       );
-      ctx.drawImage(document.getElementById("tmtextbox"), 0, 0);
-      ctx.font = "130px Comic Sans MS";
-      ctx.fillStyle = "#ffffff";
-      const tmtitle = title.replace("F2P ", "");
-      ctx.fillText(tmtitle, 960 - ctx.measureText(tmtitle).width / 2, 960);
-      ctx.drawImage(document.getElementById("tmborder"), 0, 0);
-      const a = document.createElement("a");
-      a.href = cnv.toDataURL("image/jpeg");
-      a.download = "Thumbnail.jpg";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    };
+      ctxThumbnail.drawImage(document.getElementById("tmtextbox"), 0, 0);
+      ctxThumbnail.font = "130px Comic Sans MS";
+      ctxThumbnail.fillStyle = "#ffffff";
+      tmtitle = title.replace("F2P ", "");
+      ctxThumbnail.fillText(
+        tmtitle,
+        960 - ctxThumbnail.measureText(tmtitle).width / 2,
+        960
+      );
+      ctxThumbnail.drawImage(document.getElementById("tmborder"), 0, 0);
+      if (!window.location.href.includes("Desktop")) {
+        const a = document.createElement("a");
+        a.href = cnvThumbnail.toDataURL("image/jpeg");
+        a.download = "Thumbnail.jpg";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      //intro
+      data = document.getElementById("stats").value.split("");
+      animate();
+      if (!window.location.href.includes("Desktop")) {
+        const recording = record(cnvIntro, 4 * 1000);
+        // download
+        var link$ = document.createElement("a");
+        link$.setAttribute("download", "intro");
+        recording.then((url) => {
+          link$.setAttribute("href", url);
+          link$.click();
+        });
+      }
+    }
   </script>
 </html>
