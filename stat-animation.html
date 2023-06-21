@@ -22,15 +22,6 @@
     </style>
   </head>
   <body>
-    <label for="title">Title:</label>
-    <input id="title" name="title" type="text" />
-    <label for="desc">Description:</label>
-    <input id="desc" name="desc" type="text" />
-    <label for="stats">Stats:</label>
-    <input id="stats" name="stats" type="text" />
-    <label for="cardimg">Card:</label>
-    <input id="cardimg" name="cardimg" type="text" />
-    <button onclick="go()">Record</button>
     <canvas></canvas>
     <img id="statbg" src="images/topf2pstat.png" />
     <img id="card" src="images/noimage.jpg" />
@@ -38,6 +29,7 @@
     <img id="bg" src="images/purpbg.jpg" />
   </body>
   <script>
+    const params = new URL(document.location).searchParams;
     //variables
     const screenWidth = 1280;
     const screenHeight = 720;
@@ -48,52 +40,17 @@
     let desc = "Raider's Requiem";
     let data = [5, 4, 5, 2, 4, 2];
 
-    function record(canvas, time) {
-      var recordedChunks = [];
-      return new Promise(function (res, rej) {
-        var stream = canvas.captureStream(fps);
-        mediaRecorder = new MediaRecorder(stream, {
-          mimeType: "video/webm; codecs=vp9",
-        });
-        //ondataavailable will fire in interval of `time || 4000 ms`
-        mediaRecorder.start();
-        setTimeout(() => {
-          mediaRecorder.stop();
-        }, time);
-        mediaRecorder.ondataavailable = function (event) {
-          recordedChunks.push(event.data);
-          var blob = new Blob(recordedChunks, { type: "video/webm" });
-          var url = URL.createObjectURL(blob);
-          res(url);
-        };
-      });
-    }
     const cnv = document.getElementsByTagName("canvas")[0];
     const ctx = cnv.getContext("2d");
     cnv.width = screenWidth;
     cnv.height = screenHeight;
     function go() {
-      title = document.getElementById("title").value.toUpperCase();
-      desc = document.getElementById("desc").value;
-      data = document.getElementById("stats").value.split("");
-      document.getElementById("card").src = `images/cards/${
-        document.getElementById("cardimg").value
-      }.jpg`;
-      animate();
-      if (!window.location.href.includes("Desktop")) {
-        const recording = record(cnv, duration * 1000);
-        // download
-        var link$ = document.createElement("a");
-        link$.setAttribute("download", "intro");
-        recording.then((url) => {
-          link$.setAttribute("href", url);
-          link$.click();
-        });
-      }
-    }
-
-    //animation function
-    function animate() {
+      title = params.get("title").toUpperCase();
+      desc = params.get("desc");
+      data = params.get("data").split("");
+      document.getElementById("card").src = `images/cards/${params.get(
+        "card"
+      )}.jpg`;
       const card = document.getElementById("card");
       const logo = document.getElementById("logo");
       const statbg = document.getElementById("statbg");
@@ -152,5 +109,10 @@
         }
       }, 33);
     }
+    document.onload = () => {
+      setTimeout(() => {
+        go();
+      }, 1933); //1:28
+    };
   </script>
 </html>

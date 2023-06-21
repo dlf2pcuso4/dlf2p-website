@@ -53,6 +53,7 @@
     </div>
     <div class="m20">
       <button type="button" onclick="draw()">Generate Assets</button>
+      <p id="link" style="font-size: 10px"></p>
     </div>
     <div class="flexdiv">
       <canvas id="thumbnail"></canvas>
@@ -341,7 +342,7 @@
       //intro
       data = document.getElementById("stats").value.split("");
       animate();
-      if (!window.location.href.includes("Desktop")) {
+      /* if (!window.location.href.includes("Desktop")) {
         const recording = record(cnvIntro, 4 * 1000);
         // download
         var link$ = document.createElement("a");
@@ -350,7 +351,19 @@
           link$.setAttribute("href", url);
           link$.click();
         });
-      }
+      } */
+      const introurl = `https://dlf2p.com/stat-animation?title=${encodeURIComponent(
+        tmtitle
+      )}&desc=${encodeURIComponent(tmdesc)}&data=${encodeURIComponent(
+        document.getElementById("stats").value
+      )}&card=${encodeURIComponent(document.getElementById("tmcard").src)}`;
+      document.getElementById("link").innerHTML = introurl;
+      let tag = document.createElement("textarea");
+      tag.innerHTML = introurl;
+      document.body.appendChild(tag);
+      tag.select();
+      document.execCommand("copy");
+      document.body.removeChild(tag);
     }
   </script>
 </html>
