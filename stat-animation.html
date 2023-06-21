@@ -19,17 +19,33 @@
       canvas {
         background-color: #111111;
       }
+      iframe {
+        width: 667px;
+        height: 1280px;
+        margin-left: 918px;
+        -webkit-transform: scale(0.56);
+        transform: scale(0.56);
+        -webkit-transform-origin: 0 0;
+        transform-origin: 0 0;
+      }
     </style>
   </head>
   <body>
     <canvas></canvas>
+    <iframe
+      id="iframe"
+      src="https://dlf2p.com/deck-embed?d=5JDFYPWxZrJl0QG2nE6JEAF1op5bow9HgTdXEhk2XeLkzQVtTFMed5gkyh1Has94eQcd1TeiWHJ7HrNpmJhEyOd-mb5kF3_601_F2P%20Phoenix%20Gearfried"
+      frameborder="0"
+    ></iframe>
     <img id="statbg" src="images/topf2pstat.png" />
     <img id="card" src="images/noimage.jpg" />
     <img id="logo" src="images/nobglogo.png" />
     <img id="bg" src="images/purpbg.jpg" />
+    <img id="statbgleft" src="images/statbg2.png" />
   </body>
   <script>
     const params = new URL(document.location).searchParams;
+
     //variables
     const screenWidth = 1280;
     const screenHeight = 720;
@@ -106,13 +122,29 @@
           ctx.fill();
         }
         if (count > 101) {
-          ctx.fillStyle = "#00ff00";
-          ctx.fillRect(0, 0, cnv.width, cnv.height);
           clearInterval(loop);
+          document.getElementById("iframe").style.marginTop = "-720px";
+          const statbgleft = document.getElementById("statbgleft");
+          ctx.drawImage(statbgleft, 0, 0, 1280, 720);
+          ctx.fillStyle = "#380176E0";
+          ctx.beginPath(); //mid pt: 184 295
+          ctx.moveTo(184, 295 - 27.9 * data[0]);
+          ctx.lineTo(184 + 23.9 * data[1], 295 - 14 * data[1]);
+          ctx.lineTo(184 + 23.9 * data[2], 295 + 14 * data[2]);
+          ctx.lineTo(184, 295 + 27.9 * data[3]);
+          ctx.lineTo(184 - 23.9 * data[4], 295 + 14 * data[4]);
+          ctx.lineTo(184 - 23.9 * data[5], 295 - 14 * data[5]);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#00ff00";
+          ctx.fillRect(368, 0, 544, cnv.height);
         }
       }, 33);
     }
     document.body.onload = () => {
+      document.getElementById(
+        "iframe"
+      ).src = `https://dlf2p.com/deck-embed?d=${params.get("d")}`;
       setTimeout(() => {
         go();
       }, 1533); //1:28
