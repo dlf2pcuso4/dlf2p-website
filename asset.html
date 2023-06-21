@@ -356,7 +356,9 @@
         tmtitle
       )}&desc=${encodeURIComponent(tmdesc)}&data=${encodeURIComponent(
         document.getElementById("stats").value
-      )}&card=${encodeURIComponent(document.getElementById("tmcard").src)}`;
+      )}&card=${encodeURIComponent(
+        document.getElementById("tmcard").src
+      )}&d=${encodeURIComponent(params.get("d"))}`;
       document.getElementById("link").innerHTML = introurl;
       let tag = document.createElement("textarea");
       tag.innerHTML = introurl;
