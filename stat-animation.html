@@ -20,11 +20,11 @@
         background-color: #111111;
       }
       iframe {
-        width: 667px;
-        height: 1280px;
-        margin-left: 918px;
-        -webkit-transform: scale(0.56);
-        transform: scale(0.56);
+        width: 700px;
+        height: 1340px;
+        margin-left: 912px;
+        -webkit-transform: scale(0.525);
+        transform: scale(0.525);
         -webkit-transform-origin: 0 0;
         transform-origin: 0 0;
       }
@@ -32,11 +32,7 @@
   </head>
   <body>
     <canvas></canvas>
-    <iframe
-      id="iframe"
-      src="https://dlf2p.com/deck-embed?d=5JDFYPWxZrJl0QG2nE6JEAF1op5bow9HgTdXEhk2XeLkzQVtTFMed5gkyh1Has94eQcd1TeiWHJ7HrNpmJhEyOd-mb5kF3_601_F2P%20Phoenix%20Gearfried"
-      frameborder="0"
-    ></iframe>
+    <div id="iframediv"></div>
     <img id="statbg" src="images/topf2pstat.png" />
     <img id="card" src="images/noimage.jpg" />
     <img id="logo" src="images/nobglogo.png" />
@@ -142,9 +138,11 @@
       }, 33);
     }
     document.body.onload = () => {
-      document.getElementById(
-        "iframe"
-      ).src = `https://dlf2p.com/deck-embed?d=${params.get("d")}`;
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://dlf2p.com/deck-embed?d=${params.get("d")}`;
+      iframe.id = "iframe";
+      iframe.frameBorder = 0;
+      document.getElementById("iframediv").appendChild(iframe);
       setTimeout(() => {
         go();
       }, 1533); //1:28
