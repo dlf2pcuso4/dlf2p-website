@@ -139,7 +139,7 @@
     }
     document.body.onload = () => {
       const iframe = document.createElement("iframe");
-      iframe.src = `https://dlf2p.com/deck-embed?d=${params.get("d")}`;
+      iframe.src = `https://dlf2p.com/deck-embed?d=${params.get("d")}&bg=g`;
       iframe.id = "iframe";
       iframe.frameBorder = 0;
       document.getElementById("iframediv").appendChild(iframe);
