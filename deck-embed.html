@@ -7,6 +7,12 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
+    <style>
+      .txtborder {
+        text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black,
+          -2px 2px black, 2px 2px black, 2px -2px black, -2px -2px black;
+      }
+    </style>
     <script src="lib/css-picker.js"></script>
     <script src="lib/carddb-dl.js"></script>
     <script src="lib/skilldb-dl.js"></script>
@@ -70,6 +76,7 @@
   <script>
     if (params.get("bg") == "g") {
       document.body.style.backgroundColor = "#00ff00";
+      document.getElementById("deckSkill").classList += "txtborder";
     }
   </script>
 </html>
