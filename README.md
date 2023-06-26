@@ -107,5 +107,3 @@ V1.4:
 - deck.html:
   - Removed "Download Card Images" button
   - Added "Copy YDK" and "Download YDK" button
-
-test
