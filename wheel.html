@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Duel Links F2P</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc m20">
+      <button onclick="spin(10)">Spin the wheel</button>
+    </div>
+    <div class="flexdivc">
+      <div
+        class="m20"
+        style="width: 400px; text-align: left; background-color: #000055"
+      >
+        <div class="flexdivc m20">
+          <img id="i1" src="images/noimage.jpg" style="width: 150px" />
+        </div>
+        <p id="c1"></p>
+        <br />
+        <p id="a1"></p>
+        <br />
+        <p id="d1"></p>
+      </div>
+      <div
+        class="m20"
+        style="width: 400px; text-align: left; background-color: #550000"
+      >
+        <div class="flexdivc m20">
+          <img id="i2" src="images/noimage.jpg" style="width: 150px" />
+        </div>
+        <p id="c2"></p>
+        <br />
+        <p id="a2"></p>
+        <br />
+        <p id="d2"></p>
+      </div>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/carddb-dl.js"></script>
+  <script>
+    var list = [
+      { char: "Yami Yugi", ace: "Dark Magician", deck: "Dark Magician" },
+      { char: "Seto Kaiba", ace: "Blue-Eyes White Dragon", deck: "Blue Eyes" },
+      { char: "Joey Wheeler", ace: "Red-Eyes Black Dragon", deck: "Red Eyes" },
+      { char: "Mai Valentine", ace: "Harpie Lady Sisters", deck: "Harpie" },
+      {
+        char: "Téa Gardner",
+        ace: "Dark Magician Girl",
+        deck: "Dark Magician Girl",
+      },
+      {
+        char: "Yugi Muto",
+        ace: "Gandora the Dragon of Destruction",
+        deck: "Gadget, Silent Swordsman, Silent Magician",
+      },
+      { char: "Weevil Underwood", ace: "Insect Queen", deck: "Insects" },
+      { char: "Rex Raptor", ace: "Red-Eyes Black Dragon", deck: "Dinosaurs" },
+      { char: "Mako Tsunami", ace: "The Legendary Fisherman", deck: "Fish" },
+      { char: "Yami Bakura", ace: "Dark Necrofear", deck: "Zombies" },
+      { char: "Bandit Keith", ace: "Barrel Dragon", deck: "Dark Machines" },
+      { char: "Odion", ace: "Embodiment of Apophis", deck: "Trap Monsters" },
+      {
+        char: "Maximillion Pegasus",
+        ace: "Relinquished",
+        deck: "Relinquished",
+      },
+      { char: "Paradox Brothers", ace: "Gate Guardian", deck: "Gate Guardian" },
+      { char: "Bonz", ace: "Pumpking the King of Ghosts", deck: "Zombies" },
+      { char: "Espa Roba", ace: "Jinzo", deck: "Jinzo" },
+      {
+        char: "Tristan Taylor",
+        ace: "Acrobat Monkey",
+        deck: "Normal Monster Support",
+      },
+      {
+        char: "Lumis and Umbra",
+        ace: "Masked Beast Des Gardius",
+        deck: "Masked Beast",
+      },
+      {
+        char: "Duke Devlin",
+        ace: "Orgoth the Relentless",
+        deck: "Dice Roll Support",
+      },
+      { char: "Jaden Yuki", ace: "Elemental HERO Neos", deck: "HERO" },
+      { char: "Zane Truesdale", ace: "Cyber End Dragon", deck: "Cyber Dragon" },
+      {
+        char: "Aster Phoenix",
+        ace: "Destiny HERO - Plasma",
+        deck: "Destiny HERO",
+      },
+      { char: "Jesse Anderson", ace: "Rainbow Dragon", deck: "Crystal Beast" },
+      {
+        char: "Chazz Princeton",
+        ace: "Ojama King",
+        deck: "Ojama, Armed Dragon",
+      },
+      { char: "Alexis Rhodes", ace: "Cyber Blader", deck: "Cyber Angel" },
+      {
+        char: "Dr. Vellian Crowler",
+        ace: "Ancient Gear Golem",
+        deck: "Ancient Gear",
+      },
+      { char: "Yubel", ace: "Yubel", deck: "Yubel" },
+      {
+        char: "Bastion Misawa",
+        ace: "Water Dragon",
+        deck: "Water Dragon Support",
+      },
+      {
+        char: "Syrus Truesdale",
+        ace: "Super Vehicroid Jumbo Drill",
+        deck: "Vehicroid",
+      },
+      {
+        char: "Tyranno Hassleberry",
+        ace: "Ultimate Tyranno",
+        deck: "Dinosaurs",
+      },
+      {
+        char: "Sartorius Kumar",
+        ace: "Arcana Force EX - The Light Ruler",
+        deck: "Arcana Force",
+      },
+      {
+        char: "Jaden/Yubel",
+        ace: "Elemental HERO Divine Neos",
+        deck: "Neos, Neo-Spacian",
+      },
+      {
+        char: 'Jim "Crocodile"  Cook',
+        ace: "Fossil Warrior Skull King",
+        deck: "Fossil",
+      },
+      { char: "Axel Brodie", ace: "Volcanic Doomfire", deck: "Volcanic" },
+      {
+        char: "Supreme King Jaden",
+        ace: "Evil HERO Malicious Fiend",
+        deck: "Evil HERO",
+      },
+      { char: "Yusei Fudo", ace: "Stardust Dragon", deck: "Synchron" },
+      { char: "Jack Atlas", ace: "Red Dragon Archfiend", deck: "Resonator" },
+      { char: "Crow Hogan", ace: "Black-Winged Dragon", deck: "Blackwing" },
+      { char: "Akiza Izinski", ace: "Black Rose Dragon", deck: "Rose Dragon" },
+      { char: "Leo", ace: "Power Tool Dragon", deck: "Morphtronic" },
+      { char: "Antinomy", ace: "T.G. Halberd Cannon", deck: "T.G." },
+      {
+        char: "Dark Signer Kalin Kessler",
+        ace: "Earthbound Immortal Ccapac Apu",
+        deck: "Earthbound Immortal",
+      },
+      {
+        char: "Dark Signer Carly Carmine",
+        ace: "Earthbound Immortal Aslla piscu",
+        deck: "Earthbound Immortal",
+      },
+      {
+        char: "Dark Signer Rex Goodwin",
+        ace: "Earthbound Immortal Wiraqocha Rasca",
+        deck: "Earthbound Immortal",
+      },
+      {
+        char: "Kalin Kessler",
+        ace: "Infernity Doom Dragon",
+        deck: "Infernity",
+      },
+      {
+        char: "Carly Carmine",
+        ace: "Fortune Fairy Chee",
+        deck: "Fortune Fairy",
+      },
+      { char: "Primo", ace: "Meklord Emperor Wisel", deck: "Meklord" },
+      { char: "Aporia", ace: "Meklord Astro Mekanikle", deck: "Meklord" },
+      { char: "Paradox", ace: "Malefic Truth Dragon", deck: "Malefic" },
+      {
+        char: "Z-one",
+        ace: "Sephylon, the Ultimate Timelord",
+        deck: "Timelord",
+      },
+      {
+        char: "Aigami",
+        ace: "Indiora Doom Volt the Cubic Emperor",
+        deck: "Cubic",
+      },
+      {
+        char: "Bakura (DSOD)",
+        ace: "Dark Master - Zorc",
+        deck: "Ritual Support",
+      },
+      { char: "Yuma/Astral", ace: "Number 39: Utopia", deck: "Onomat" },
+      {
+        char: 'Reginald "Shark" Kastle',
+        ace: "Number 32: Shark Drake",
+        deck: "Shark, Fish",
+      },
+      { char: "Rio Kastle", ace: "Ice Beast Zerofyne", deck: "Fish" },
+      {
+        char: "Kite Tenjo",
+        ace: "Galaxy-Eyes Photon Dragon",
+        deck: "Photon, Galaxy",
+      },
+      {
+        char: "Trey",
+        ace: "Number 6: Chronomaly Atlandis",
+        deck: "Chronomaly",
+      },
+      {
+        char: "Quattro",
+        ace: "Number 15: Gimmick Puppet Giant Grinder",
+        deck: "Gimmick Puppet",
+      },
+      {
+        char: "Anna Kaboom",
+        ace: "Superdreadnought Rail Cannon Gustav Max",
+        deck: "Trains",
+      },
+      { char: "Girag", ace: "Number 106: Giant Hand", deck: "Hand" },
+      {
+        char: "Yuya Sakaki",
+        ace: "Odd-Eyes Pendulum Dragon",
+        deck: "Performapal",
+      },
+      {
+        char: "Yuto",
+        ace: "Dark Rebellion Xyz Dragon",
+        deck: "Phantom Knight",
+      },
+      {
+        char: "Zuzu Boyle",
+        ace: "Bloom Diva the Melodious Choir",
+        deck: "Melodious",
+      },
+      {
+        char: "Gong Strong",
+        ace: "Superheavy Samurai Big Benkei",
+        deck: "Superheavy Samurai",
+      },
+      {
+        char: "Sylvio Sawatari",
+        ace: "Abyss Actor - Superstar",
+        deck: "Abyss Actor, Mayosenju",
+      },
+      { char: "Declan Akaba", ace: "D/D/D Doom King Armageddon", deck: "D/D" },
+      {
+        char: "Sora Perse",
+        ace: "Frightfur Bear",
+        deck: "Fluffal, Edge Imp, Frightfur",
+      },
+      {
+        char: "Shay Obsidian",
+        ace: "Raidraptor - Rise Falcon",
+        deck: "Raidraptor",
+      },
+      { char: "Playmaker and Ai", ace: "Decode Talker", deck: "Cyberse" },
+      { char: "Soulburner", ace: "Salamangreat Heatleo", deck: "Salamangreat" },
+      { char: "The Gore", ace: "Gouki The Great Ogre", deck: "Gouki" },
+      { char: "Blue Angel", ace: "Trickstar Holly Angel", deck: "Trickstar" },
+      { char: "Varis", ace: "Borreload Dragon", deck: "Rokket" },
+    ];
+  </script>
+  <script>
+    function spin(count) {
+      let r1 = list[Math.floor(Math.random() * list.length)];
+      let r2 = list[Math.floor(Math.random() * list.length)];
+      document.getElementById("i1").src = `images/cards/${
+        jsonResponseDl.filter((a) => a.name == r1.ace)[0].konamiID
+      }.jpg`;
+      document.getElementById("c1").innerHTML = "Character: " + r1.char;
+      document.getElementById("a1").innerHTML = "Ace monster: " + r1.ace;
+      document.getElementById("d1").innerHTML = "Archetype: " + r1.deck;
+      document.getElementById("i2").src = `images/cards/${
+        jsonResponseDl.filter((a) => a.name == r2.ace)[0].konamiID
+      }.jpg`;
+      document.getElementById("c2").innerHTML = "Character: " + r2.char;
+      document.getElementById("a2").innerHTML = "Ace monster: " + r2.ace;
+      document.getElementById("d2").innerHTML = "Archetype: " + r2.deck;
+      if (count > 0) {
+        setTimeout(() => {
+          spin(count - 1);
+        }, 70);
+      }
+    }
+  </script>
+</html>
