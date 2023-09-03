@@ -13,7 +13,18 @@
       #img {
         display: none;
       }
+      iframe {
+        width: 700px;
+        height: 2382px;
+        margin-top: -1080px;
+        margin-left: 1360px;
+        -webkit-transform: scale(0.81);
+        transform: scale(0.81);
+        -webkit-transform-origin: 0 0;
+        transform-origin: 0 0;
+      }
     </style>
+    <script src="lib/topf2pdeckdb.js"></script>
   </head>
   <body>
     <canvas id="canvas" width="1920" height="1080"></canvas>
@@ -27,10 +38,12 @@
     var txtbrIndex = 0;
     var txtbrRow = 0;
     const params = new URL(document.location).searchParams;
-    const deckname = params.get("n");
-    const description = params.get("d");
+    const index = params.get("d");
+    const arrDecks = jsonResponseTopF2p[jsonResponseTopF2p.length - 1].decks;
+    const deckname = arrDecks[index].text.split("\n")[0];
+    const description = arrDecks[index].text.split("\n")[1];
     const descriptionTextArray = description.split(" ");
-    const stats = params.get("s").split("");
+    const stats = arrDecks[index].stats.split("");
     const canvas = document.getElementById("canvas"); //width 552
     const ctx = canvas.getContext("2d");
     const deckbg = document.getElementById("deckbg");
@@ -75,5 +88,11 @@
         ctx.fill();
       }, 50);
     };
+
+    //deck
+    const iframe = document.createElement("iframe");
+    iframe.src = arrDecks[index].link;
+    iframe.frameBorder = 0;
+    document.body.appendChild(iframe);
   </script>
 </html>
