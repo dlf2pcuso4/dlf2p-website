@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Top F2P DB Updater</title>
+    <style>
+      body {
+        color: #ffffff;
+        font-family: bahnschrift;
+        background-image: url("images/fullbg.jpg");
+        background-size: 100vw;
+        background-repeat: no-repeat;
+      }
+      #maindiv {
+        background-color: #000000c0;
+        width: fit-content;
+        padding: 20px;
+      }
+      textarea {
+        resize: none;
+      }
+      img {
+        width: 200px;
+        height: 160px;
+      }
+    </style>
+    <script src="lib/topf2pdeckdb.js"></script>
+  </head>
+  <body>
+    <div id="maindiv">
+      <label>Top 5 F2P Decks Info</label>
+      <br />
+      <textarea cols="50" rows="20"></textarea>
+      <br />
+      <div style="display: flex">
+        <div>
+          <button onclick="load()">Load previous</button>
+          <br />
+          <button onclick="save()">Save new</button>
+          <br />
+        </div>
+        <img src="images/topf2pstat.png" />
+      </div>
+    </div>
+  </body>
+  <script>
+    const arrDecks = jsonResponseTopF2p[jsonResponseTopF2p.length - 1].decks;
+    const txtarea = document.getElementsByTagName("textarea")[0];
+    function load() {
+      txtarea.value = "";
+      for (let i = 0; i < arrDecks.length; i++) {
+        txtarea.value += `${arrDecks[i].text}\n${arrDecks[i].stats}\n${arrDecks[i].link}\n\n`;
+      }
+    }
+    function save() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          const ogtxt = xhttp.responseText;
+          const inputtxt = txtarea.value.replace(/\n\n/g, "\n").split("\n");
+          const months =
+            "January,February,March,April,May,June,July,August,September,October,November,December".split(
+              ","
+            );
+          const date = new Date();
+          const currentmonth = months[date.getMonth()];
+          const currentyear = date.getFullYear();
+          let addedtxt = `{\ndate:"${currentmonth} ${currentyear}",\ndecks:[\n`;
+          for (let i = 0; i < (txtarea.value.match(/#/g) || []).length; i++) {
+            addedtxt += `{\nlink:"${inputtxt[i * 4 + 3]}",\nstats:"${
+              inputtxt[i * 4 + 2]
+            }",\ntext:"${inputtxt[i * 4]}\\n${inputtxt[i * 4 + 1]}",\n},\n`;
+          }
+          addedtxt += "],\n},";
+          downloadTxt(
+            `${ogtxt.replace("];", "")}${addedtxt}\n];`,
+            "topf2pdeckdb.js"
+          );
+        }
+      };
+      xhttp.open("GET", "https://dlf2p.com/lib/topf2pdeckdb.js", true);
+      xhttp.send();
+    }
+    function downloadTxt(text, filename) {
+      let tag = document.createElement("a");
+      tag.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+      );
+      tag.setAttribute("download", filename);
+      tag.style.display = "none";
+      document.body.appendChild(tag);
+      tag.click();
+      document.body.removeChild(tag);
+    }
+  </script>
+</html>
