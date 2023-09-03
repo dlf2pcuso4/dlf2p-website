@@ -65,15 +65,17 @@
           const date = new Date();
           const currentmonth = months[date.getMonth()];
           const currentyear = date.getFullYear();
-          let addedtxt = `{\ndate:"${currentmonth} ${currentyear}",\ndecks:[\n`;
+          let addedtxt = `  {\n    date: "${currentmonth} ${currentyear}",\n    decks: [\n`;
           for (let i = 0; i < (txtarea.value.match(/#/g) || []).length; i++) {
-            addedtxt += `{\nlink:"${inputtxt[i * 4 + 3]}",\nstats:"${
-              inputtxt[i * 4 + 2]
-            }",\ntext:"${inputtxt[i * 4]}\\n${inputtxt[i * 4 + 1]}",\n},\n`;
+            addedtxt += `      {\n        link: "${
+              inputtxt[i * 4 + 3]
+            }",\n        stats: "${inputtxt[i * 4 + 2]}",\n        text: "${
+              inputtxt[i * 4]
+            }\\n${inputtxt[i * 4 + 1]}",\n      },\n`;
           }
-          addedtxt += "],\n},";
+          addedtxt += "    ],\n  },";
           downloadTxt(
-            `${ogtxt.replace("];", "")}${addedtxt}\n];`,
+            `${ogtxt.replace("];\n", "")}${addedtxt}\n];\n`,
             "topf2pdeckdb.js"
           );
         }
