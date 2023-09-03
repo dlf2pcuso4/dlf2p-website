@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Top F2P Decks</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/topf2pdeckdb.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div>
+        <h1 style="text-align: center">Top F2P Decks</h1>
+        <div id="decks" style="width: min-content"></div>
+      </div>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script>
+    if (_isMobile) {
+      document.head.innerHTML +=
+        "<style>#decks iframe{width:100vw;height:1450px;margin-bottom:-290px;}</style>";
+    } else {
+      document.head.innerHTML +=
+        "<style>#decks iframe{width:900px;height:700px;margin-bottom:-50px;}</style>";
+    }
+    const params = new URL(document.location).searchParams;
+    const date = params.get("date");
+    var jsonTopF2pfiltered = jsonResponseTopF2p.filter(
+      (a) => a.date == date
+    )[0];
+    if (!jsonTopF2pfiltered)
+      jsonTopF2pfiltered = jsonResponseTopF2p[jsonResponseTopF2p.length - 1];
+    for (let i = 0; i < jsonTopF2pfiltered.decks.length; i++) {
+      const flexdiv = document.createElement("div");
+      if (!_isMobile) flexdiv.classList = "flexdiv";
+      document.getElementById("decks").appendChild(flexdiv);
+      const iframe = document.createElement("iframe");
+      iframe.src = jsonTopF2pfiltered.decks[i].link;
+      iframe.frameBorder = 0;
+      flexdiv.appendChild(iframe);
+      const text = document.createElement("p");
+      text.style.width = _isMobile ? "80vw" : "300px";
+      text.style.textAlign = "left";
+      text.style.fontSize = _isMobile ? "22px" : "16px";
+      text.innerHTML =
+        jsonTopF2pfiltered.decks[i].text.replace(/\n/g, "<br><br>") +
+        "<br><br>";
+      const statwords =
+        "Fun,Consistent,Offensive,Competitive,Easy to use,Defensive".split(",");
+      for (let j = 0; j < jsonTopF2pfiltered.decks[i].stats.length; j++) {
+        text.innerHTML += `${statwords[j]}: ${jsonTopF2pfiltered.decks[i].stats[j]}<br>`;
+      }
+      if (_isMobile) {
+        text.innerHTML += "<br><br>";
+        const mobilediv = document.createElement("div");
+        mobilediv.classList = "flexdivc";
+        flexdiv.appendChild(mobilediv);
+        mobilediv.appendChild(text);
+      } else {
+        flexdiv.appendChild(text);
+      }
+    }
+  </script>
+</html>
