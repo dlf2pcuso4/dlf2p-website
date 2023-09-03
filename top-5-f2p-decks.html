@@ -52,7 +52,7 @@
       const statwords =
         "Fun,Consistent,Offensive,Competitive,Easy to use,Defensive".split(",");
       for (let j = 0; j < jsonTopF2pfiltered.decks[i].stats.length; j++) {
-        text.innerHTML += `${statwords[j]}: ${jsonTopF2pfiltered.decks[i].stats[j]}<br>`;
+        text.innerHTML += `${statwords[j]}: ${jsonTopF2pfiltered.decks[i].stats[j]}/5<br>`;
       }
       if (_isMobile) {
         text.innerHTML += "<br><br>";
