@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DLF2P Thumbnail Editor</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
+      h1 {
+        text-align: center;
+      }
+      canvas {
+        width: 768px;
+        height: 432px;
+        margin: 20px;
+      }
+      #imgs {
+        display: none;
+      }
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+  </head>
+  <body>
+    <h1>DLF2P Thumbnail Editor</h1>
+    <div class="flexdivc">
+      <div>
+        <canvas></canvas>
+      </div>
+      <div style="text-align: center; width: fit-content">
+        <div class="flexdivc">
+          <label>Border:&nbsp;</label>
+          <input
+            id="showborder"
+            type="checkbox"
+            checked="true"
+            oninput="updateShowBorder()"
+          />
+        </div>
+        <div class="flexdivc">
+          <label>Title:&nbsp;</label>
+          <input id="title" type="text" onkeyup="updateTitle()" />
+          <input
+            id="showtitle"
+            type="checkbox"
+            checked="true"
+            oninput="updateShowTitle()"
+          />
+        </div>
+        <div class="flexdivc">
+          <label>Card (L):&nbsp;</label>
+          <input id="cardl" type="text" onkeyup="updateCard('l')" />
+          <input
+            id="showcardl"
+            type="checkbox"
+            checked="true"
+            oninput="updateShowCard('l')"
+          />
+        </div>
+        <div class="flexdivc">
+          <label>Card (R):&nbsp;</label>
+          <input id="cardr" type="text" onkeyup="updateCard('r')" />
+          <input
+            id="showcardr"
+            type="checkbox"
+            checked="true"
+            oninput="updateShowCard('r')"
+          />
+        </div>
+        <div class="flexdivc">
+          <label>Upload image:&nbsp;</label>
+          <input
+            id="customimginp"
+            type="file"
+            accept="image/jpeg, image/png, image/jpg"
+            onchange="updateCustomImgSrc()"
+          />
+        </div>
+        <div class="flexdivc">
+          <div id="customdiv"></div>
+        </div>
+        <div class="flexdivc">
+          <button onclick="download()">Download Image</button>
+        </div>
+      </div>
+    </div>
+    <div id="imgs">
+      <img id="tmbg" src="images/tmbg.png" onload="imgloaded()" />
+      <img id="tmborder" src="images/tmborder.png" onload="imgloaded()" />
+      <img id="tmtextbox" src="images/tmtextbox.png" onload="imgloaded()" />
+      <img id="tmcardimgidl" src="images/noimage.jpg" onload="imgloaded()" />
+      <img id="tmcardimgidr" src="images/noimage.jpg" onload="imgloaded()" />
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script>
+    const cnv = document.getElementsByTagName("canvas")[0];
+    const ctx = cnv.getContext("2d");
+    cnv.width = 1920;
+    cnv.height = 1080;
+    const clrcnv = () => ctx.clearRect(0, 0, cnv.width, cnv.height);
+    var tmtitle = "Title";
+    var imgloadedcount = 0;
+    var showborder = true;
+    var showtitle = true;
+    var showcardl = true;
+    var showcardr = true;
+    const customimgdim = [];
+
+    var customimgx = 0;
+    var customimgy = 0;
+    var customimgs = 1;
+    function updateShowBorder() {
+      showborder = document.getElementById("showborder").checked;
+      updateCanvas();
+    }
+    function updateTitle() {
+      tmtitle = document.getElementById("title").value;
+      updateCanvas();
+    }
+    function updateShowTitle() {
+      showtitle = document.getElementById("showtitle").checked;
+      updateCanvas();
+    }
+    function updateCard(lr) {
+      if (lr == "l") {
+        const card = jsonResponseDl.filter(
+          (a) =>
+            a.name.toLowerCase() ==
+            document.getElementById("cardl").value.toLowerCase()
+        )[0];
+        if (card) {
+          document.getElementById(
+            "tmcardimgidl"
+          ).src = `images/cards/${card.konamiID}.jpg`;
+        } else {
+          document.getElementById("tmcardimgidl").src = `images/noimage.jpg`;
+        }
+      } else {
+        const card = jsonResponseDl.filter(
+          (a) =>
+            a.name.toLowerCase() ==
+            document.getElementById("cardr").value.toLowerCase()
+        )[0];
+        if (card) {
+          document.getElementById(
+            "tmcardimgidr"
+          ).src = `images/cards/${card.konamiID}.jpg`;
+        } else {
+          document.getElementById("tmcardimgidr").src = `images/noimage.jpg`;
+        }
+      }
+    }
+    function updateShowCard(lr) {
+      if (lr == "l") {
+        showcardl = document.getElementById("showcardl").checked;
+      } else {
+        showcardr = document.getElementById("showcardr").checked;
+      }
+      updateCanvas();
+    }
+    function updateCustomImgSrc() {
+      const file = document.getElementById("customimginp").files;
+      if (file) {
+        let imgname = prompt("Enter image name:", "Pasted image");
+        if (imgname != null && imgname != "") {
+          newImg(
+            imgname,
+            URL.createObjectURL(new Blob(file, { type: "application/zip" }))
+          );
+        }
+      }
+    }
+    document.onpaste = function (event) {
+      var items = (event.clipboardData || event.originalEvent.clipboardData)
+        .items;
+      for (var index in items) {
+        var item = items[index];
+        if (item.kind === "file") {
+          var blob = item.getAsFile();
+          var reader = new FileReader();
+          reader.onload = function (event) {
+            let imgname = prompt("Enter image name:", "Pasted image");
+            if (imgname != null && imgname != "") {
+              newImg(imgname, event.target.result);
+            }
+          };
+          reader.readAsDataURL(blob);
+        }
+      }
+    };
+    function newImg(filename, dataurl) {
+      const customimg = document.createElement("img");
+      customimg.id = `customimg${filename}`;
+      customimg.src = dataurl;
+      customimg.onload = () => updateCanvas();
+      document.getElementById("imgs").appendChild(customimg);
+      customimgdim.push({ filename: filename, x: 0, y: 0, s: 1 });
+      const tempdiv = document.createElement("div");
+      tempdiv.id = `customimgdiv${filename}`;
+      tempdiv.innerHTML += `
+        <div style="width:min-content;margin:10px;background-color:#000000c0">
+          <div class="flexdivc"><p>${filename}</p></div>
+          <div class="flexdivc">
+            <label>X:&nbsp;</label>
+            <input id="customimgx${filename}" type="range" min="0" max="1920" value="0" onchange="updateCustomImg('${filename}','x')">
+            <label>&nbsp;Y:&nbsp;</label>
+            <input id="customimgy${filename}" type="range" min="0" max="1080" value="0" onchange="updateCustomImg('${filename}','y')">
+          </div>
+          <div class="flexdivc">
+            <label>Size:&nbsp;</label>
+            <input id="customimgs${filename}" type="range" min="0" max="300" value="100" onchange="updateCustomImg('${filename}','s')">
+          </div>
+          <div class="flexdivc">
+            <button onclick="deleteCustomImg('${filename}')">Delete</button>
+          </div>
+        </div>`;
+      document.getElementById("customdiv").appendChild(tempdiv);
+    }
+    function updateCustomImg(filename, xy) {
+      for (let i = 0; i < customimgdim.length; i++) {
+        if (customimgdim[i].filename == filename) {
+          switch (xy) {
+            case "x":
+              customimgdim[i].x = document.getElementById(
+                `customimgx${customimgdim[i].filename}`
+              ).value;
+              break;
+            case "y":
+              customimgdim[i].y = document.getElementById(
+                `customimgy${customimgdim[i].filename}`
+              ).value;
+              break;
+            case "s":
+              customimgdim[i].s =
+                document.getElementById(`customimgs${customimgdim[i].filename}`)
+                  .value / 100;
+              break;
+          }
+        }
+      }
+      updateCanvas();
+    }
+    function deleteCustomImg(filename) {
+      for (let i = 0; i < customimgdim.length; i++) {
+        if (customimgdim[i].filename == filename) {
+          customimgdim.splice(i, 1);
+          break;
+        }
+      }
+      document.getElementById(`customimg${filename}`).remove();
+      document.getElementById(`customimgdiv${filename}`).remove();
+      updateCanvas();
+    }
+    function imgloaded() {
+      imgloadedcount += 1;
+      if (imgloadedcount >= 5) {
+        updateCanvas();
+      }
+    }
+    function updateCanvas() {
+      //bg
+      ctx.drawImage(document.getElementById("tmbg"), 0, 0);
+      //custom image
+      for (let i = 0; i < customimgdim.length; i++) {
+        ctx.drawImage(
+          document.getElementById(`customimg${customimgdim[i].filename}`),
+          customimgdim[i].x,
+          customimgdim[i].y,
+          document.getElementById(`customimg${customimgdim[i].filename}`)
+            .width * customimgdim[i].s,
+          document.getElementById(`customimg${customimgdim[i].filename}`)
+            .height * customimgdim[i].s
+        );
+      }
+      //card left
+      if (showcardl) {
+        ctx.drawImage(
+          document.getElementById("tmcardimgidl"),
+          136,
+          156,
+          525,
+          766
+        );
+      }
+      //card right
+      if (showcardr) {
+        ctx.drawImage(
+          document.getElementById("tmcardimgidr"),
+          1259,
+          156,
+          525,
+          766
+        );
+      }
+      //title
+      if (showtitle) {
+        ctx.drawImage(document.getElementById("tmtextbox"), 0, 0);
+        ctx.font = "130px Comic Sans MS";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(tmtitle, 960 - ctx.measureText(tmtitle).width / 2, 960);
+      }
+      //border
+      if (showborder) ctx.drawImage(document.getElementById("tmborder"), 0, 0);
+    }
+    function download() {
+      if (!window.location.href.includes("Desktop")) {
+        const a = document.createElement("a");
+        a.href = cnv.toDataURL("image/jpeg");
+        a.download = "Thumbnail.jpg";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    }
+  </script>
+</html>
