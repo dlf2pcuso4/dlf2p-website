@@ -205,9 +205,9 @@
           <div class="flexdivc"><p>${filename}</p></div>
           <div class="flexdivc">
             <label>X:&nbsp;</label>
-            <input id="customimgx${filename}" type="range" min="0" max="1920" value="0" onchange="updateCustomImg('${filename}','x')">
+            <input id="customimgx${filename}" type="range" min="-1920" max="1920" value="0" onchange="updateCustomImg('${filename}','x')">
             <label>&nbsp;Y:&nbsp;</label>
-            <input id="customimgy${filename}" type="range" min="0" max="1080" value="0" onchange="updateCustomImg('${filename}','y')">
+            <input id="customimgy${filename}" type="range" min="-1080" max="1080" value="0" onchange="updateCustomImg('${filename}','y')">
           </div>
           <div class="flexdivc">
             <label>Size:&nbsp;</label>
