@@ -67,6 +67,9 @@ input {
   display: flex;
   margin: 30px;
 }
+.m5 {
+  margin: 5px;
+}
 .m20 {
   margin: 30px;
 }
@@ -132,8 +135,10 @@ input {
 }
 * [type="checkbox"] {
   width: 35px;
+  height: 35px;
   cursor: pointer;
   margin-right: 12px;
+  vertical-align: bottom;
 }
 #divDeck {
   width: min-content;

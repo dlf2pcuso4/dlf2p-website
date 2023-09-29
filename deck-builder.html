@@ -23,56 +23,71 @@
           <input type="text" name="deckname" id="deckname" autocomplete="off" />
         </div>
         <div class="m20">
-          <label for="searchname">Search card:</label>
-          <input
-            type="text"
-            name="searchname"
-            id="searchname"
-            autocomplete="off"
-            onkeydown="keydown(event,'searchCard')"
-          />
-          <button
-            id="btnSearch"
-            type="button"
-            onclick="searchCard('all')"
-          ></button>
-          <br />
-          <button type="button" onclick="searchCard('deck')">
-            Search From Deck
-          </button>
-          <br />
-          <label for="searchfrom">Search from:</label>
-          <select name="searchfrom" id="searchfrom">
-            <option value="dl">Duel Links</option>
-            <option value="md">Master Duel</option>
-          </select>
-          <br />
-          <label for="searchsort">Sort results by:</label>
-          <select name="searchsort" id="searchsort">
-            <option value="name">Name</option>
-            <option value="release">Release date</option>
-            <option value="popularity">Popularity</option>
-          </select>
-          <br />
-          <label for="searchfilter">Filter results by:</label>
-          <select name="searchfilter" id="searchfilter"></select>
-          <button id="btnFilter" type="button" onclick="addFilter()">
-            Add Filter
-          </button>
-          <div id="filterlist"></div>
-        </div>
-        <div class="m20">
-          <label for="searchskill">Search skill:</label>
-          <input
-            type="text"
-            name="searchskill"
-            id="searchskill"
-            autocomplete="off"
-            onkeyup="searchSkill()"
-          />
-          <br />
-          <select name="skillresults" id="skillresults"></select>
-          <button type="button" onclick="addSkill()">Set skill</button>
+          <div class="m5">
+            <label for="searchname">Search card:</label>
+            <input
+              type="text"
+              name="searchname"
+              id="searchname"
+              autocomplete="off"
+              onkeydown="keydown(event,'searchCard')"
+            />
+            <button
+              id="btnSearch"
+              type="button"
+              onclick="searchCard('all')"
+            ></button>
+          </div>
+          <div class="m5">
+            <button type="button" onclick="searchCard('deck')">
+              Search From Deck
+            </button>
+          </div>
+          <div class="m5">
+            <label for="searchfrom">Search from:</label>
+            <select name="searchfrom" id="searchfrom">
+              <option value="dl">Duel Links</option>
+              <option value="md">Master Duel</option>
+            </select>
+          </div>
+          <div class="m5">
+            <label for="showrush">Search Rush cards:</label>
+            <input id="showrush" type="checkbox" name="showrush" />
+          </div>
+          <div class="m5">
+            <label for="showunreleased">Show unreleased cards:</label>
+            <input id="showunreleased" type="checkbox" name="showunreleased" />
+          </div>
+          <div class="m5">
+            <label for="searchsort">Sort results by:</label>
+            <select name="searchsort" id="searchsort">
+              <option value="name">Name</option>
+              <option value="release">Release date</option>
+              <option value="popularity">Popularity</option>
+            </select>
+          </div>
+          <div class="m5">
+            <label for="searchfilter">Filter results by:</label>
+            <select name="searchfilter" id="searchfilter"></select>
+            <button id="btnFilter" type="button" onclick="addFilter()">
+              Add Filter
+            </button>
+            <div id="filterlist"></div>
+          </div>
+          <div class="m5">
+            <label for="searchskill">Search skill:</label>
+            <input
+              type="text"
+              name="searchskill"
+              id="searchskill"
+              autocomplete="off"
+              onkeyup="searchSkill()"
+            />
+          </div>
+          <div class="m5">
+            <select name="skillresults" id="skillresults"></select>
+            <button type="button" onclick="addSkill()">Set skill</button>
+          </div>
         </div>
         <div class="m20">
           <label for="importdeck">Import deck by deck code:</label>
@@ -94,13 +109,9 @@
           <button type="button" onclick="sendDeck()">Create Deck</button>
         </div>
         <div class="flexdiv20">
-          <label for="autoadd">Add to deck:</label>
+          <label for="autoadd">Add to deck:&nbsp;</label>
           <input id="autoadd" type="checkbox" name="autoadd" />
-          <label for="showunreleased">Show unreleased cards:</label>
-          <input id="showunreleased" type="checkbox" name="showunreleased" />
-        </div>
-        <div class="flexdiv20">
-          <label for="swfilter">Add Small World bridge filter:</label>
+          <label for="swfilter">Add Small World bridge filter:&nbsp;</label>
           <input id="swfilter" type="checkbox" name="swfilter" />
         </div>
         <div class="flexdiv20">

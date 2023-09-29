@@ -64,6 +64,9 @@ select {
   display: flex;
   margin: 20px;
 }
+.m5 {
+  margin: 5px;
+}
 .m20 {
   margin: 20px;
 }
@@ -122,9 +125,11 @@ select {
   width: 200px;
 }
 * [type="checkbox"] {
-  width: 30px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   margin-right: 10px;
+  vertical-align: bottom;
 }
 #divDeck {
   width: min-content;
