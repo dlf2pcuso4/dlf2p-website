@@ -170,7 +170,7 @@ input {
   width: 90vw;
 }
 /* f2p-decks, kog-decks */
-#btnSort {
+.tglbtn {
   margin: 5px;
   padding: 5px;
   width: fit-content;

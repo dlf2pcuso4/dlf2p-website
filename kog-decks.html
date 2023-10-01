@@ -17,7 +17,9 @@
         <h1>King of Games Decks</h1>
         <p>A list of decks that players have reached KOG with</p>
         <div class="flexdivc">
-          <p id="btnSort" onclick="sortBy()">Sort decks by: Name</p>
+          <p id="btnSort" class="tglbtn" onclick="sortBy()">
+            Sort decks by: Name
+          </p>
         </div>
         <table>
           <tr>
@@ -35,6 +37,7 @@
     var tbInnerHtml = document.getElementsByTagName("table")[0].innerHTML;
     var sortedList = jsonResponseKogDecks;
     const mth = " Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+    document.getElementById("btnSort").innerHTML = "Sort decks by: Date";
     function refreshTable() {
       document.getElementsByTagName("table")[0].innerHTML = tbInnerHtml;
       for (let i = 0; i < sortedList.length; i++) {
