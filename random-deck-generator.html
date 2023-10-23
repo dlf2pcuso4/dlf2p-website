@@ -10,7 +10,7 @@
     <style>
       #deck {
         width: min-content;
-        height: 570px;
+        height: min-content;
         display: grid;
         grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
       }
@@ -30,35 +30,10 @@
       <div id="deck"></div>
     </div>
     <div class="flexdivc">
-      <button onclick="generate()">Regenerate</button>
-      <button onclick="edit()">Open in Editor</button>
-    </div>
-    <div id="_popup">
-      <div class="flexdivc">
-        <div>
-          <div id="cardinfo">
-            <div class="flexdivc">
-              <img id="cardinfoImg" src="images/cards/55144522.jpg" />
-            </div>
-            <div class="flexdivc">
-              <p id="cardinfoName">Pot of Greed</p>
-            </div>
-            <div class="flexdiv">
-              <p id="cardinfoRace">What does it do?</p>
-              <p id="cardinfoAttribute"></p>
-              <p id="cardinfoLevel"></p>
-            </div>
-            <p id="cardinfoEffect"></p>
-            <div class="flexdiv">
-              <p id="cardinfoAtk"></p>
-              <p id="cardinfoDef"></p>
-            </div>
-            <div class="flexdiv">
-              <p id="cardinfoObtain"></p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <button onclick="generate('s')">Generate (Speed)</button>
+      <button onclick="generate('r')">Generate (Rush)</button>
+      <button onclick="edit('b')">Open in Editor</button>
+      <button onclick="edit('d')">Open in Deck Viewer</button>
     </div>
   </body>
   <script src="lib/priority-handler.js"></script>
@@ -66,8 +41,7 @@
   <script src="lib/navbar-handler.js"></script>
   <script src="lib/popup-handler.js"></script>
   <script>
-    const db = jsonResponseDl;
-    var deck = [];
+    const deck = [];
     function isType(card, type) {
       switch (type) {
         case "m":
@@ -80,8 +54,10 @@
               card.monsterType.includes("Link")
             )
           );
-        case "st":
-          return card.type == "Spell" || card.type == "Trap";
+        case "s":
+          return card.type == "Spell";
+        case "t":
+          return card.type == "Trap";
         case "ed":
           return (
             card.monsterType.includes("Fusion") ||
@@ -89,7 +65,6 @@
             card.monsterType.includes("Xyz") ||
             card.monsterType.includes("Link")
           );
-
         default:
           return false;
       }
@@ -130,7 +105,7 @@
       cardinfoObtain.innerHTML = cardinfoObtain.innerHTML.slice(0, -2);
       showPopup();
     }
-    function edit() {
+    function edit(bd) {
       let deckcode = "";
       let specialCards = "";
       console.log({ deck });
@@ -146,42 +121,39 @@
       if (specialCards) {
         link += "_" + specialCards.slice(0, -1);
       }
-      window.location.href = "deck-builder?d=" + link;
+      window.location.href = `${bd == "b" ? "deck-builder" : "deck"}?d=` + link;
     }
 
     //code onload
-    function generate() {
-      deck = [];
+    function generate(sr) {
+      deck.length = 0;
+      const db =
+        sr == "s"
+          ? jsonResponseDl.filter((a) => !a.rush && a.obtain.length)
+          : jsonResponseDl.filter((a) => a.rush && a.obtain.length);
+      const ratio =
+        sr == "s" ? { m: 15, s: 8, t: 7, ed: 8 } : { m: 30, s: 0, t: 0, ed: 0 };
       document.getElementById("deck").innerHTML = "";
-      for (let i = 0; i < 15; i++) {
+      const arrType = [];
+      for (let i = 0; i < ratio.m; i++) {
+        arrType.push("m");
+      }
+      for (let i = 0; i < ratio.s; i++) {
+        arrType.push("s");
+      }
+      for (let i = 0; i < ratio.t; i++) {
+        arrType.push("t");
+      }
+      for (let i = 0; i < 30; i++) {
         let rnd = Math.floor(Math.random() * db.length);
-        while (
-          !isType(db[rnd], "m") ||
-          db[rnd].obtain.length == 0 ||
-          deck.includes(db[rnd])
-        ) {
+        while (!isType(db[rnd], arrType[i]) || deck.includes(db[rnd])) {
           rnd = Math.floor(Math.random() * db.length);
         }
         deck.push(db[rnd]);
       }
-      for (let i = 0; i < 15; i++) {
+      for (let i = 0; i < ratio.ed; i++) {
         let rnd = Math.floor(Math.random() * db.length);
-        while (
-          !isType(db[rnd], "st") ||
-          db[rnd].obtain.length == 0 ||
-          deck.includes(db[rnd])
-        ) {
-          rnd = Math.floor(Math.random() * db.length);
-        }
-        deck.push(db[rnd]);
-      }
-      for (let i = 0; i < 8; i++) {
-        let rnd = Math.floor(Math.random() * db.length);
-        while (
-          !isType(db[rnd], "ed") ||
-          db[rnd].obtain.length == 0 ||
-          deck.includes(db[rnd])
-        ) {
+        while (!isType(db[rnd], "ed") || deck.includes(db[rnd])) {
           rnd = Math.floor(Math.random() * db.length);
         }
         deck.push(db[rnd]);
@@ -206,7 +178,7 @@
           )
       );
       for (let i = 0; i < deck.length; i++) {
-        const j = (i + 8) % 38;
+        const j = (i + ratio.ed) % (30 + ratio.ed);
         const nameid = deck[j].konamiID ? deck[j].konamiID : deck[j].name;
         const div = document.createElement("div");
         div.classList.add("carddiv");
@@ -214,7 +186,6 @@
         tag.src = `images/dltag${deck[j].rarity}.png`;
         tag.width = 50;
         const img = document.createElement("img");
-        img.id = j;
         img.onclick = () => displayCard(j);
         img.src = `images/cards/${nameid}.jpg`;
         img.width = 80;
@@ -225,6 +196,5 @@
         div.appendChild(img);
       }
     }
-    generate();
   </script>
 </html>
