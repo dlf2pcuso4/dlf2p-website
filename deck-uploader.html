@@ -125,15 +125,20 @@
         document.getElementById("count").innerHTML = inited;
         await sleep(1);
       }
-      similarityList = similarityList.sort((a, b) => a.dist > b.dist);
+      inited = jsonResponseDl.length;
+      document.getElementById("count").innerHTML = inited;
+      similarityList = similarityList.sort((a, b) => a.dist - b.dist);
       return similarityList;
     }
 
-    function searchImg() {
+    async function searchImg() {
       if (inited == jsonResponseDl.length) {
         const inputImage = document.getElementById("targetImg");
         const imageCollection = document.querySelectorAll(".imgColl");
-        const similarImages = findSimilarImages(inputImage, imageCollection);
+        const similarImages = await findSimilarImages(
+          inputImage,
+          imageCollection
+        );
         console.log({ similarImages });
       }
     }
