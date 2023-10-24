@@ -15,8 +15,13 @@
         <div class="flexdivc">
           <p><span id="count">0</span>/<span id="total">0</span></p>
         </div>
-        <button onclick="init()">Initialise</button>
-        <button onclick="searchImg()">Search</button>
+        <div class="flexdivc">
+          <button onclick="init()">Initialise</button>
+          <button onclick="searchImg()">Search</button>
+        </div>
+        <div class="flexdivc">
+          <img id="targetImg" src="images/noimage.jpg" />
+        </div>
       </div>
     </div>
     <div id="imgs" style="display: none"></div>
@@ -54,6 +59,21 @@
         await sleep(1);
       }
     }
+    document.onpaste = function (event) {
+      var items = (event.clipboardData || event.originalEvent.clipboardData)
+        .items;
+      for (var index in items) {
+        var item = items[index];
+        if (item.kind === "file") {
+          var blob = item.getAsFile();
+          var reader = new FileReader();
+          reader.onload = function (event) {
+            document.getElementById("targetImg").src = event.target.result;
+          };
+          reader.readAsDataURL(blob);
+        }
+      }
+    };
     // Function to compute color histogram for an image
     function computeHistogram(img) {
       const cnv = document.createElement("canvas");
@@ -109,7 +129,7 @@
 
     function searchImg() {
       if (inited == jsonResponseDl.length) {
-        const inputImage = document.getElementById("Crystron Quan");
+        const inputImage = document.getElementById("targetImg");
         const imageCollection = document.querySelectorAll(".imgColl");
         const mostSimilarImage = findMostSimilarImage(
           inputImage,
