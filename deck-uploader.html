@@ -13,6 +13,9 @@
     <div class="flexdivc">
       <div>
         <div class="flexdivc">
+          <h1>Deck Uploader</h1>
+        </div>
+        <div class="flexdivc">
           <p><span id="count">0</span>/<span id="total">0</span></p>
         </div>
         <div class="flexdivc">
@@ -109,33 +112,29 @@
       return sum;
     }
     // Function to find the most similar image
-    function findMostSimilarImage(inputImage, imageCollection) {
+    async function findSimilarImages(inputImage, imageCollection) {
+      inited = 0;
       let inputHist = computeHistogram(inputImage);
-      let minDistance = Infinity;
-      let mostSimilarImage = null;
-      let distances = [];
+      let similarityList = [];
       for (let img of imageCollection) {
-        let hist = computeHistogram(img);
-        let distance = chiSquaredDistance(inputHist, hist);
-        distances.push(distance);
-        if (distance < minDistance) {
-          minDistance = distance;
-          mostSimilarImage = img;
-        }
+        similarityList.push({
+          src: img.src,
+          dist: chiSquaredDistance(inputHist, computeHistogram(img)),
+        });
+        inited++;
+        document.getElementById("count").innerHTML = inited;
+        await sleep(1);
       }
-      console.log({ distances });
-      return mostSimilarImage;
+      similarityList = similarityList.sort((a, b) => a.dist > b.dist);
+      return similarityList;
     }
 
     function searchImg() {
       if (inited == jsonResponseDl.length) {
         const inputImage = document.getElementById("targetImg");
         const imageCollection = document.querySelectorAll(".imgColl");
-        const mostSimilarImage = findMostSimilarImage(
-          inputImage,
-          imageCollection
-        );
-        console.log(mostSimilarImage.src); // This will log the src of the most similar image
+        const similarImages = findSimilarImages(inputImage, imageCollection);
+        console.log({ similarImages });
       }
     }
   </script>
