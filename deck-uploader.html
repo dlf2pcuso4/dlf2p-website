@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Deck Uploader</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div>
+        <div class="flexdivc">
+          <p><span id="count">0</span>/<span id="total">0</span></p>
+        </div>
+        <button onclick="init()">Initialise</button>
+        <button onclick="searchImg()">Search</button>
+      </div>
+    </div>
+    <div id="imgs" style="display: none"></div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/carddb-dl.js"></script>
+  <script>
+    var imgres = { w: 64, h: 64 };
+
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    var inited = 0;
+    async function init() {
+      document.getElementById("total").innerHTML = jsonResponseDl.length;
+      for (let i = 0; i < jsonResponseDl.length; i++) {
+        const img = document.createElement("img");
+        img.src =
+          "images/cards/" +
+          (jsonResponseDl[i].konamiID
+            ? jsonResponseDl[i].konamiID
+            : jsonResponseDl[i].name) +
+          ".jpg";
+        img.id = jsonResponseDl[i].name;
+        img.classList = "imgColl";
+        img.onload = () => {
+          inited++;
+          document.getElementById("count").innerHTML = inited;
+        };
+        img.onerror = function () {
+          img.remove();
+          inited++;
+          document.getElementById("count").innerHTML = inited;
+          return true;
+        };
+        document.getElementById("imgs").appendChild(img);
+        await sleep(1);
+      }
+    }
+    // Function to compute color histogram for an image
+    function computeHistogram(img) {
+      const cnv = document.createElement("canvas");
+      const ctx = cnv.getContext("2d");
+      cnv.width = imgres.w;
+      cnv.height = imgres.h;
+      ctx.drawImage(img, 42, 95, 276, 276, 0, 0, imgres.w, imgres.h);
+      const imageData = ctx.getImageData(0, 0, imgres.w, imgres.h).data;
+      let histogram = {
+        r: new Array(256).fill(0),
+        g: new Array(256).fill(0),
+        b: new Array(256).fill(0),
+      };
+      for (let i = 0; i < imageData.length; i += 4) {
+        histogram.r[imageData[i]]++;
+        histogram.g[imageData[i + 1]]++;
+        histogram.b[imageData[i + 2]]++;
+      }
+      return histogram;
+    }
+    // Function to compute the Chi-squared distance between two histograms
+    function chiSquaredDistance(histA, histB) {
+      let sum = 0;
+      for (let i = 0; i < 256; i++) {
+        const a = histA.r[i] - histB.r[i];
+        const b = histA.g[i] - histB.g[i];
+        const c = histA.b[i] - histB.b[i];
+        sum +=
+          (a * a) / (histA.r[i] + histB.r[i] + 1) +
+          (b * b) / (histA.g[i] + histB.g[i] + 1) +
+          (c * c) / (histA.b[i] + histB.b[i] + 1);
+      }
+      return sum;
+    }
+    // Function to find the most similar image
+    function findMostSimilarImage(inputImage, imageCollection) {
+      let inputHist = computeHistogram(inputImage);
+      let minDistance = Infinity;
+      let mostSimilarImage = null;
+      let distances = [];
+      for (let img of imageCollection) {
+        let hist = computeHistogram(img);
+        let distance = chiSquaredDistance(inputHist, hist);
+        distances.push(distance);
+        if (distance < minDistance) {
+          minDistance = distance;
+          mostSimilarImage = img;
+        }
+      }
+      console.log({ distances });
+      return mostSimilarImage;
+    }
+
+    function searchImg() {
+      if (inited == jsonResponseDl.length) {
+        const inputImage = document.getElementById("Crystron Quan");
+        const imageCollection = document.querySelectorAll(".imgColl");
+        const mostSimilarImage = findMostSimilarImage(
+          inputImage,
+          imageCollection
+        );
+        console.log(mostSimilarImage.src); // This will log the src of the most similar image
+      }
+    }
+  </script>
+</html>
