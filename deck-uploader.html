@@ -13,7 +13,7 @@
     <div class="flexdivc">
       <div>
         <div class="flexdivc">
-          <h1>Deck Uploader1</h1>
+          <h1>Deck Uploader4</h1>
         </div>
         <div class="flexdivc">
           <p><span id="count">0</span>/<span id="total">0</span></p>
@@ -78,12 +78,16 @@
       }
     };
     // Function to compute color histogram for an image
-    function computeHistogram(img) {
+    function computeHistogram(img, crop) {
       const cnv = document.createElement("canvas");
       const ctx = cnv.getContext("2d");
       cnv.width = imgres.w;
       cnv.height = imgres.h;
-      ctx.drawImage(img, 42, 95, 276, 276, 0, 0, imgres.w, imgres.h);
+      if (crop) {
+        ctx.drawImage(img, 42, 95, 276, 276, 0, 0, imgres.w, imgres.h);
+      } else {
+        ctx.drawImage(img, 0, 0, imgres.w, imgres.h);
+      }
       const imageData = ctx.getImageData(0, 0, imgres.w, imgres.h).data;
       let histogram = {
         r: new Array(256).fill(0),
@@ -113,7 +117,7 @@
     }
     // Function to find the most similar image
     async function findSimilarImages(inputImage, imageCollection) {
-      let inputHist = computeHistogram(inputImage);
+      let inputHist = computeHistogram(inputImage, false);
       let similarityList = [];
       for (let img of imageCollection) {
         similarityList.push({
@@ -132,7 +136,10 @@
           temp.push({
             img: img.img,
             src: img.src,
-            dist: chiSquaredDistance(inputHist, computeHistogram(img.img)),
+            dist: chiSquaredDistance(
+              inputHist,
+              computeHistogram(img.img, true)
+            ),
           });
           inited++;
           if (inited % 100 == 0) {
