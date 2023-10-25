@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Deck Uploader123</title>
+    <title>Deck Uploader</title>
     <meta charset="utf-8" />
     <link rel="icon" type="image/x-icon" href="images/logo.png" />
     <style>
@@ -13,7 +13,7 @@
     <div class="flexdivc">
       <div>
         <div class="flexdivc">
-          <h1>Deck Uploader</h1>
+          <h1>Deck Uploader1</h1>
         </div>
         <div class="flexdivc">
           <p><span id="count">0</span>/<span id="total">0</span></p>
@@ -113,21 +113,41 @@
     }
     // Function to find the most similar image
     async function findSimilarImages(inputImage, imageCollection) {
-      inited = 0;
       let inputHist = computeHistogram(inputImage);
       let similarityList = [];
       for (let img of imageCollection) {
         similarityList.push({
+          img: img,
           src: img.src,
-          dist: chiSquaredDistance(inputHist, computeHistogram(img)),
+          dist: 0,
         });
-        inited++;
-        document.getElementById("count").innerHTML = inited;
-        await sleep(1);
+      }
+      let refineRes = [1, 4, 16, 64]; //compare blurry versions of images, increase res step by step
+      let refineIte = [5000, 1000, 500, 100]; //pick best matching targets
+      for (let i = 0; i < refineRes.length; i++) {
+        inited = 0;
+        imgres = { w: refineRes[i], h: refineRes[i] };
+        let temp = [];
+        for (let img of similarityList) {
+          temp.push({
+            img: img.img,
+            src: img.src,
+            dist: chiSquaredDistance(inputHist, computeHistogram(img.img)),
+          });
+          inited++;
+          if (inited % 100 == 0) {
+            document.getElementById("count").innerHTML = inited;
+            await sleep(1);
+          }
+        }
+        temp = temp.sort((a, b) => a.dist - b.dist);
+        similarityList.length = 0;
+        for (let j = 0; j < refineIte[i]; j++) {
+          similarityList.push(temp[j]);
+        }
       }
       inited = jsonResponseDl.length;
       document.getElementById("count").innerHTML = inited;
-      similarityList = similarityList.sort((a, b) => a.dist - b.dist);
       return similarityList;
     }
 
