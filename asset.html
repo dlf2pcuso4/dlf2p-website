@@ -286,7 +286,7 @@
       if (!window.location.href.includes("Desktop")) {
         const a = document.createElement("a");
         a.href = cnvThumbnail.toDataURL("image/jpeg");
-        a.download = "Thumbnail.jpg";
+        a.download = `DAT${tmtitle.replace(/ /g, "")}Thumbnail.jpg`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
