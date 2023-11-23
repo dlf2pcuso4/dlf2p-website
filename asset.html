@@ -255,7 +255,7 @@
       }, 33);
     }
 
-    function draw() {
+    function draw(local) {
       //thumbnail
       deckCardSize = 0.7;
       deckImgPerRow = 6;
@@ -305,12 +305,15 @@
           link$.click();
         });
       } */
-      const introurl = `https://dlf2p.com/stat-animation?title=${encodeURIComponent(
+      const local = params.get("local");
+      const introurl = `${
+        local ? local : "https://dlf2p.com/"
+      }stat-animation.html?title=${encodeURIComponent(
         tmtitle
       )}&desc=${encodeURIComponent(tmdesc)}&data=${encodeURIComponent(
         document.getElementById("stats").value
       )}&card=${encodeURIComponent(
-        document.getElementById("tmcard").src
+        document.getElementById("tmcard").src.replace("https://dlf2p.com/", "")
       )}&d=${encodeURIComponent(params.get("d"))}`;
       document.getElementById("link").innerHTML = introurl;
       let tag = document.createElement("textarea");
