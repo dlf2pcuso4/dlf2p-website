@@ -283,7 +283,7 @@
         960
       );
       ctxThumbnail.drawImage(document.getElementById("tmborder"), 0, 0);
-      if (!window.location.href.includes("Desktop")) {
+      if (window.location.href.split("dlf2p.com")[0] == "https://") {
         const a = document.createElement("a");
         a.href = cnvThumbnail.toDataURL("image/jpeg");
         a.download = `DAT${tmtitle.replace(/ /g, "")}Thumbnail.jpg`;
