@@ -3,6 +3,7 @@
 # git pull
 # git push origin main
 local/
+template.html
 archetypedbmaker.html
 test.html
 img-downloader.html
