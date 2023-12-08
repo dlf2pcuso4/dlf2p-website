@@ -114,15 +114,27 @@
         height: 80vh;
         background-color: #00000080;
         text-align: left;
+        overflow-y: scroll;
       }
       #deck div {
         width: 58vw;
         margin: 1.5vh 0;
       }
+      .rarity {
+        width: 4vw;
+        height: 1vw;
+        margin: 0 0 8.46vw -4vw;
+      }
+      .banStatus {
+        width: 2vw;
+        height: 2vw;
+        margin: -6.46vw 3.8vw 6.46vw -5.8vw;
+      }
       #deckskillimg {
         width: 1.5vw;
         height: 1.5vw;
         margin: 0 0.5vw;
+        display: none;
       }
       #deckskill {
         font-size: 1.3vw;
@@ -137,6 +149,21 @@
       }
       #cardinfoName {
         font-size: 1.4vw;
+      }
+      .fade-in {
+        opacity: 1;
+        animation-name: fadeInOpacity;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-in;
+        animation-duration: 0.2s;
+      }
+      @keyframes fadeInOpacity {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
       }
     </style>
     <script src="lib/carddb-dl.js"></script>
@@ -294,6 +321,7 @@
       }
     }
     function loaddeck(url) {
+      document.getElementById("deckskillimg").style.display = "block";
       document.getElementById("maindeck").textContent = "";
       document.getElementById("extradeck").textContent = "";
       document.getElementById("deckskill").innerHTML =
@@ -306,19 +334,35 @@
         cardimg.src = `images/cards/${Number(card)}.jpg`;
         cardimg.style.width = "5.8vw";
         cardimg.setAttribute("onclick", `popup("${Number(card)}")`);
-        const monstertype = jsonResponseDl.filter(
+        const cardObj = jsonResponseDl.filter(
           (a) => a.konamiID == Number(card)
-        )[0].monsterType;
-        if (
+        )[0];
+        cardimg.classList = "fade-in";
+        const monstertype = cardObj.monsterType;
+        const cardlocation =
           monstertype.includes("Fusion") ||
           monstertype.includes("Synchro") ||
           monstertype.includes("Xyz") ||
           monstertype.includes("XYZ") ||
           monstertype.includes("Link")
-        ) {
-          document.getElementById("extradeck").appendChild(cardimg);
-        } else {
-          document.getElementById("maindeck").appendChild(cardimg);
+            ? "extradeck"
+            : "maindeck";
+        document.getElementById(cardlocation).appendChild(cardimg);
+        const rarity = document.createElement("img");
+        rarity.classList = "rarity fade-in";
+        rarity.src = `images/dltag${cardObj.rarity}.png`;
+        document.getElementById(cardlocation).appendChild(rarity);
+        if (cardObj.banStatus) {
+          const banStatus = document.createElement("img");
+          banStatus.classList = "banStatus fade-in";
+          banStatus.src = `images/${
+            ["forbidden", "limit1", "limit2", "limit3"][
+              ["Forbidden", "Limited 1", "Limited 2", "Limited 3"].indexOf(
+                cardObj.banStatus
+              )
+            ]
+          }.png`;
+          document.getElementById(cardlocation).appendChild(banStatus);
         }
       }
     }
