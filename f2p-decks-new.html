@@ -138,6 +138,7 @@
       }
       #deckskill {
         font-size: 1.3vw;
+        cursor: pointer;
       }
       #cardinfo {
         width: 50vw;
@@ -165,11 +166,15 @@
           opacity: 1;
         }
       }
+      button {
+        font-size: 1.5vw;
+      }
     </style>
     <script src="lib/carddb-dl.js"></script>
     <script src="lib/skilldb-dl.js"></script>
     <script src="lib/f2pdeckdb.js"></script>
     <script src="lib/deckcode-handler.js"></script>
+    <script src="lib/priority-handler.js"></script>
   </head>
   <body>
     <nav>
@@ -217,7 +222,7 @@
             <div>
               <div class="flexdiv">
                 <img src="images/skill.png" id="deckskillimg" />
-                <p id="deckskill"></p>
+                <p id="deckskill" onclick="popupSkill()"></p>
               </div>
               <div id="maindeck"></div>
               <div id="extradeck"></div>
@@ -329,14 +334,26 @@
       const deckcodeArr = decodeDeck(url.split("d=")[1].split("_")[0]).match(
         /.{1,10}/g
       );
+      if (url.split("_")[3]) {
+        const specialArr = url.split("_")[3].split("-");
+        for (specialCard of specialArr) {
+          deckcodeArr.push(decodeURIComponent(specialCard));
+        }
+      }
+      //sort deck array
+      deckcodeArr.sort((a, b) => getPriority(b, "dl") - getPriority(a, "dl"));
+      //append img
       for (card of deckcodeArr) {
         const cardimg = document.createElement("img");
-        cardimg.src = `images/cards/${Number(card)}.jpg`;
+        cardimg.src = `images/cards/${isNaN(card) ? card : Number(card)}.jpg`;
         cardimg.style.width = "5.8vw";
-        cardimg.setAttribute("onclick", `popup("${Number(card)}")`);
-        const cardObj = jsonResponseDl.filter(
-          (a) => a.konamiID == Number(card)
-        )[0];
+        cardimg.setAttribute(
+          "onclick",
+          `popup("${isNaN(card) ? card : Number(card)}")`
+        );
+        const cardObj = isNaN(card)
+          ? jsonResponseDl.filter((a) => a.name == card)[0]
+          : jsonResponseDl.filter((a) => a.konamiID == Number(card))[0];
         cardimg.classList = "fade-in";
         const monstertype = cardObj.monsterType;
         const cardlocation =
@@ -365,9 +382,20 @@
           document.getElementById(cardlocation).appendChild(banStatus);
         }
       }
+      //buttons
+      if (!document.getElementById("openDeck")) {
+        const openDeck = document.createElement("button");
+        openDeck.id = "openDeck";
+        openDeck.innerHTML = "Open Deck in New Page";
+        document.getElementById("deck").firstElementChild.appendChild(openDeck);
+      }
+      document.getElementById("openDeck").onclick = () =>
+        window.open(url, "_blank");
     }
     function popup(card) {
-      const cardObj = jsonResponseDl.filter((a) => a.konamiID == card)[0];
+      const cardObj = isNaN(card)
+        ? jsonResponseDl.filter((a) => a.name == card)[0]
+        : jsonResponseDl.filter((a) => a.konamiID == Number(card))[0];
       document.getElementById("cardinfoImg").src = `images/cards/${card}.jpg`;
       document.getElementById("cardinfoName").innerHTML = cardObj.name;
       document.getElementById("cardinfoRace").innerHTML =
@@ -413,6 +441,22 @@
           .innerHTML.slice(0, -2);
       }
       showPopup();
+    }
+    function popupSkill() {
+      const skill = document.getElementById("deckskill").innerHTML;
+      const skillObj = jsonResponseSkill.filter((a) => a.name == skill);
+      if (skillObj.length) {
+        document.getElementById("cardinfoImg").src = "";
+        document.getElementById("cardinfoName").innerHTML = skillObj[0].name;
+        document.getElementById("cardinfoRace").innerHTML = "";
+        document.getElementById("cardinfoAttribute").innerHTML = "";
+        document.getElementById("cardinfoLevel").innerHTML = "";
+        document.getElementById("cardinfoEffect").innerHTML =
+          skillObj[0].description;
+        document.getElementById("cardinfoAtk").innerHTML = "";
+        document.getElementById("cardinfoDef").innerHTML = "";
+        showPopup();
+      }
     }
     refreshMenu();
   </script>
