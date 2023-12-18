@@ -116,6 +116,7 @@
             .toLowerCase()
             .includes(document.getElementById("filter").value.toLowerCase())
         );
+      filteredDecks.reverse();
       filteredDecks.length = 10;
       //create html elements
       for (item of filteredDecks) {
