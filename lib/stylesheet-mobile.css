@@ -4,7 +4,7 @@
   margin: 0%;
 }
 body {
-  background: #1b1329;
+  background: #100042;
   font-size: 26px;
   font-weight: bold;
   font-family: "Montserrat";
@@ -26,7 +26,7 @@ table {
   border-spacing: 0px;
 }
 th {
-  background-color: #604978;
+  background-color: #5e3cb3;
   padding: 8px;
 }
 td {
@@ -37,7 +37,7 @@ td {
   font-size: 24px;
 }
 tr:hover {
-  background-color: #604978;
+  background-color: #5e3cb3;
 }
 table img {
   width: 200px;
@@ -52,9 +52,6 @@ button {
 }
 select {
   cursor: pointer;
-}
-input {
-  height: 30px;
 }
 .flexdiv {
   display: flex;
@@ -91,6 +88,29 @@ input {
   cursor: pointer;
 }
 /* deck-builder & deck-display */
+input {
+  font-size: 24px;
+  font-family: "Montserrat";
+  color: #ffffff;
+  border: 0.2vh solid #5e3cb3;
+  background-color: #000000;
+}
+button {
+  color: #ffffff;
+  border: 0.4vh solid #5e3cb3;
+  background-color: #201834;
+  padding: 0.3vw;
+}
+button:hover {
+  background-color: #5e3cb3;
+}
+select {
+  font-size: 24px;
+  font-family: "Montserrat";
+  color: #ffffff;
+  border: 0.2vh solid #5e3cb3;
+  background-color: #000000;
+}
 #controls {
   background-color: #00000080;
   min-width: 505px;
@@ -174,7 +194,7 @@ input {
   margin: 5px;
   padding: 5px;
   width: fit-content;
-  background-color: #604978;
+  background-color: #5e3cb3;
   font-weight: lighter;
   font-size: 28px;
   cursor: pointer;

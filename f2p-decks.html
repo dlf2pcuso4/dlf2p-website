@@ -12,108 +12,416 @@
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
     <script src="lib/css-picker.js"></script>
+    <style>
+      #menu {
+        width: 20vw;
+        height: 80vh;
+        margin-right: 1vw;
+        background-color: #00000080;
+      }
+      .menuhead {
+        margin: 1vh;
+        height: 11vh;
+        background-color: #000000;
+        user-select: none;
+      }
+      .menuhead input {
+        width: 15vw;
+        height: 1.4vw;
+      }
+      .menuhead div {
+        margin-top: 0.8vh;
+      }
+      .menurow {
+        margin: 1vh;
+        border: 0.4vh solid #5e3cb3;
+        background-color: #1b1329;
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s, margin 0.3s;
+      }
+      .menurow:hover {
+        background-color: #5e3cb3;
+        margin: 1.7vh 1vh;
+      }
+      .menuimg {
+        width: 1.7vw;
+        height: 1.7vw;
+      }
+      #menucategory {
+        font-size: 1.3vw;
+        margin: 0 4vw;
+      }
+      #menuformat {
+        font-size: 1.3vw;
+        margin: 0 4vw;
+      }
+      #menuitems {
+        height: 65vh;
+        overflow-y: scroll;
+      }
+      .menucard {
+        width: 4vw;
+        height: 5.83vw;
+        margin: 0.5vh 0.5vw;
+      }
+      .menudesc {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .menuname {
+        margin: 0.25vh 0.1vw;
+        width: 13vw;
+        font-size: 1.3vw;
+      }
+      .menuskill p {
+        margin: 0.25vh 0.1vw;
+        width: 11vw;
+        font-size: 1vw;
+        text-align: left;
+        color: #ffff77;
+      }
+      #deck {
+        width: 60vw;
+        height: 80vh;
+        background-color: #00000080;
+        text-align: left;
+        overflow-y: scroll;
+      }
+      #deck div {
+        width: 58vw;
+        margin: 1.5vh 0;
+      }
+      .rarity {
+        width: 4vw;
+        height: 1vw;
+        margin: 0 0 8.46vw -4vw;
+      }
+      .banStatus {
+        width: 2vw;
+        height: 2vw;
+        margin: -6.46vw 3.8vw 6.46vw -5.8vw;
+      }
+      #deckskillimg {
+        width: 1.5vw;
+        height: 1.5vw;
+        margin: 0 0.5vw;
+        display: none;
+      }
+      #deckskill {
+        font-size: 1.3vw;
+        cursor: pointer;
+      }
+      #cardinfo {
+        width: 50vw;
+        height: 70vh;
+        font-size: 1vw;
+      }
+      #cardinfo img {
+        width: 12vw;
+      }
+      #cardinfoName {
+        font-size: 1.4vw;
+      }
+      .fade-in {
+        opacity: 1;
+        animation-name: fadeInOpacity;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-in;
+        animation-duration: 0.2s;
+      }
+      @keyframes fadeInOpacity {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      button {
+        font-size: 1.5vw;
+        padding: 0.5vw;
+      }
+    </style>
+    <script src="lib/carddb-dl.js"></script>
     <script src="lib/skilldb-dl.js"></script>
     <script src="lib/f2pdeckdb.js"></script>
+    <script src="lib/deckcode-handler.js"></script>
+    <script src="lib/priority-handler.js"></script>
   </head>
   <body>
+    <h1>Free to Play Decks</h1>
     <div class="flexdivc">
       <div style="text-align: center; width: min-content">
-        <h1>Free to Play Decks</h1>
-        <p>A list of decks that meet the DLF2P F2P requirements</p>
         <div class="flexdivc">
-          <p id="btnRush" class="tglbtn" onclick="showRush()">
-            Deck type: Speed
-          </p>
-          <p id="btnSort" class="tglbtn" onclick="sortBy()">
-            Sort decks by: Name
-          </p>
+          <div id="menu">
+            <div class="menuhead" style="padding: 0.5vw">
+              <div class="flexdivc">
+                <img src="images/search.png" class="menuimg" />
+                <input
+                  type="text"
+                  id="filter"
+                  placeholder="(Shows up to 10 results)"
+                  autocomplete="off"
+                  onkeyup="refreshMenu('typing')"
+                />
+              </div>
+              <div class="flexdivc" onclick="refreshMenu('category')">
+                <img src="images/arrowleft.png" class="menuimg" />
+                <p id="menucategory">2023</p>
+                <img src="images/arrowright.png" class="menuimg" />
+              </div>
+              <div class="flexdivc" onclick="refreshMenu('speed/rush')">
+                <img src="images/arrowleft.png" class="menuimg" />
+                <p id="menuformat">Speed</p>
+                <img src="images/arrowright.png" class="menuimg" />
+              </div>
+            </div>
+            <div id="menuitems"></div>
+          </div>
+          <div id="deck" class="flexdivc">
+            <div>
+              <div class="flexdiv">
+                <img src="images/skill.png" id="deckskillimg" />
+                <p id="deckskill" onclick="popupSkill()"></p>
+              </div>
+              <div id="maindeck"></div>
+              <div id="extradeck"></div>
+            </div>
+          </div>
         </div>
-        <table>
-          <tr>
-            <th>Archetype</th>
-            <th>User</th>
-            <th>Skill</th>
-            <th>Date</th>
-          </tr>
-        </table>
       </div>
     </div>
   </body>
   <script src="lib/navbar-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
   <script>
-    var tbInnerHtml = document.getElementsByTagName("table")[0].innerHTML;
-    const mth = " Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
-    document.getElementById("btnRush").innerHTML = "Deck type: Speed";
-    document.getElementById("btnSort").innerHTML = "Sort decks by: Date";
-    function showRush() {
-      if (document.getElementById("btnRush").innerHTML == "Deck type: Speed") {
-        document.getElementById("btnRush").innerHTML = "Deck type: Rush";
-      } else {
-        document.getElementById("btnRush").innerHTML = "Deck type: Speed";
-      }
-      refresh();
-    }
-    function sortBy() {
-      switch (document.getElementById("btnSort").innerHTML) {
-        case "Sort decks by: Date":
-          document.getElementById("btnSort").innerHTML = "Sort decks by: Name";
+    function refreshMenu(change) {
+      //update selectors
+      switch (change) {
+        case "category":
+          const categories = ["2022", "2023", "2024", "All"];
+          document.getElementById("menucategory").innerHTML =
+            categories[
+              (categories.indexOf(
+                document.getElementById("menucategory").innerHTML
+              ) +
+                1) %
+                categories.length
+            ];
           break;
-        case "Sort decks by: Name":
-          document.getElementById("btnSort").innerHTML = "Sort decks by: Date";
+        case "speed/rush":
+          document.getElementById("menuformat").innerHTML =
+            document.getElementById("menuformat").innerHTML == "Speed"
+              ? "Rush"
+              : "Speed";
+          break;
+        case "typing":
+          document.getElementById("menucategory").innerHTML = "All";
           break;
       }
-      refresh();
-    }
-    function refresh() {
-      let sortedList = jsonResponseF2pDecks.filter((a) =>
-        document.getElementById("btnRush").innerHTML == "Deck type: Speed"
-          ? !jsonResponseSkill[a.url.split("_")[1]].description.includes(
-              "[EFFECT]"
-            )
-          : jsonResponseSkill[a.url.split("_")[1]].description.includes(
-              "[EFFECT]"
-            )
+      const months = "0,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec".split(
+        ","
       );
-      switch (document.getElementById("btnSort").innerHTML) {
-        case "Sort decks by: Name":
-          sortedList = sortedList.sort((a, b) =>
-            a.archetype.localeCompare(b.archetype)
-          );
-          break;
-        case "Sort decks by: Date":
-          sortedList = sortedList.sort(
-            (a, b) =>
-              Number(
-                b.date.slice(b.date.length - 4) * 10000 +
-                  mth.indexOf(b.date.slice(0, 3 - b.date.length)) * 100 +
-                  b.date.slice(4, b.date.length - 6)
-              ) -
-              Number(
-                a.date.slice(a.date.length - 4) * 10000 +
-                  mth.indexOf(a.date.slice(0, 3 - a.date.length)) * 100 +
-                  a.date.slice(4, a.date.length - 6)
+      document.getElementById("menuitems").textContent = "";
+      //filter decks
+      let filteredDecks = jsonResponseF2pDecks.filter(
+        (a) =>
+          (document.getElementById("menuformat").innerHTML == "Speed"
+            ? !jsonResponseSkill[a.url.split("_")[1]].description.includes(
+                "[EFFECT]"
               )
-          );
-          break;
-      }
-      document.getElementsByTagName("table")[0].innerHTML = tbInnerHtml;
-      for (let i = 0; i < sortedList.length; i++) {
-        document.getElementsByTagName("table")[0].innerHTML +=
-          '<tr onclick="window.location=' +
-          "'" +
-          sortedList[i].url +
-          "'" +
-          ';"><td>' +
-          sortedList[i].archetype +
-          "</td><td>" +
-          sortedList[i].user +
-          "</td><td>" +
-          jsonResponseSkill[sortedList[i].url.split("_")[1]].name +
-          "</td><td>" +
-          sortedList[i].date +
-          "</td></tr>";
+            : jsonResponseSkill[a.url.split("_")[1]].description.includes(
+                "[EFFECT]"
+              )) &&
+          (document.getElementById("menucategory").innerHTML != "All"
+            ? a.date.slice(8) ==
+              document.getElementById("menucategory").innerHTML
+            : true)
+      );
+      if (document.getElementById("filter").value)
+        filteredDecks = filteredDecks.filter((a) =>
+          a.archetype
+            .toLowerCase()
+            .includes(document.getElementById("filter").value.toLowerCase())
+        );
+      filteredDecks.length = 10;
+      //create html elements
+      for (item of filteredDecks) {
+        const numDate = `${("0" + months.indexOf(item.date.slice(0, 3))).substr(
+          -2
+        )}/${item.date.slice(4, 6)}`;
+        //get keycard
+        const deckcodeArr = decodeDeck(
+          item.url.split("d=")[1].split("_")[0]
+        ).match(/.{1,10}/g);
+        let keycard = "images/noimage.jpg";
+        for (card of deckcodeArr) {
+          let currentcard = jsonResponseDl.filter(
+            (a) => a.konamiID == Number(card)
+          )[0];
+          if (currentcard.type.includes("Monster")) {
+            keycard = `images/cards/${Number(card)}.jpg`;
+            if (
+              currentcard.name.includes(item.archetype) ||
+              currentcard.description.includes(item.archetype)
+            )
+              break;
+          }
+        }
+        //create div
+        const menuitem = document.createElement("div");
+        menuitem.innerHTML = `
+        <div class="menurow" onclick="loaddeck('${item.url}')">
+          <div class="menudesc">
+            <img src="${keycard}" class="menucard" />
+          </div>
+          <div class="menudesc">
+            <p class="menuname">${item.archetype} (${numDate})</p>
+            <div class="menuskill flexdiv">
+              <p>✦ ${jsonResponseSkill[item.url.split("_")[1]].name}</p>
+            </div>
+          </div>
+        </div>
+        `;
+        document.getElementById("menuitems").appendChild(menuitem);
       }
     }
-    refresh();
+    function loaddeck(url) {
+      document.getElementById("deckskillimg").style.display = "block";
+      document.getElementById("maindeck").textContent = "";
+      document.getElementById("extradeck").textContent = "";
+      document.getElementById("deckskill").innerHTML =
+        jsonResponseSkill[url.split("_")[1]].name;
+      const deckcodeArr = decodeDeck(url.split("d=")[1].split("_")[0]).match(
+        /.{1,10}/g
+      );
+      if (url.split("_")[3]) {
+        const specialArr = url.split("_")[3].split("-");
+        for (specialCard of specialArr) {
+          deckcodeArr.push(decodeURIComponent(specialCard));
+        }
+      }
+      //sort deck array
+      deckcodeArr.sort((a, b) => getPriority(b, "dl") - getPriority(a, "dl"));
+      //append img
+      for (card of deckcodeArr) {
+        const cardimg = document.createElement("img");
+        cardimg.src = `images/cards/${isNaN(card) ? card : Number(card)}.jpg`;
+        cardimg.style.width = "5.8vw";
+        cardimg.setAttribute(
+          "onclick",
+          `popup("${isNaN(card) ? card : Number(card)}")`
+        );
+        const cardObj = isNaN(card)
+          ? jsonResponseDl.filter((a) => a.name == card)[0]
+          : jsonResponseDl.filter((a) => a.konamiID == Number(card))[0];
+        cardimg.classList = "fade-in";
+        const monstertype = cardObj.monsterType;
+        const cardlocation =
+          monstertype.includes("Fusion") ||
+          monstertype.includes("Synchro") ||
+          monstertype.includes("Xyz") ||
+          monstertype.includes("XYZ") ||
+          monstertype.includes("Link")
+            ? "extradeck"
+            : "maindeck";
+        document.getElementById(cardlocation).appendChild(cardimg);
+        const rarity = document.createElement("img");
+        rarity.classList = "rarity fade-in";
+        rarity.src = `images/dltag${cardObj.rarity}.png`;
+        document.getElementById(cardlocation).appendChild(rarity);
+        if (cardObj.banStatus) {
+          const banStatus = document.createElement("img");
+          banStatus.classList = "banStatus fade-in";
+          banStatus.src = `images/${
+            ["forbidden", "limit1", "limit2", "limit3"][
+              ["Forbidden", "Limited 1", "Limited 2", "Limited 3"].indexOf(
+                cardObj.banStatus
+              )
+            ]
+          }.png`;
+          document.getElementById(cardlocation).appendChild(banStatus);
+        }
+      }
+      //buttons
+      if (!document.getElementById("openDeck")) {
+        const openDeck = document.createElement("button");
+        openDeck.id = "openDeck";
+        openDeck.innerHTML = "Open Deck in New Page";
+        document.getElementById("deck").firstElementChild.appendChild(openDeck);
+      }
+      document.getElementById("openDeck").onclick = () =>
+        window.open(url, "_blank");
+    }
+    function popup(card) {
+      const cardObj = isNaN(card)
+        ? jsonResponseDl.filter((a) => a.name == card)[0]
+        : jsonResponseDl.filter((a) => a.konamiID == Number(card))[0];
+      document.getElementById("cardinfoImg").src = `images/cards/${card}.jpg`;
+      document.getElementById("cardinfoName").innerHTML = cardObj.name;
+      document.getElementById("cardinfoRace").innerHTML =
+        "Type: " + cardObj.race;
+      if (!cardObj.attribute) {
+        document.getElementById("cardinfoAttribute").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoAttribute").innerHTML =
+          "Attribute: " + cardObj.attribute;
+      }
+      if (!cardObj.level) {
+        document.getElementById("cardinfoLevel").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoLevel").innerHTML =
+          "Level/Rank: " + cardObj.level;
+      }
+      document.getElementById("cardinfoEffect").innerHTML = cardObj.description
+        .replace(/\r\n----------------------------------------\r\n/g, "<br>")
+        .replace(/\n/g, "<br>");
+      if (!cardObj.atk) {
+        document.getElementById("cardinfoAtk").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoAtk").innerHTML =
+          "ATK: " + cardObj.atk;
+      }
+      if (!cardObj.def) {
+        document.getElementById("cardinfoDef").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoDef").innerHTML =
+          "DEF: " + cardObj.def;
+      }
+      if (!cardObj.obtain.length) {
+        document.getElementById("cardinfoObtain").innerHTML =
+          "Cannot be obtained";
+      } else {
+        document.getElementById("cardinfoObtain").innerHTML = "How to obtain: ";
+        for (let i = 0; i < cardObj.obtain.length; i++) {
+          document.getElementById("cardinfoObtain").innerHTML +=
+            cardObj.obtain[i].source.name + ", ";
+        }
+        document.getElementById("cardinfoObtain").innerHTML = document
+          .getElementById("cardinfoObtain")
+          .innerHTML.slice(0, -2);
+      }
+      showPopup();
+    }
+    function popupSkill() {
+      const skill = document.getElementById("deckskill").innerHTML;
+      const skillObj = jsonResponseSkill.filter((a) => a.name == skill);
+      if (skillObj.length) {
+        document.getElementById("cardinfoImg").src = "";
+        document.getElementById("cardinfoName").innerHTML = skillObj[0].name;
+        document.getElementById("cardinfoRace").innerHTML = "";
+        document.getElementById("cardinfoAttribute").innerHTML = "";
+        document.getElementById("cardinfoLevel").innerHTML = "";
+        document.getElementById("cardinfoEffect").innerHTML =
+          skillObj[0].description;
+        document.getElementById("cardinfoAtk").innerHTML = "";
+        document.getElementById("cardinfoDef").innerHTML = "";
+        showPopup();
+      }
+    }
+    refreshMenu();
   </script>
 </html>
