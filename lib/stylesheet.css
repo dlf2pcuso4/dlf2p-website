@@ -81,6 +81,145 @@ select {
 #_navtgl img {
   cursor: pointer;
 }
+/* f2p-decks */
+#menudeck {
+  display: flex;
+  justify-content: center;
+}
+#menu {
+  width: 20vw;
+  height: 80vh;
+  margin-right: 1vw;
+  background-color: #00000080;
+}
+.menuhead {
+  margin: 1vh;
+  height: 11vh;
+  background-color: #000000;
+  user-select: none;
+}
+.menuhead input {
+  width: 15vw;
+  height: 1.4vw;
+}
+.menuhead div {
+  margin-top: 0.8vh;
+}
+.menurow {
+  margin: 1vh;
+  border: 0.2vw solid #5e3cb3;
+  background-color: #1b1329;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s, margin 0.3s;
+}
+.menurow:hover {
+  background-color: #5e3cb3;
+  margin: 1.7vh 1vh;
+}
+.menuimg {
+  width: 1.7vw;
+  height: 1.7vw;
+}
+#menucategory {
+  font-size: 1.3vw;
+  margin: 0 4vw;
+}
+#menuformat {
+  font-size: 1.3vw;
+  margin: 0 4vw;
+}
+#menuitems {
+  height: 65vh;
+  overflow-y: scroll;
+}
+.menucard {
+  width: 4vw;
+  height: 5.83vw;
+  margin: 0.5vh 0.5vw;
+}
+.menudesc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.menuname {
+  margin: 0.25vh 0.1vw;
+  width: 13vw;
+  font-size: 1.3vw;
+}
+.menuskill p {
+  margin: 0.25vh 0.1vw;
+  width: 11vw;
+  font-size: 1vw;
+  text-align: left;
+  color: #ffff77;
+}
+#deck {
+  width: 60vw;
+  height: 80vh;
+  background-color: #00000080;
+  text-align: left;
+  overflow-y: scroll;
+}
+#deck div {
+  width: 58vw;
+  margin: 1.5vh 0;
+}
+.rarity {
+  width: 4vw;
+  height: 1vw;
+  margin: 0 0 8.46vw -4vw;
+}
+.banStatus {
+  width: 2vw;
+  height: 2vw;
+  margin: -6.46vw 3.8vw 6.46vw -5.8vw;
+}
+#deckskillimg {
+  width: 1.5vw;
+  height: 1.5vw;
+  margin: 0 0.5vw;
+  display: none;
+}
+#deckskill {
+  font-size: 1.3vw;
+  cursor: pointer;
+}
+.deckcardimg {
+  width: 5.8vw;
+}
+#cardinfo {
+  width: 50vw;
+  height: 70vh;
+  font-size: 1vw;
+}
+#cardinfo img {
+  width: 12vw;
+}
+#cardinfoName {
+  font-size: 1.4vw;
+}
+.fade-in {
+  opacity: 1;
+  animation-name: fadeInOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 0.2s;
+}
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+#openDeck {
+  font-size: 1.5vw;
+  padding: 0.5vw;
+}
 /* deck-builder & deck-display */
 input {
   font-size: 18px;

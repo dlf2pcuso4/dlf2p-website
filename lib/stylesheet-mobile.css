@@ -13,6 +13,7 @@ body {
   text-decoration: none;
 }
 h1 {
+  font-size: 6vw;
   margin: 15px;
 }
 a {
@@ -87,17 +88,154 @@ select {
   max-width: 100px;
   cursor: pointer;
 }
+/* f2p-decks */
+#menu {
+  display: flex;
+  width: 90vw;
+  height: 15vh;
+  margin-right: 1vw;
+  background-color: #00000080;
+}
+.menuhead {
+  margin: 1vh;
+  height: 11vh;
+  background-color: #000000;
+  user-select: none;
+}
+.menuhead input {
+  font-size: 2.8vw;
+  width: 20vw;
+}
+.menuhead div {
+  margin-top: 0.8vh;
+}
+.menurow {
+  margin: 1vh;
+  border: 0.2vw solid #5e3cb3;
+  background-color: #1b1329;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s, margin 0.3s;
+}
+.menurow:hover {
+  background-color: #5e3cb3;
+  margin: 1.7vh 1vh;
+}
+.menuimg {
+  width: 4vw;
+  height: 4vw;
+}
+#menucategory {
+  font-size: 2.8vw;
+  margin: 0 4vw;
+}
+#menuformat {
+  font-size: 2.8vw;
+  margin: 0 4vw;
+}
+#menuitems {
+  display: flex;
+  height: 15vh;
+  overflow-x: scroll;
+}
+.menucard {
+  width: 12vw;
+  height: 17.49vw;
+  margin: 0.5vh 0.5vw;
+}
+.menudesc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.menuname {
+  margin: 0.25vh 0.1vw;
+  width: 30vw;
+  font-size: 2.8vw;
+}
+.menuskill p {
+  margin: 0.25vh 0.1vw;
+  width: 25vw;
+  font-size: 2.3vw;
+  text-align: left;
+  color: #ffff77;
+}
+#deck {
+  width: 90vw;
+  height: 70vh;
+  background-color: #00000080;
+  text-align: left;
+  overflow-y: scroll;
+}
+#deck div {
+  width: 80vw;
+  margin: 1.5vh 0;
+}
+.rarity {
+  width: 9.45vw;
+  height: 2.36vw;
+  margin: 0 0 19vw -9.45vw;
+}
+.banStatus {
+  width: 4.73vw;
+  height: 4.73vw;
+  margin: -15.27vw 8.98vw 15.27vw -13.7vw;
+}
+#deckskillimg {
+  width: 3.55vw;
+  height: 3.55vw;
+  margin: 0 1.18vw;
+  display: none;
+}
+#deckskill {
+  font-size: 3.07vw;
+  cursor: pointer;
+}
+.deckcardimg {
+  width: 13vw;
+}
+#cardinfo {
+  width: 80vw;
+  height: 70vh;
+  font-size: 1vw;
+}
+#cardinfo img {
+  width: 30vw;
+}
+#cardinfoName {
+  font-size: 1.4vw;
+}
+.fade-in {
+  opacity: 1;
+  animation-name: fadeInOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 0.2s;
+}
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+#openDeck {
+  font-size: 3.5vw;
+  padding: 1.2vw;
+}
 /* deck-builder & deck-display */
 input {
   font-size: 24px;
   font-family: "Montserrat";
   color: #ffffff;
-  border: 0.2vh solid #5e3cb3;
+  border: 0.3vw solid #5e3cb3;
   background-color: #000000;
 }
 button {
   color: #ffffff;
-  border: 0.4vh solid #5e3cb3;
+  border: 0.4vw solid #5e3cb3;
   background-color: #201834;
   padding: 0.3vw;
 }
@@ -108,7 +246,7 @@ select {
   font-size: 24px;
   font-family: "Montserrat";
   color: #ffffff;
-  border: 0.2vh solid #5e3cb3;
+  border: 0.3vw solid #5e3cb3;
   background-color: #000000;
 }
 #controls {

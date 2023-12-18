@@ -12,139 +12,6 @@
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
     </style>
     <script src="lib/css-picker.js"></script>
-    <style>
-      #menu {
-        width: 20vw;
-        height: 80vh;
-        margin-right: 1vw;
-        background-color: #00000080;
-      }
-      .menuhead {
-        margin: 1vh;
-        height: 11vh;
-        background-color: #000000;
-        user-select: none;
-      }
-      .menuhead input {
-        width: 15vw;
-        height: 1.4vw;
-      }
-      .menuhead div {
-        margin-top: 0.8vh;
-      }
-      .menurow {
-        margin: 1vh;
-        border: 0.4vh solid #5e3cb3;
-        background-color: #1b1329;
-        display: flex;
-        justify-content: center;
-        cursor: pointer;
-        transition: background-color 0.3s, margin 0.3s;
-      }
-      .menurow:hover {
-        background-color: #5e3cb3;
-        margin: 1.7vh 1vh;
-      }
-      .menuimg {
-        width: 1.7vw;
-        height: 1.7vw;
-      }
-      #menucategory {
-        font-size: 1.3vw;
-        margin: 0 4vw;
-      }
-      #menuformat {
-        font-size: 1.3vw;
-        margin: 0 4vw;
-      }
-      #menuitems {
-        height: 65vh;
-        overflow-y: scroll;
-      }
-      .menucard {
-        width: 4vw;
-        height: 5.83vw;
-        margin: 0.5vh 0.5vw;
-      }
-      .menudesc {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-      .menuname {
-        margin: 0.25vh 0.1vw;
-        width: 13vw;
-        font-size: 1.3vw;
-      }
-      .menuskill p {
-        margin: 0.25vh 0.1vw;
-        width: 11vw;
-        font-size: 1vw;
-        text-align: left;
-        color: #ffff77;
-      }
-      #deck {
-        width: 60vw;
-        height: 80vh;
-        background-color: #00000080;
-        text-align: left;
-        overflow-y: scroll;
-      }
-      #deck div {
-        width: 58vw;
-        margin: 1.5vh 0;
-      }
-      .rarity {
-        width: 4vw;
-        height: 1vw;
-        margin: 0 0 8.46vw -4vw;
-      }
-      .banStatus {
-        width: 2vw;
-        height: 2vw;
-        margin: -6.46vw 3.8vw 6.46vw -5.8vw;
-      }
-      #deckskillimg {
-        width: 1.5vw;
-        height: 1.5vw;
-        margin: 0 0.5vw;
-        display: none;
-      }
-      #deckskill {
-        font-size: 1.3vw;
-        cursor: pointer;
-      }
-      #cardinfo {
-        width: 50vw;
-        height: 70vh;
-        font-size: 1vw;
-      }
-      #cardinfo img {
-        width: 12vw;
-      }
-      #cardinfoName {
-        font-size: 1.4vw;
-      }
-      .fade-in {
-        opacity: 1;
-        animation-name: fadeInOpacity;
-        animation-iteration-count: 1;
-        animation-timing-function: ease-in;
-        animation-duration: 0.2s;
-      }
-      @keyframes fadeInOpacity {
-        0% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
-      }
-      button {
-        font-size: 1.5vw;
-        padding: 0.5vw;
-      }
-    </style>
     <script src="lib/carddb-dl.js"></script>
     <script src="lib/skilldb-dl.js"></script>
     <script src="lib/f2pdeckdb.js"></script>
@@ -152,10 +19,12 @@
     <script src="lib/priority-handler.js"></script>
   </head>
   <body>
-    <h1>Free to Play Decks</h1>
+    <div class="flexdivc">
+      <h1>Free to Play Decks</h1>
+    </div>
     <div class="flexdivc">
       <div style="text-align: center; width: min-content">
-        <div class="flexdivc">
+        <div id="menudeck">
           <div id="menu">
             <div class="menuhead" style="padding: 0.5vw">
               <div class="flexdivc">
@@ -163,7 +32,7 @@
                 <input
                   type="text"
                   id="filter"
-                  placeholder="(Shows up to 10 results)"
+                  placeholder="(Up to 10 results shown)"
                   autocomplete="off"
                   onkeyup="refreshMenu('typing')"
                 />
@@ -310,7 +179,7 @@
       for (card of deckcodeArr) {
         const cardimg = document.createElement("img");
         cardimg.src = `images/cards/${isNaN(card) ? card : Number(card)}.jpg`;
-        cardimg.style.width = "5.8vw";
+        cardimg.classList = "deckcardimg fade-in";
         cardimg.setAttribute(
           "onclick",
           `popup("${isNaN(card) ? card : Number(card)}")`
@@ -318,7 +187,6 @@
         const cardObj = isNaN(card)
           ? jsonResponseDl.filter((a) => a.name == card)[0]
           : jsonResponseDl.filter((a) => a.konamiID == Number(card))[0];
-        cardimg.classList = "fade-in";
         const monstertype = cardObj.monsterType;
         const cardlocation =
           monstertype.includes("Fusion") ||
