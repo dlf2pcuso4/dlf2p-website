@@ -5,7 +5,7 @@
 }
 body {
   background: #100042;
-  font-size: 26px;
+  font-size: 3.5vw;
   font-weight: bold;
   font-family: "Montserrat";
   color: white;
@@ -27,7 +27,7 @@ body {
 }
 h1 {
   font-size: 6vw;
-  margin: 15px;
+  margin: 1.5vw;
 }
 a {
   text-decoration: none;
@@ -57,12 +57,17 @@ table img {
   width: 200px;
 }
 button {
-  font-size: 24px;
+  font-size: 4.5vw;
   font-family: "Montserrat";
   font-weight: bold;
-  margin: 3px;
-  padding: 3px;
   cursor: pointer;
+  color: #ffffff;
+  border: 0.4vw solid #5e3cb3;
+  background-color: #201834;
+  padding: 0.3vw;
+}
+button:hover {
+  background-color: #5e3cb3;
 }
 select {
   cursor: pointer;
@@ -83,23 +88,6 @@ select {
 }
 .m20 {
   margin: 30px;
-}
-#_navbar {
-  width: 55%;
-  cursor: pointer;
-}
-#_navbar p {
-  margin: 20px;
-  font-size: 34px;
-}
-#_navbar img {
-  width: 12vw;
-  max-width: 100px;
-}
-#_navtgl img {
-  width: 12vw;
-  max-width: 100px;
-  cursor: pointer;
 }
 /* f2p-decks */
 #menu {
@@ -234,9 +222,14 @@ select {
     opacity: 1;
   }
 }
-#openDeck {
-  font-size: 3.5vw;
-  padding: 1.2vw;
+#deckbtns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#deckbtns button {
+  width: 60vw;
+  margin: 1vh 0 1vh 0;
 }
 /* deck-builder & deck-display */
 input {
@@ -245,15 +238,6 @@ input {
   color: #ffffff;
   border: 0.3vw solid #5e3cb3;
   background-color: #000000;
-}
-button {
-  color: #ffffff;
-  border: 0.4vw solid #5e3cb3;
-  background-color: #201834;
-  padding: 0.3vw;
-}
-button:hover {
-  background-color: #5e3cb3;
 }
 select {
   font-size: 24px;
@@ -328,16 +312,17 @@ select {
   display: none;
 }
 /* index */
+.icon {
+  margin: 0.3vw;
+  width: 6vw;
+}
 #whatsnew {
-  padding: 10px;
+  padding: 2vw;
   text-align: left;
   background-color: #000000;
 }
-#whatsnew p {
-  font-size: 22px;
-}
 .banner {
-  margin-top: 30px;
+  margin-top: 2vh;
   width: 90vw;
 }
 /* f2p-decks, kog-decks */
@@ -360,16 +345,12 @@ select {
 }
 #text {
   width: 80vw;
-  max-width: 800px;
-  margin-top: 10px;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  font-size: 18px;
+  margin: 4vh 0 10vh 0;
   font-weight: lighter;
   text-align: left;
 }
 #text img {
-  width: 260px;
+  width: 40vw;
 }
 #text iframe {
   width: 125%;
@@ -387,7 +368,6 @@ select {
   margin: 10px;
   background-color: #00000080;
   text-align: left;
-  font-size: 18px;
   font-weight: lighter;
   overflow: scroll;
 }
