@@ -14,6 +14,7 @@ body {
 }
 ::-webkit-scrollbar {
   width: 0.5vw;
+  height: 0.5vw;
 }
 ::-webkit-scrollbar-track {
   background: #000000;
@@ -233,14 +234,14 @@ select {
 }
 /* deck-builder & deck-display */
 input {
-  font-size: 18px;
+  font-size: 1.3vw;
   font-family: "Montserrat";
   color: #ffffff;
   border: 0.2vh solid #5e3cb3;
   background-color: #000000;
 }
 select {
-  font-size: 18px;
+  font-size: 1.3vw;
   font-family: "Montserrat";
   color: #ffffff;
   border: 0.2vh solid #5e3cb3;
