@@ -12,6 +12,18 @@ body {
   text-align: justify;
   text-decoration: none;
 }
+::-webkit-scrollbar {
+  width: 0.5vw;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #5e3cb3;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8962eb;
+}
 h1 {
   margin: 10px;
 }
@@ -267,21 +279,22 @@ select {
   cursor: pointer;
 }
 #cardinfo {
-  margin: 20px;
-  padding: 10px;
+  padding: 1.5vh 1vw;
   background-color: black;
-  font-size: 15px;
+  font-size: 1vw;
   font-weight: normal;
-  width: 600px;
+  width: 50vw;
+  height: 80vh;
+  overflow-y: scroll;
 }
 #cardinfo img {
-  width: 200px;
+  width: 25vh;
 }
 #cardinfo p {
-  margin: 3px;
+  margin: 0.5vh;
 }
 #cardinfoName {
-  font-size: 18px;
+  font-size: 1.4vw;
 }
 #notificationImg {
   width: 200px;

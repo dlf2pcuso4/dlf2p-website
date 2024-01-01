@@ -160,6 +160,7 @@
         `;
         document.getElementById("menuitems").appendChild(menuitem);
       }
+      console.log("1");
     }
     function loaddeck(url) {
       document.getElementById("deckskillimg").style.display = "block";
@@ -294,5 +295,9 @@
       }
     }
     refreshMenu();
+    const params = new URL(document.location).searchParams;
+    if (params.get("d")) {
+      loaddeck(window.location.href.replace("/f2p-decks", "/deck"));
+    }
   </script>
 </html>
