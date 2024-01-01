@@ -335,12 +335,70 @@
     const params = new URL(document.location).searchParams;
     if (params.get("d")) {
       let format = "dl";
-      if (params.get("s")) {
-        if (params.get("s") == "md") {
-          format = "md";
-        }
+      if (params.get("s") == "md") {
+        format = "md";
       }
       loaddeck(window.location.href.replace("/f2p-decks", "/deck"), format);
+    }
+    if (params.get("stats")) {
+      //deck at side
+      const iframe = document.createElement("iframe");
+      iframe.id = "iframe";
+      iframe.src = `deck-embed.html?d=${params.get("d")}&bg=g`;
+      iframe.style.cssText = `
+         width: 656px; 
+         height: 1450px;
+         margin-left: 3000px;
+         position: fixed;
+         -webkit-transform: scale(0.8);
+         transform: scale(0.8);
+         -webkit-transform-origin: 0 0;
+         transform-origin: 0 0;`;
+      iframe.frameBorder = 0;
+      document.body.insertBefore(iframe, document.body.firstChild);
+      document.getElementById("menuitems").style.height = "30vh";
+      //stats
+      const statimg = document.createElement("img");
+      statimg.src = "images/topf2pstat.png";
+      statimg.style.display = "none";
+      statimg.onload = () => {
+        const statcnv = document.createElement("canvas");
+        statcnv.width = 519;
+        statcnv.height = 416;
+        statcnv.style.cssText = "width: 22vw; margin-left: -1vw;";
+        document.getElementById("menu").appendChild(statcnv);
+        const ctx = statcnv.getContext("2d");
+        const data = params.get("stats").split("");
+        ctx.drawImage(statimg, 0, 0, 519, 416);
+        ctx.fillStyle = "#380176E0";
+        ctx.beginPath(); //mid pt: 257 204
+        ctx.moveTo(257, 204 - 27.9 * data[0]);
+        ctx.lineTo(257 + 23.9 * data[1], 204 - 14 * data[1]);
+        ctx.lineTo(257 + 23.9 * data[2], 204 + 14 * data[2]);
+        ctx.lineTo(257, 204 + 27.9 * data[3]);
+        ctx.lineTo(257 - 23.9 * data[4], 204 + 14 * data[4]);
+        ctx.lineTo(257 - 23.9 * data[5], 204 - 14 * data[5]);
+        ctx.closePath();
+        ctx.fill();
+      };
+      document.body.appendChild(statimg);
+      const website = document.createElement("p");
+      website.style.marginTop = "3vh";
+      website.innerHTML =
+        "Visit <span style='color:#ccaa00'>dlf2p.com/f2p-decks</span>";
+      document.getElementById("menu").appendChild(website);
+      //right click to trigger transition
+      document.body.oncontextmenu = () => {
+        document.body.querySelectorAll("*").forEach(function (node) {
+          if (node.id == "iframe") {
+            node.style.marginLeft = "1385px";
+          } else {
+            node.style.display = "none";
+          }
+        });
+        document.body.style.backgroundColor = "#00000000";
+        return false;
+      };
     }
   </script>
 </html>

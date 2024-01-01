@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Record Canvas</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        background-color: #000000;
+        font-family: Comic Sans MS;
+        color: #ffffff;
+      }
+      img {
+        display: none;
+      }
+      canvas {
+        width: 1920px;
+        height: 1080px;
+        background-color: #111111;
+      }
+      iframe {
+        width: 1920px;
+        height: 1080px;
+      }
+      #iframediv {
+        margin-top: -22px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <div id="iframediv"></div>
+    <div id="iframediv2"></div>
+    <img id="statbg" src="images/topf2pstat.png" />
+    <img id="card" src="images/noimage.jpg" />
+    <img id="logo" src="images/nobglogo.png" />
+    <img id="bg" src="images/purpbg.jpg" />
+    <img id="statbgleft" src="images/statbg2.png" />
+  </body>
+  <script>
+    const params = new URL(document.location).searchParams;
+
+    //variables
+    const screenWidth = 1280;
+    const screenHeight = 720;
+    const fps = 30;
+    const duration = 4; //sec
+
+    let title = "RAIDRAPTOR";
+    let desc = "Raider's Requiem";
+    let data = [5, 4, 5, 2, 4, 2];
+
+    const cnv = document.getElementsByTagName("canvas")[0];
+    const ctx = cnv.getContext("2d");
+    cnv.width = screenWidth;
+    cnv.height = screenHeight;
+    function go() {
+      title = params.get("title").toUpperCase();
+      desc = params.get("desc");
+      data = params.get("data").split("");
+      document.getElementById("card").src = params.get("card");
+      const card = document.getElementById("card");
+      const logo = document.getElementById("logo");
+      const statbg = document.getElementById("statbg");
+      const bg = document.getElementById("bg");
+      const statx = 300;
+      const staty = 450;
+      const statscale = 0.82;
+      data.forEach((d, i, a) => (a[i] = d * statscale));
+      const dvar = [0, 0, 0, 0, 0, 0];
+      let count = 0;
+      let enter = 0;
+      let fade = 0;
+      const loop = setInterval(() => {
+        count++;
+        ctx.clearRect(0, 0, cnv.width, cnv.height);
+        //bg
+        ctx.globalAlpha = 1;
+        ctx.drawImage(bg, 0, 0);
+        //text animation
+        ctx.globalAlpha = Math.min(count / 10, 1);
+        ctx.font = "bold 40px Times New Roman";
+        ctx.fillStyle = "white";
+        ctx.fillText("[DECK NAME]", 70, 100);
+        ctx.font = "bold 60px Times New Roman";
+        ctx.fillText(title, 70, 160);
+        ctx.font = "20px Bahnschrift";
+        ctx.fillText("[BOXES]", 75, 230);
+        ctx.font = "25px Bahnschrift";
+        ctx.fillText(desc, 75, 270);
+        //card animation
+        ctx.globalAlpha = Math.min(count / 15, 1);
+        enter = 600 * Math.tanh(0.1 * count);
+        ctx.drawImage(card, cnv.width - enter, 100);
+        //logo animation
+        ctx.globalAlpha = 1;
+        ctx.drawImage(logo, 1030, 5, 250, 173);
+        //stat animation
+        if (count <= 30) {
+          ctx.globalAlpha = Math.min(count / 30, 1);
+          ctx.drawImage(statbg, statx - 257, staty - 205);
+        }
+        if (count > 30 && count <= 101) {
+          fade = Math.tanh(0.1 * (count - 30));
+          dvar.forEach((d, i, a) => (a[i] = data[i] * fade));
+          ctx.drawImage(statbg, statx - 257, staty - 205);
+          ctx.fillStyle = "#380176e0";
+          ctx.beginPath(); // pt: statx staty
+          ctx.moveTo(statx, staty - 33.5 * dvar[0]);
+          ctx.lineTo(statx + 28.7 * dvar[1], staty - 16.8 * dvar[1]);
+          ctx.lineTo(statx + 28.7 * dvar[2], staty + 17.6 * dvar[2]);
+          ctx.lineTo(statx, staty + 33.5 * dvar[3]);
+          ctx.lineTo(statx - 28.7 * dvar[4], staty + 17.6 * dvar[4]);
+          ctx.lineTo(statx - 28.7 * dvar[5], staty - 16.8 * dvar[5]);
+          ctx.closePath();
+          ctx.fill();
+        }
+        if (count > 101) {
+          clearInterval(loop);
+          document.getElementsByTagName("iframe")[0].style.marginTop =
+            "-1080px";
+          setTimeout(() => {
+            const statbgleft = document.getElementById("statbgleft");
+            ctx.drawImage(statbgleft, 0, 0, 1280, 720);
+            ctx.fillStyle = "#380176E0";
+            ctx.beginPath(); //mid pt: 184 295
+            ctx.moveTo(184, 295 - 27.9 * data[0]);
+            ctx.lineTo(184 + 23.9 * data[1], 295 - 14 * data[1]);
+            ctx.lineTo(184 + 23.9 * data[2], 295 + 14 * data[2]);
+            ctx.lineTo(184, 295 + 27.9 * data[3]);
+            ctx.lineTo(184 - 23.9 * data[4], 295 + 14 * data[4]);
+            ctx.lineTo(184 - 23.9 * data[5], 295 - 14 * data[5]);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = "#00ff00";
+            ctx.fillRect(368, 0, 544, cnv.height);
+          }, 1000);
+        }
+      }, 33);
+    }
+    document.body.onload = () => {
+      const iframe = document.createElement("iframe");
+      iframe.src = `${
+        window.location.href.split("stat-animation")[0]
+      }f2p-decks.html?d=${params.get("d")}&stats=${params.get("data")}`;
+      iframe.frameBorder = 0;
+      document.getElementById("iframediv").appendChild(iframe);
+      setTimeout(() => {
+        go();
+      }, 1400); //1:28
+    };
+  </script>
+</html>
