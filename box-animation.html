@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Box Animation</title>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/f2pdeckdb.js"></script>
+    <script src="lib/deckcode-handler.js"></script>
+    <script src="lib/priority-handler.js"></script>
+    <style>
+      canvas {
+        width: 1920px;
+        height: 1080px;
+        display: none;
+      }
+      #btnArchs {
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        margin: 2vw;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flexdiv">
+      <div id="btnArchs">
+        <p>Click to remove an archetype:</p>
+        <br />
+      </div>
+      <canvas onclick="nextSlide(false)"></canvas>
+    </div>
+    <div style="display: none">
+      <img src="images/dlminitagN.png" id="N" />
+      <img src="images/dlminitagR.png" id="R" />
+      <img src="images/dlminitagSR.png" id="SR" />
+      <img src="images/dlminitagUR.png" id="UR" />
+    </div>
+  </body>
+  <script>
+    const cnv = document.querySelector("canvas");
+    const ctx = cnv.getContext("2d");
+    cnv.width = 1920;
+    cnv.height = 1080;
+    const clrcnv = () => ctx.clearRect(0, 0, cnv.width, cnv.height);
+    const params = new URL(document.location).searchParams;
+    if (params.get("cards")) {
+      //get list of card objects
+      const cards = params.get("cards").split("fuck");
+      const cardarr = [];
+      const featArchs = [];
+      const cardAmount = [];
+      let slide = -2;
+      for (let item of cards) {
+        cardarr.push(jsonResponseDl.filter((a) => a.name == item)[0]);
+      }
+      //detect archetypes
+      let allText = "";
+      for (let item of cardarr) {
+        allText += item.description;
+      }
+      const regex = /"(.*?)"/g;
+      const quoted = [];
+      let current;
+      while ((current = regex.exec(allText))) {
+        quoted.push(current.pop());
+      }
+      const archetypes = [];
+      for (let item of quoted) {
+        if (
+          item != "" &&
+          archetypes.indexOf(item) == -1 &&
+          cardarr.filter((a) => a.name == item).length == 0 &&
+          quoted.filter((a) => a == item).length > 2
+        )
+          archetypes.push(item);
+      }
+      //make buttons for archetypes
+      for (let item of archetypes) {
+        const btnArch = document.createElement("button");
+        btnArch.innerHTML = item;
+        btnArch.onclick = () => btnArch.remove();
+        document.getElementById("btnArchs").appendChild(btnArch);
+      }
+      const btnConfirm = document.createElement("button");
+      btnConfirm.innerHTML = "Confirm archetypes";
+      btnConfirm.style.marginTop = "4vh";
+      btnConfirm.onclick = () => {
+        const btns = document.querySelectorAll("button");
+        for (let item of btns) {
+          if (item.innerHTML != "Confirm archetypes")
+            featArchs.push(item.innerHTML);
+        }
+        cnv.style.display = "block";
+        document.getElementById("btnArchs").style.display = "none";
+        ctx.drawImage(document.getElementById(cards[0]), 0, 0);
+        document.body.onkeyup = (event) => {
+          if (!isNaN(event.key) && slide == -2) {
+            if (event.key == 4) {
+              nextSlide(true);
+            } else {
+              cardAmount.push(event.key);
+              ctx.drawImage(
+                document.getElementById(cards[cardAmount.length]),
+                0,
+                0
+              );
+            }
+          }
+        };
+      };
+      document.getElementById("btnArchs").appendChild(btnConfirm);
+      //append card imgs
+      for (let item of cardarr) {
+        const cardimg = document.createElement("img");
+        cardimg.id = item.name;
+        cardimg.src = `images/cards/${item.konamiID}.jpg`;
+        cardimg.style.display = "none";
+        document.body.appendChild(cardimg);
+      }
+      function nextSlide(key) {
+        if (key || slide > -2) {
+          slide++;
+          clrcnv();
+          //ctx.fillStyle = "#100042";
+          //ctx.fillRect(0, 0, 1920, 1080);
+          ctx.font = "bold 80px Montserrat";
+          ctx.fillStyle = "#ffffff";
+          if (slide == -1) {
+            ctx.fillText(`New Box: ${params.get("box")}`, 40, 85);
+            ctx.fillStyle = "#000000e0";
+            ctx.fillRect(40, 126, 1820, 914);
+            for (let i = 0; i < cardarr.length; i++) {
+              ctx.drawImage(
+                document.getElementById(cardarr[i].name),
+                80 + 190 * (i % 9),
+                166 + 283 * Math.floor(i / 9),
+                190,
+                278
+              );
+              if (cardarr[i].rarity)
+                ctx.drawImage(
+                  document.getElementById(cardarr[i].rarity),
+                  80 + 190 * (i % 9),
+                  166 + 283 * Math.floor(i / 9),
+                  190,
+                  278
+                );
+              if (i == 26) break;
+            }
+          } else if (slide < featArchs.length) {
+            ctx.fillText(`Archetype: ${featArchs[slide]}`, 40, 85);
+            ctx.fillStyle = "#000000e0";
+            ctx.fillRect(660, 126, 1220, 914);
+            let cardno = -1;
+            for (let item of cardarr) {
+              if (
+                item.name.includes(featArchs[slide]) ||
+                item.description.includes(featArchs[slide])
+              ) {
+                if (cardno == -1) {
+                  ctx.drawImage(
+                    document.getElementById(item.name),
+                    40,
+                    166,
+                    580,
+                    846
+                  );
+                  if (item.rarity)
+                    ctx.drawImage(
+                      document.getElementById(item.rarity),
+                      330,
+                      166,
+                      290,
+                      423
+                    );
+                } else {
+                  ctx.drawImage(
+                    document.getElementById(item.name),
+                    700 + 190 * (cardno % 6),
+                    166 + 278 * Math.floor(cardno / 6),
+                    190,
+                    278
+                  );
+                  if (item.rarity)
+                    ctx.drawImage(
+                      document.getElementById(item.rarity),
+                      700 + 190 * (cardno % 6),
+                      166 + 278 * Math.floor(cardno / 6),
+                      190,
+                      278
+                    );
+                }
+                cardno++;
+              }
+            }
+          } else if (cardAmount.length > slide - featArchs.length) {
+            ctx.fillText(`Recommended Card Amount:`, 40, 85);
+            ctx.drawImage(
+              document.getElementById(cardarr[slide - featArchs.length].name),
+              670,
+              117,
+              580,
+              846
+            );
+            if (cardarr[slide - featArchs.length].rarity)
+              ctx.drawImage(
+                document.getElementById(
+                  cardarr[slide - featArchs.length].rarity
+                ),
+                960,
+                117,
+                290,
+                423
+              );
+            ctx.fillStyle = "#000000a0";
+            ctx.fillRect(670, 425, 580, 150);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(`${cardAmount[slide - featArchs.length]}x`, 920, 520);
+          } else {
+            clrcnv();
+          }
+        }
+      }
+    }
+  </script>
+</html>
