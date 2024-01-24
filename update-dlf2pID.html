@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Update DLF2P ID</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Description in search engine" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div style="text-align: center; width: min-content">
+        <h1>Update DLF2P ID</h1>
+      </div>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/dlf2pID.js"></script>
+  <script>
+    //last update: 14875 cards
+    function createDlf2pIdList() {
+      let jsTxt = `var dlf2pIDResponse = [`;
+      for (let i = 0; i < jsonResponseDl.length; i++) {
+        let konamiID = "";
+        if (jsonResponseDl[i].konamiID)
+          konamiID = `konamiID:\`${jsonResponseDl[i].konamiID}\`,`;
+        jsTxt += `{name:\`${jsonResponseDl[i].name}\`,${konamiID}_id:\`${jsonResponseDl[i]._id}\`,dlf2pID:\`${i}\`,},`;
+      }
+      jsTxt += `];`;
+      let element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(jsTxt)
+      );
+      element.setAttribute("download", "dlf2pID.js");
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+    function updateDlf2pIdList() {
+      let count = 0;
+      let jsTxt = `var dlf2pIDResponse = [`;
+      for (let item of dlf2pIDResponse) {
+        let konamiID = "";
+        if (item.konamiID) konamiID = `konamiID:\`${item.konamiID}\`,`;
+        jsTxt += `{name:\`${item.name}\`,${konamiID}_id:\`${item._id}\`,dlf2pID:\`${item.dlf2pID}\`,},`;
+        count++;
+      }
+      for (let item of jsonResponseDl) {
+        if (dlf2pIDResponse.filter((a) => a._id == item._id).length == 0) {
+          let konamiID = "";
+          if (item.konamiID) konamiID = `konamiID:\`${item.konamiID}\`,`;
+          jsTxt += `{name:\`${item.name}\`,${konamiID}_id:\`${item._id}\`,dlf2pID:\`${count}\`,},`;
+          count++;
+        }
+      }
+      jsTxt += `];`;
+      let element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(jsTxt)
+      );
+      element.setAttribute("download", "dlf2pID.js");
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+  </script>
+</html>
