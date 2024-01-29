@@ -3,6 +3,9 @@
     <title>Top F2P Text Template</title>
     <meta charset="utf-8" />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
       * {
         padding: 0%;
         margin: 0%;
@@ -13,18 +16,13 @@
       #img {
         display: none;
       }
-      iframe {
-        width: 700px;
-        height: 2382px;
-        margin-top: -1080px;
-        margin-left: 1360px;
-        -webkit-transform: scale(0.81);
-        transform: scale(0.81);
-        -webkit-transform-origin: 0 0;
-        transform-origin: 0 0;
-      }
     </style>
     <script src="lib/topf2pdeckdb.js"></script>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/dlf2pID.js"></script>
   </head>
   <body>
     <canvas id="canvas" width="1920" height="1080"></canvas>
@@ -33,6 +31,9 @@
       <img id="deckstat" src="images/topf2pstat.png" />
     </div>
   </body>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/deck-viewer-handler.js"></script>
   <script>
     var txtbr = "";
     var txtbrIndex = 0;
@@ -90,9 +91,16 @@
     };
 
     //deck
-    const iframe = document.createElement("iframe");
-    iframe.src = arrDecks[index].link;
-    iframe.frameBorder = 0;
-    document.body.appendChild(iframe);
+    document.body.appendChild(
+      newDeckElement(
+        arrDecks[index].link.split("d=")[1],
+        "dl",
+        "28",
+        "_AUTO",
+        "4.5"
+      )
+    );
+    document.querySelector(".deck-viewer-deck").style.margin =
+      "-1080px 0 0 1385px";
   </script>
 </html>

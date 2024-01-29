@@ -70,6 +70,7 @@
   </body>
   <script src="lib/navbar-handler.js"></script>
   <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-viewer-handler.js"></script>
   <script>
     function refreshMenu(change) {
       //update selectors
@@ -342,21 +343,6 @@
       loaddeck(`deck?d=${convertToV2(params.get("d"))}`, format);
     }
     if (params.get("stats")) {
-      //deck at side
-      const iframe = document.createElement("iframe");
-      iframe.id = "iframe";
-      iframe.src = `deck-embed.html?d=${params.get("d")}&bg=g`;
-      iframe.style.cssText = `
-         width: 656px; 
-         height: 1450px;
-         margin-left: 3000px;
-         position: fixed;
-         -webkit-transform: scale(0.8);
-         transform: scale(0.8);
-         -webkit-transform-origin: 0 0;
-         transform-origin: 0 0;`;
-      iframe.frameBorder = 0;
-      document.body.insertBefore(iframe, document.body.firstChild);
       document.getElementById("menuitems").style.height = "30vh";
       //stats
       const statimg = document.createElement("img");
@@ -391,13 +377,17 @@
       //right click to trigger transition
       document.body.oncontextmenu = () => {
         document.body.querySelectorAll("*").forEach(function (node) {
-          if (node.id == "iframe") {
-            node.style.marginLeft = "1385px";
-          } else {
-            node.style.display = "none";
-          }
+          node.style.display = "none";
         });
         document.body.style.backgroundColor = "#00000000";
+
+        document.body.insertBefore(
+          newDeckElement(params.get("d"), "dl", "28", "_AUTO", "4.5"),
+          document.body.firstChild
+        );
+        document.querySelector(".deck-viewer-deck").style.cssText = `
+         margin-left: 1385px;
+         position: fixed;`;
         return false;
       };
     }
