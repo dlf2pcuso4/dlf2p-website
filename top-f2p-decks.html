@@ -13,6 +13,10 @@
     </style>
     <script src="lib/css-picker.js"></script>
     <script src="lib/topf2pdeckdb.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/dlf2pID.js"></script>
   </head>
   <body>
     <div class="flexdivc">
@@ -23,14 +27,11 @@
     </div>
   </body>
   <script src="lib/navbar-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-viewer-handler.js"></script>
   <script>
-    if (_isMobile) {
-      document.head.innerHTML +=
-        "<style>#decks iframe{width:100vw;height:1450px;margin-bottom:-290px;}</style>";
-    } else {
-      document.head.innerHTML +=
-        "<style>#decks iframe{width:900px;height:700px;margin-bottom:-50px;}</style>";
-    }
     const params = new URL(document.location).searchParams;
     const date = params.get("date");
     var jsonTopF2pfiltered = jsonResponseTopF2p.filter(
@@ -42,14 +43,23 @@
       const flexdiv = document.createElement("div");
       if (!_isMobile) flexdiv.classList = "flexdiv";
       document.getElementById("decks").appendChild(flexdiv);
-      const iframe = document.createElement("iframe");
-      iframe.src = jsonTopF2pfiltered.decks[i].link;
-      iframe.frameBorder = 0;
-      flexdiv.appendChild(iframe);
+      const innerDiv = document.createElement("div");
+      innerDiv.style.padding = "1vw";
+      flexdiv.appendChild(innerDiv);
+      innerDiv.appendChild(
+        newDeckElement(
+          jsonTopF2pfiltered.decks[i].link.split("d=")[1],
+          "dl",
+          _isMobile ? "85" : "50",
+          _isMobile ? "_AUTO" : "60",
+          _isMobile ? "14" : "4.8"
+        )
+      );
       const text = document.createElement("p");
-      text.style.width = _isMobile ? "80vw" : "300px";
+      text.style.padding = "1vw";
+      text.style.width = _isMobile ? "80vw" : "30vw";
       text.style.textAlign = "left";
-      text.style.fontSize = _isMobile ? "22px" : "16px";
+      text.style.fontSize = _isMobile ? "22px" : "1.2vw";
       text.innerHTML =
         jsonTopF2pfiltered.decks[i].text.replace(/\n/g, "<br><br>") +
         "<br><br>";
