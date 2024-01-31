@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Import YDK</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Description in search engine" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/dlf2pID.js"></script>
+    <script src="lib/deckcode-handler.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div style="text-align: center; width: min-content">
+        <h1>Import YDK</h1>
+        <div style="margin-top: 2vh;">
+          <label for="inp">Paste the YDK here:</label>
+        </div>
+        <input style="margin-top: 2vh;" name="inp" type="text" />
+        <button style="margin-top: 2vh;" onclick="submit()">Import</button>
+      </div>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script>
+    function submit() {
+      try {
+        let lines = document.querySelector("input").value.split(" ");
+        let deckcode = "";
+        for (let line of lines)
+          deckcode += isNaN(line) ? "" : ("000000000" + line).substr(-10);
+        window.open(
+          `deck?d=3_${v2tov3(`${encodeDeck(deckcode)}_-1_Imported%20Deck`)}`
+        );
+      } catch (err) {
+        console.log(err);
+        document.querySelector("button").innerHTML = "Invalid YDK";
+        setTimeout(() => {
+          document.querySelector("button").innerHTML = "Import";
+        }, 2000);
+      }
+    }
+  </script>
+</html>
