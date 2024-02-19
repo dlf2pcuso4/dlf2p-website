@@ -69,7 +69,7 @@
       while ((current = regex.exec(allText))) {
         quoted.push(current.pop());
       }
-      const archetypes = ["Galaxy", "Photon", "Zombie", "Shiranui", "Cyberse"];
+      const archetypes = [];
       for (let item of quoted) {
         if (
           item != "" &&
