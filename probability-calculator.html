@@ -17,29 +17,17 @@
     <script src="lib/carddb-md.js"></script>
     <script src="lib/skilldb-dl.js"></script>
     <script src="lib/dlf2pID.js"></script>
-    <style>
-      select {
-        width: 15vw;
-      }
-      label {
-        margin: 0 1vw 0 1vw;
-      }
-      input {
-        width: 5vw;
-      }
-      #criterias {
-        margin-bottom: 10vh;
-      }
-    </style>
   </head>
   <body>
     <div class="flexdivc">
       <div>
-        <h1 style="text-align: center; margin: 1vh">Probability Calculator</h1>
-        <div class="flexdivc">
+        <h1 style="text-align: center; margin: 1vh">
+          Probability "Calculator"
+        </h1>
+        <div class="flxc">
           <div id="d" style="width: min-content"></div>
         </div>
-        <div class="flexdivc" style="margin: 1vh">
+        <div class="flxc" style="margin: 1vh">
           <label for="handsize">Hand size:</label>
           <input
             type="number"
@@ -50,13 +38,14 @@
             max="20"
             oninput="(()=>{const e=document.getElementById('handsize');e.value=Math.round(e.value)})()"
           />
+          <br />
           <label for="operator">Operator:</label>
-          <select name="operator" id="operator" style="width: 5vw">
+          <select name="operator" id="operator">
             <option value="AND">AND</option>
             <option value="OR">OR</option>
           </select>
         </div>
-        <div class="flexdivc" style="margin: 1vh">
+        <div class="flxc" style="margin: 1vh">
           <select id="includes">
             <option value="Includes">Includes</option>
             <option value="Does not include">Does not include</option>
@@ -71,9 +60,10 @@
             <option value="13">1x or 3x of</option>
           </select>
           <select id="cardname"></select>
+          <br />
           <button onclick="addCriteria()">Add criteria</button>
         </div>
-        <div class="flexdivc">
+        <div class="flxc">
           <button onclick="removeCriteria()">Remove latest criteria</button>
           <button id="btnCalculate" onclick="calculateProbability()">
             Calculate probability: - %
@@ -82,6 +72,15 @@
         <div id="criterias">
           <p>Criterias added:</p>
         </div>
+        <p class="info infohead">How does this "calculator" work?</p>
+        <p class="info">
+          This calculator uses the truly genius method of drawing a sample hand
+          999999 times and counts the amount of hands that satisfy the criteria.
+          No probability calculations are actually performed because
+          probabilities are hard and I am bad at Math. That is also why the
+          results are sometimes different from other calculators, but
+          realistically it's gonna be good enough.
+        </p>
       </div>
     </div>
   </body>
@@ -91,6 +90,87 @@
   <script src="lib/popup-handler.js"></script>
   <script src="lib/deck-viewer-handler.js"></script>
   <script>
+    if (_isMobile) {
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        `
+    <style>
+      .flxc {
+        padding: 0 5vw 0 5vw;
+      }
+      select {
+        width: 50vw;
+        margin: 1vw 0 1vw 0;
+      }
+      label {
+        font-size: 4vw;
+        margin: 0 1vw 0 1vw;
+      }
+      button {
+        margin: 1vw 0 1vw 0;
+      }
+      input {
+        width: 20vw;
+      }
+      #criterias {
+        margin-bottom: 10vh;
+      }
+      .info {
+        width: 90vw;
+        padding: 0 5vw 0 5vw;
+        margin-bottom: 2vh;
+      }
+      .infohead {
+        font-size: 5vw;
+      }
+      #operator {
+        width: 20vw;
+      }
+      #criterias {
+        font-size: 4vw;
+        padding: 0 5vw 0 5vw;
+      }
+    </style>
+      `
+      );
+    } else {
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        `
+    <style>
+      .flxc {
+        display: flex;
+        justify-content: center;
+      }
+      select {
+        width: 15vw;
+      }
+      label {
+        margin: 0 1vw 0 1vw;
+      }
+      input {
+        width: 5vw;
+      }
+      #criterias {
+        margin-bottom: 10vh;
+      }
+      .info {
+        width: 50vw;
+        margin-bottom: 4vh;
+      }
+      .infohead {
+        font-size: 2vw;
+      }
+      #operator {
+        width: 5vw;
+      }
+      br {
+        display: none;
+      }
+    </style>
+      `
+      );
+    }
     const params = new URL(document.location).searchParams;
     const d = params.get("d");
     const s = params.get("s") || "dl";
@@ -100,9 +180,9 @@
         newDeckElement(
           d,
           s,
-          _isMobile ? "85" : "50",
+          _isMobile ? "90" : "50",
           _isMobile ? "_AUTO" : "60",
-          _isMobile ? "14" : "4.8"
+          _isMobile ? "14.8" : "4.8"
         )
       );
     const arrDeck = [];
