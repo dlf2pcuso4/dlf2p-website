@@ -17,12 +17,71 @@
     <script src="lib/carddb-md.js"></script>
     <script src="lib/skilldb-dl.js"></script>
     <script src="lib/dlf2pID.js"></script>
+    <style>
+      select {
+        width: 15vw;
+      }
+      label {
+        margin: 0 1vw 0 1vw;
+      }
+      input {
+        width: 5vw;
+      }
+      #criterias {
+        margin-bottom: 10vh;
+      }
+    </style>
   </head>
   <body>
     <div class="flexdivc">
       <div>
-        <h1 style="text-align: center">Probability Calculator</h1>
-        <div id="d" style="width: min-content"></div>
+        <h1 style="text-align: center; margin: 1vh">Probability Calculator</h1>
+        <div class="flexdivc">
+          <div id="d" style="width: min-content"></div>
+        </div>
+        <div class="flexdivc" style="margin: 1vh">
+          <label for="handsize">Hand size:</label>
+          <input
+            type="number"
+            name="handsize"
+            id="handsize"
+            value="5"
+            min="1"
+            max="20"
+            oninput="(()=>{const e=document.getElementById('handsize');e.value=Math.round(e.value)})()"
+          />
+          <label for="operator">Operator:</label>
+          <select name="operator" id="operator" style="width: 5vw">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+          </select>
+        </div>
+        <div class="flexdivc" style="margin: 1vh">
+          <select id="includes">
+            <option value="Includes">Includes</option>
+            <option value="Does not include">Does not include</option>
+          </select>
+          <select id="amount">
+            <option value="123">any amount of</option>
+            <option value="1">exactly 1x of</option>
+            <option value="2">exactly 2x of</option>
+            <option value="3">exactly 3x of</option>
+            <option value="12">1x or 2x of</option>
+            <option value="23">2x or 3x of</option>
+            <option value="13">1x or 3x of</option>
+          </select>
+          <select id="cardname"></select>
+          <button onclick="addCriteria()">Add criteria</button>
+        </div>
+        <div class="flexdivc">
+          <button onclick="removeCriteria()">Remove latest criteria</button>
+          <button id="btnCalculate" onclick="calculateProbability()">
+            Calculate probability: - %
+          </button>
+        </div>
+        <div id="criterias">
+          <p>Criterias added:</p>
+        </div>
       </div>
     </div>
   </body>
@@ -53,7 +112,46 @@
       if (el.src.includes("cards/"))
         arrDeck.push(el.src.split("cards/")[1].split(".")[0]);
     }
-    console.log({ arrDeck });
+    for (let item of arrDeck) {
+      document
+        .getElementById("cardname")
+        .insertAdjacentHTML(
+          "beforeend",
+          `<option value="${item}">${
+            jsonResponseDl.filter(
+              (a) => a.name == item || a.konamiID == item
+            )[0].name
+          }</option>`
+        );
+    }
+    const criteria = [];
+    function addCriteria() {
+      criteria.push({
+        includes: document.getElementById("includes").value == "Includes",
+        id: document.getElementById("cardname").value,
+        copies: document.getElementById("amount").value.split(""),
+      });
+      document
+        .getElementById("criterias")
+        .insertAdjacentHTML(
+          "beforeend",
+          `<p>${document.getElementById("includes").value} ${
+            document.getElementById("amount").options[
+              document.getElementById("amount").selectedIndex
+            ].text
+          } ${
+            document.getElementById("cardname").options[
+              document.getElementById("cardname").selectedIndex
+            ].text
+          }</p>`
+        );
+    }
+    function removeCriteria() {
+      if (criteria.length) {
+        criteria.pop();
+        document.getElementById("criterias").lastChild.remove();
+      }
+    }
     function getProbability(size, condition, operator, iterations) {
       let probability = 0;
       for (let i = 0; i < iterations; i++) {
@@ -79,16 +177,18 @@
       }
       return Math.round(probability);
     }
-    console.log(
-      getProbability(
-        4,
-        [
-          { includes: true, id: "99423156", copies: [1, 2, 3] },
-          { includes: true, id: "62038047", copies: [1] },
-        ],
-        "AND",
-        9999999
-      )
-    );
+    function calculateProbability() {
+      document.getElementById("btnCalculate").innerHTML = "Calculating...";
+      setTimeout(() => {
+        document.getElementById(
+          "btnCalculate"
+        ).innerHTML = `Calculate probability: ${getProbability(
+          document.getElementById("handsize").value,
+          criteria,
+          document.getElementById("operator").value,
+          999999
+        )}%`;
+      }, 1);
+    }
   </script>
 </html>
