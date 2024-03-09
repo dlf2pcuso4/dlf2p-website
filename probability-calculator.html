@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Probability Calculator</title>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Find the probability of opening with the specific cards in your deck."
+    />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/topf2pdeckdb.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/dlf2pID.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div>
+        <h1 style="text-align: center">Probability Calculator</h1>
+        <div id="d" style="width: min-content"></div>
+      </div>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-viewer-handler.js"></script>
+  <script>
+    const params = new URL(document.location).searchParams;
+    const d = params.get("d");
+    const s = params.get("s") || "dl";
+    document
+      .getElementById("d")
+      .appendChild(
+        newDeckElement(
+          d,
+          s,
+          _isMobile ? "85" : "50",
+          _isMobile ? "_AUTO" : "60",
+          _isMobile ? "14" : "4.8"
+        )
+      );
+    const arrDeck = [];
+    for (let el of document
+      .querySelector(".deck-viewer-maindeck")
+      .querySelectorAll("img")) {
+      if (el.src.includes("cards/"))
+        arrDeck.push(el.src.split("cards/")[1].split(".")[0]);
+    }
+    console.log({ arrDeck });
+    function getProbability(size, condition, operator, iterations) {
+      let probability = 0;
+      for (let i = 0; i < iterations; i++) {
+        const hand = [];
+        for (let j = 0; j < size; j++) {
+          const r = Math.floor(Math.random() * arrDeck.length);
+          if (hand.indexOf(r) === -1) hand.push(r);
+        }
+        for (let j = 0; j < size; j++) {
+          hand[j] = arrDeck[hand[j]];
+        }
+        const conds = [];
+        for (let item of condition) {
+          const filt = hand.filter((a) => a == item.id);
+          let res = false;
+          for (let copies of item.copies) {
+            if (filt.length == copies) res = true;
+          }
+          conds.push(item.includes ? res : !res);
+        }
+        if (operator == "AND" ? !conds.includes(false) : conds.includes(true))
+          probability += 100 / iterations;
+      }
+      return Math.round(probability);
+    }
+    console.log(
+      getProbability(
+        4,
+        [
+          { includes: true, id: "99423156", copies: [1, 2, 3] },
+          { includes: true, id: "62038047", copies: [1] },
+        ],
+        "AND",
+        9999999
+      )
+    );
+  </script>
+</html>
