@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>No Gem Banlist</title>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="The custom banlist of our no gem format in Duel Links."
+    />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
+      p {
+        margin: 2vh 0 2vh 0;
+        max-width: 80vw;
+      }
+      #content {
+        width: 70vw;
+        height: 70vh;
+        background-color: #00000080;
+        overflow-y: scroll;
+        padding: 1vw;
+      }
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/no-gem-banlist-db.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <h1>No Gem Banlist</h1>
+    </div>
+    <div class="flexdivc">
+      <p>
+        This custom banlist replaces the Konami banlist in no gem events. Every
+        other no gem card that is not listed here is unlimited. This list
+        follows the Duel Links banlist format (you can only use 1 card from the
+        Limit 1 list etc.)
+      </p>
+    </div>
+    <div class="flexdivc">
+      <div style="width: min-content">
+        <div id="content"></div>
+      </div>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-viewer-handler.js"></script>
+  <script>
+    for (let el of jsonResponseDl) {
+      el.banStatus = null;
+    }
+    for (let card of jsonNoGemBanlist) {
+      for (let el of jsonResponseDl) {
+        if (el.name == card.name) {
+          el.banStatus = card.banStatus;
+        }
+      }
+    }
+    let innerHTML = "";
+    jsonNoGemBanlist = jsonNoGemBanlist.sort((a, b) => {
+      const order = ["Limited 3", "Limited 2", "Limited 1", "Forbidden"];
+      return order.indexOf(a.banStatus) - order.indexOf(b.banStatus);
+    });
+    let currentLimit = "";
+    for (let el of jsonNoGemBanlist) {
+      if (currentLimit != el.banStatus) {
+        innerHTML += "<br>";
+        currentLimit = el.banStatus;
+      }
+      let item = jsonResponseDl.filter((a) => a.name == el.name)[0];
+      let cardsizes = _isMobile
+        ? {
+            w: 17,
+            h: 24.8,
+            m: 0.6,
+            rw: 11.69,
+            rh: 2.98,
+            bw: 5.3,
+            bh: 5.3,
+          }
+        : {
+            w: 6,
+            h: 8.75,
+            m: 0.15,
+            rw: 4.13,
+            rh: 1.05,
+            bw: 1.88,
+            bh: 1.88,
+          };
+      innerHTML += `<img src="images/cards/${item.konamiID}.jpg" style="width:${
+        cardsizes.w
+      }vw;height:${cardsizes.h}vw;margin:${cardsizes.rh + cardsizes.m}vw ${
+        cardsizes.m
+      }vw ${cardsizes.m}vw ${cardsizes.m}vw;" onclick="cardPopup(${
+        item.konamiID
+      })" onerror="this.onerror=null;this.src='images/noimage.jpg';" />`;
+      if (item.rarity) {
+        innerHTML += `<img src="images/dltag${item.rarity}.png" style="width:${
+          cardsizes.rw
+        }vw;height:${cardsizes.rh}vw;margin:0 ${cardsizes.m}vw ${
+          cardsizes.h + cardsizes.m
+        }vw ${-cardsizes.rw - cardsizes.m}vw;" />`;
+        if (item.banStatus)
+          innerHTML += `<img src="images/${
+            ["forbidden", "limit1", "limit2", "limit3"][
+              ["Forbidden", "Limited 1", "Limited 2", "Limited 3"].indexOf(
+                item.banStatus
+              )
+            ]
+          }.png" style="width:${cardsizes.bw}vw;height:${
+            cardsizes.bh
+          }vw;margin:0 ${cardsizes.rw + cardsizes.m}vw ${
+            cardsizes.h - cardsizes.bh + cardsizes.m
+          }vw ${-cardsizes.w - cardsizes.m}vw;" />`;
+      }
+    }
+    document.getElementById("content").innerHTML = innerHTML;
+    function cardPopup(card) {
+      const cardObj = isNaN(card)
+        ? jsonResponseDl.filter((a) => a.name == card)[0]
+        : jsonResponseDl.filter((a) => a.konamiID == Number(card))[0];
+      document.getElementById("cardinfoImg").src = `images/cards/${card}.jpg`;
+      document.getElementById("cardinfoName").innerHTML = cardObj.name;
+      document.getElementById("cardinfoRace").innerHTML =
+        "Type: " + cardObj.race;
+      if (!cardObj.attribute) {
+        document.getElementById("cardinfoAttribute").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoAttribute").innerHTML =
+          "Attribute: " + cardObj.attribute;
+      }
+      if (!cardObj.level) {
+        document.getElementById("cardinfoLevel").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoLevel").innerHTML =
+          "Level/Rank: " + cardObj.level;
+      }
+      document.getElementById("cardinfoEffect").innerHTML = cardObj.description
+        .replace(/\r\n----------------------------------------\r\n/g, "<br>")
+        .replace(/\n/g, "<br>");
+      if (!cardObj.atk) {
+        document.getElementById("cardinfoAtk").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoAtk").innerHTML =
+          "ATK: " + cardObj.atk;
+      }
+      if (!cardObj.def) {
+        document.getElementById("cardinfoDef").innerHTML = "";
+      } else {
+        document.getElementById("cardinfoDef").innerHTML =
+          "DEF: " + cardObj.def;
+      }
+      if (!cardObj.obtain.length) {
+        document.getElementById("cardinfoObtain").innerHTML =
+          "Cannot be obtained";
+      } else {
+        document.getElementById("cardinfoObtain").innerHTML = "How to obtain: ";
+        for (let i = 0; i < cardObj.obtain.length; i++) {
+          document.getElementById("cardinfoObtain").innerHTML +=
+            cardObj.obtain[i].source.name + ", ";
+        }
+        document.getElementById("cardinfoObtain").innerHTML = document
+          .getElementById("cardinfoObtain")
+          .innerHTML.slice(0, -2);
+      }
+      showPopup();
+    }
+  </script>
+</html>
