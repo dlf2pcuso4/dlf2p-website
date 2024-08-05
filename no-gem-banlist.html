@@ -63,6 +63,11 @@
       }
     }
     let innerHTML = "";
+    for (let el of jsonNoGemSkillBanlist) {
+      innerHTML += `<div class="flexdiv" onclick=skillPopup(\`${encodeURIComponent(
+        el
+      )}\`)><img src="images/skill.png" id="deckskillimg" style="display: block;">${el}</div><br>`;
+    }
     jsonNoGemBanlist = jsonNoGemBanlist.sort((a, b) => {
       const order = ["Limited 3", "Limited 2", "Limited 1", "Forbidden"];
       return order.indexOf(a.banStatus) - order.indexOf(b.banStatus);
@@ -170,6 +175,23 @@
           .innerHTML.slice(0, -2);
       }
       showPopup();
+    }
+    function skillPopup(skilluri) {
+      const skill = decodeURIComponent(skilluri);
+      const skillObj = jsonResponseSkill.filter((a) => a.name == skill);
+      if (skillObj.length) {
+        document.getElementById("cardinfoImg").src = "";
+        document.getElementById("cardinfoName").innerHTML = skillObj[0].name;
+        document.getElementById("cardinfoRace").innerHTML = "";
+        document.getElementById("cardinfoAttribute").innerHTML = "";
+        document.getElementById("cardinfoLevel").innerHTML = "";
+        document.getElementById("cardinfoEffect").innerHTML =
+          skillObj[0].description;
+        document.getElementById("cardinfoAtk").innerHTML = "";
+        document.getElementById("cardinfoDef").innerHTML = "";
+        document.getElementById("cardinfoObtain").innerHTML = "";
+        showPopup();
+      }
     }
   </script>
 </html>
