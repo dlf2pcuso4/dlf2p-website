@@ -31,6 +31,11 @@
   <script src="lib/navbar-handler.js"></script>
   <script src="lib/popup-handler.js"></script>
   <script>
+    if (_isMobile)
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        `<style>iframe{width:100vw;height:100vh;}</style>`
+      );
     const params = new URL(document.location).searchParams;
     document
       .getElementById("iframediv")
