@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>Deck Builder</title>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Deck builder for Duel Links, Master Duel, TCG and OCG."
+    />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <style>
+      h1 {
+        display: none;
+      }
+      iframe {
+        width: 90vw;
+        height: 90vh;
+      }
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+  </head>
+  <body>
+    <h1>Deck Builder</h1>
+    <div id="iframediv" class="flexdivc"></div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script>
+    const params = new URL(document.location).searchParams;
+    document
+      .getElementById("iframediv")
+      .insertAdjacentHTML(
+        "beforeend",
+        `<iframe src="https://dlf2pcuso4.github.io/ygo-lightning-solo/editor.html?dlf2p=true${
+          params.get("d") ? `&d=${params.get("d")}` : ""
+        }" frameborder="0"></iframe>`
+      );
+  </script>
+</html>
