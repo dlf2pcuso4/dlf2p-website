@@ -1,0 +1,180 @@
+<html>
+  <head>
+    <title>Deck Builder</title>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Duel Links and Master Duel deck builder. Has a built-in Small World bridge searcher!"
+    />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/dlf2pID.js"></script>
+    <script src="lib/deck-builder-filters.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <h1>Deck Builder</h1>
+    </div>
+    <div id="controls">
+      <div>
+        <div class="m20">
+          <label for="deckname">Deck name:</label>
+          <input type="text" name="deckname" id="deckname" autocomplete="off" />
+        </div>
+        <div class="m20">
+          <div class="m5">
+            <label for="searchname">Search card:</label>
+            <input
+              type="text"
+              name="searchname"
+              id="searchname"
+              autocomplete="off"
+              onkeydown="keydown(event,'searchCard')"
+            />
+            <button
+              id="btnSearch"
+              type="button"
+              onclick="searchCard('all')"
+            ></button>
+          </div>
+          <div class="m5">
+            <button type="button" onclick="searchCard('deck')">
+              Search From Deck
+            </button>
+          </div>
+          <div class="m5">
+            <label for="searchfrom">Search from:</label>
+            <select name="searchfrom" id="searchfrom">
+              <option value="dl">Duel Links</option>
+              <option value="md">Master Duel</option>
+            </select>
+          </div>
+          <div class="m5">
+            <label for="showrush">Search Rush cards:</label>
+            <input id="showrush" type="checkbox" name="showrush" />
+          </div>
+          <div class="m5">
+            <label for="showunreleased">Show unreleased cards:</label>
+            <input id="showunreleased" type="checkbox" name="showunreleased" />
+          </div>
+          <div class="m5">
+            <label for="searchsort">Sort results by:</label>
+            <select name="searchsort" id="searchsort">
+              <option value="name">Name</option>
+              <option value="release">Release date</option>
+              <option value="popularity">Popularity</option>
+            </select>
+          </div>
+          <div class="m5">
+            <label for="searchfilter">Filter results by:</label>
+            <select name="searchfilter" id="searchfilter"></select>
+            <button id="btnFilter" type="button" onclick="addFilter()">
+              Add Filter
+            </button>
+            <div id="filterlist"></div>
+          </div>
+          <div class="m5">
+            <label for="searchskill">Search skill:</label>
+            <input
+              type="text"
+              name="searchskill"
+              id="searchskill"
+              autocomplete="off"
+              onkeyup="searchSkill()"
+            />
+          </div>
+          <div class="m5">
+            <select name="skillresults" id="skillresults"></select>
+            <button type="button" onclick="addSkill()">Set skill</button>
+          </div>
+        </div>
+        <div class="m20">
+          <label for="importdeck">Import deck by deck code:</label>
+          <input
+            type="text"
+            name="importdeck"
+            id="importdeck"
+            autocomplete="off"
+            onkeydown="keydown(event,'importDeck')"
+          />
+          <button id="btnImport" type="button" onclick="importDeck()"></button>
+        </div>
+        <div class="flexdiv20">
+          <button id="btnSortBy" type="button" onclick="sortBy()">
+            Sort: Duel Links
+          </button>
+          <button type="button" onclick="clearDeck()">Clear Deck</button>
+          <button id="btnCopy" type="button" onclick="copyDeck()"></button>
+          <button type="button" onclick="sendDeck()">Create Deck</button>
+        </div>
+        <div class="flexdiv20">
+          <label for="autoadd">Add to deck:&nbsp;</label>
+          <input id="autoadd" type="checkbox" name="autoadd" />
+          <label for="swfilter">Add Small World bridge filter:&nbsp;</label>
+          <input id="swfilter" type="checkbox" name="swfilter" />
+        </div>
+        <div class="flexdiv20">
+          <div id="swfilterbox"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flexdivc">
+          <h2>Deck Preview</h2>
+        </div>
+        <div class="flexdivc">
+          <p>Skill: <span id="deckSkill"></span></p>
+        </div>
+        <div class="flexdivc">
+          <div id="divDeck">
+            <canvas
+              id="cnvDeck"
+              onclick="selectDeckCard(event)"
+              oncontextmenu="javascript:selectDeckCard(event);return false;"
+            ></canvas>
+            <canvas
+              id="cnvExDeck"
+              onclick="selectExDeckCard(event)"
+              oncontextmenu="javascript:selectExDeckCard(event);return false;"
+            ></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flexdivc">
+      <div>
+        <canvas
+          id="cnvResults"
+          onclick="selectCard(event)"
+          oncontextmenu="javascript:addCard(event);return false;"
+        ></canvas>
+      </div>
+    </div>
+    <div id="imgs">
+      <img id="dltagUR" src="images/dltagUR.png" />
+      <img id="dltagSR" src="images/dltagSR.png" />
+      <img id="dltagR" src="images/dltagR.png" />
+      <img id="dltagN" src="images/dltagN.png" />
+      <img id="mdtagUR" src="images/mdtagUR.png" />
+      <img id="mdtagSR" src="images/mdtagSR.png" />
+      <img id="mdtagR" src="images/mdtagR.png" />
+      <img id="mdtagN" src="images/mdtagN.png" />
+      <img id="Forbidden" src="images/forbidden.png" />
+      <img id="Limited 1" src="images/limit1.png" />
+      <img id="Limited 2" src="images/limit2.png" />
+      <img id="Limited 3" src="images/limit3.png" />
+      <div id="imgsResults"></div>
+      <div id="imgsDeck"></div>
+    </div>
+  </body>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-builder-js.js"></script>
+</html>
