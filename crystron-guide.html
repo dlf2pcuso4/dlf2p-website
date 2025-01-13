@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta
       name="description"
-      content="The ultimate Crystron guide for Yu-Gi-Oh."
+      content="The ultimate Yu-Gi-Oh Crystron guide, with card explanations, decklists and combos."
     />
     <link rel="icon" type="image/x-icon" href="images/logo.png" />
     <style>
@@ -89,6 +89,7 @@
       <a href="#" onclick="switchPage(this.innerHTML)">Home</a>
       <a href="#" onclick="switchPage(this.innerHTML)">Card Overview</a>
       <a href="#" onclick="switchPage(this.innerHTML)">Deck Variations</a>
+      <a href="#" onclick="switchPage(this.innerHTML)">General Tips</a>
       <a href="#" onclick="switchPage(this.innerHTML)">Decklists</a>
       <a href="#" onclick="switchPage(this.innerHTML)">Combos</a>
     </nav>
@@ -456,6 +457,14 @@
           Working in progress...
         </p>`;
           break;
+        case "General Tips":
+          document.getElementById("content").innerHTML = `
+        <h1>General Tips</h1>
+        <br />
+        <p>
+          Working in progress...
+        </p>`;
+          break;
         case "Decklists":
           document.getElementById("content").innerHTML = `
           <h1>Decklists</h1>
@@ -470,7 +479,7 @@
         <br />
         <div class="flexdivc">
           <div>
-            <p></p>
+            <p>More decklists working in progress...</p>
             <br />
             <div id="deck2"></div>
           </div>
@@ -501,7 +510,8 @@
           [Action | Active Card] &lt;Cost&gt; {Effect}
         </p>
         <br /><br />
-        ${html}`;
+        ${html}
+        <p>More combos working in progress...</p>`;
           break;
         default:
           document.getElementById("content").innerHTML = "";
