@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Crystron Guide</title>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="The ultimate Crystron guide for Yu-Gi-Oh."
+    />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/crystron-combo-db.js"></script>
+    <style>
+      body {
+        background-image: url("images/bannerCrystron.jpg");
+        background-size: auto 100vh;
+        background-position: top center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: #000000;
+      }
+      nav {
+        background-color: #00000080;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 7vh; /*x0.07, x0.14*/
+        margin: 0.7vw 1.4vh;
+      }
+      nav a {
+        color: white;
+        padding: 0.7vw 2.8vh;
+        margin: 0 0.7vh;
+        border: 0px;
+        font-size: 1.4vw;
+        transition: background-color 0.3s, font-size 0.3s;
+      }
+      nav a:hover {
+        background-color: #5e3cb3;
+        font-size: 1.6vw;
+      }
+      nav .selected {
+        background-color: #5e3cb3;
+        font-size: 1.6vw;
+      }
+      #content {
+        background-color: #000000c0;
+        width: 70vw;
+        height: 70vh;
+        padding: 3vw;
+        overflow: scroll;
+      }
+      #ygolDiv {
+        background-color: #000000c0;
+        width: 30vw;
+        height: 70vh;
+        padding: 3vw;
+        display: none;
+      }
+      table {
+        width: 65vw;
+      }
+      td {
+        font-size: 1.2vw;
+      }
+      .comboName {
+        font-weight: bold;
+        font-size: 1.4vw;
+        cursor: pointer;
+        color: #8b91ff;
+      }
+      .comboText {
+        white-space: pre-line;
+        font-size: 1vw;
+      }
+      canvas {
+        width: 30vw;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="#" onclick="switchPage(this.innerHTML)">Home</a>
+      <a href="#" onclick="switchPage(this.innerHTML)">Card Overview</a>
+      <a href="#" onclick="switchPage(this.innerHTML)">Deck Variations</a>
+      <a href="#" onclick="switchPage(this.innerHTML)">Decklists</a>
+      <a href="#" onclick="switchPage(this.innerHTML)">Combos</a>
+    </nav>
+    <div class="flexdivc">
+      <div id="content"></div>
+      <div id="ygolDiv">
+        <p>Replay Player</p>
+        <br />
+        <ygol
+          yld="rAWnkizgeXb3tTUSaVX6IjRmXi7d45fpuPwoaaQc79FOAKYBXe4s_MyHd5_nK4hcEViheu_SaaPi0XKGB0iS-2AZMBEWwf5AudoTdCErBSHIYNjMIfbNVmOyN79KUg0OX"
+          autoplay="true"
+          simple-ui="true"
+        ></ygol>
+      </div>
+    </div>
+  </body>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-viewer-handler.js"></script>
+  <script src="lib/temp-fix.js"></script>
+  <script src="https://dlf2pcuso4.github.io/ygo-lightning-solo/v1/main.js"></script>
+  <script>
+    function switchPage(page) {
+      if (page != "Combos") {
+        document.getElementById("content").style.width = "70vw";
+        document.getElementById("ygolDiv").style.display = "none";
+      }
+      switch (page) {
+        case "Home":
+          document.getElementById("content").innerHTML = `
+        <h1>The Complete Crystron Guide</h1>
+        <br />
+        <p>
+          Crystrons are a WATER Machine archetype that specialises on popping
+          your own cards to swarm the field with synchro material, then synchro
+          summoning with quick effects during your opponent's main and battle
+          phase. Many Crystron cards generate card advantage by banishing
+          themselves from your GY, and the deck has many ways to recycle cards
+          from both the GY and banishment, creating a strong advantage loop that
+          can easily outgrind and overwhelm your opponent.
+        </p>
+        <br />
+        <p>Website made by: DLF2P</p>`;
+          break;
+        case "Card Overview":
+          document.getElementById("content").innerHTML = `
+        <h1>Card Overview</h1>
+        <p>Click on the cards for card information.</p>
+        <table id="f2pTable">
+          <tbody>
+            <tr>
+              <th>Card</th>
+              <th>Info</th>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Sulfefnir')">
+              <td><img src="images/cards/3422200.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Sulfefnir (x3)</span
+                ><br /><br />Sulfefnir can summon itself from your hand or GY by
+                discarding a Crystron card, then destroying a card on your field
+                (usually itself). This will trigger its second effect that
+                allows you to summon a Crystron monster from the deck. This
+                effect can also be triggered by popping it with another card
+                effect, such as any of your non-lv.5 main deck non-tuners.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Sulfador')">
+              <td><img src="images/cards/3576031.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Sulfador (x2-3)</span
+                ><br /><br />The archetypal double foolish burial. Sulfador can
+                summon itself from your hand or GY by popping a face-up Crystron
+                card, then locks into Machine monsters from the extra deck. When
+                normal or special summoned, Sulfador sends up to 2 Crystron
+                cards with different names from your deck to the GY. Sulfador is
+                amazing for setting up your GY and giving you access to any
+                Crystron card you're missing. It is also a combo starter if you
+                have any Crystron card on the field.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Thystvern')">
+              <td><img src="images/cards/29838323.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Thystvern (x1)</span
+                ><br /><br />The monster searcher. Thystvern can banish itself
+                from your GY to search for any Crystron monster. Unlike Smiger,
+                Thystvern is not a 1 card starter on its own, so playing 1 copy
+                is enough.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Smiger')">
+              <td><img src="images/cards/83443619.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Smiger (x3)</span
+                ><br /><br />The spell/trap searcher. Smiger can banish itself
+                from your GY to search for any Crystron spell/trap. Smiger is a
+                1 card starter by including Almiraj in the extra deck, so play
+                as many copies of it as you can.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Rosenix')">
+              <td><img src="images/cards/55326322.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Rosenix (x0-1)</span
+                ><br /><br />Rosenix can banish itself from your GY to generate
+                a lv.1 token which can be used as synchro or link material.
+                Rosenix is commonly used for its tuner summoning effect when you
+                go first, and can generate a material for S:P (by converting the
+                token into Clockwork Knight) when you go second.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Prasiortle')">
+              <td><img src="images/cards/56049970.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Prasiortle (x0-1)</span
+                ><br /><br />Prasiortle can banish itself from your GY to
+                special summon a Crystron monster from your hand. This effect is
+                usually not very useful unless you draw too many Crystron
+                monsters, so it is commonly used for its tuner summoning effect
+                instead.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Tristaros')">
+              <td><img src="images/cards/3576031.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Tristaros (x2-3)</span
+                ><br /><br />The tuner that summons from the deck. Tristaros is
+                easily the best main deck Crystron tuner, because unlike the
+                other tuners, it activates in response to your opponent's card
+                effect, special summons a Crystron monster from your deck, and
+                immediately synchro summon using that card as part of the
+                synchro materials (it is not mandatory to use Tristaros itself
+                as material), letting you dodge targeted interruptions such as
+                Veiler.<br /><br />Tristaros also has a GY effect that lets you
+                banish itself to pop a synchro monster you control and special
+                summon 2 Crystron monsters from your deck. This also triggers
+                the on-destruction effects of your Crystron synchro monsters,
+                which summons even more bodies to your field.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Citree')">
+              <td><img src="images/cards/20050865.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Citree (x0-1)</span
+                ><br /><br />The tuner that summons from the GY, and banishes
+                the materials after synchro summoning. The best of the
+                non-Tristaros tuners, and although it is technically fine to
+                play none, having 1 copy in your deck as part of your endboard
+                is very useful.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Rion')">
+              <td><img src="images/cards/66938505.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Rion (x0-1)</span
+                ><br /><br />The tuner that summons from banishment, and
+                shuffles the materials back to your deck after synchro
+                summoning. Rion is a lot less useful than Tristaros and Citree,
+                but can still be used just as a lv.3 tuner used for synchro
+                summoning normally, and is often a useful target for the quick
+                effect of Tristaros to summon from the deck.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Quan')">
+              <td><img src="images/cards/93665266.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Quan (x0)</span
+                ><br /><br />The tuner that summons from hand. Quan is terrible
+                and only sees play in very specific builds that can reliably get
+                a non-tuner in your hand that is worth sending to the GY during
+                your opponent's turn.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Inclusion')">
+              <td><img src="images/cards/3576031.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Inclusion (x3)</span
+                ><br /><br />The archetypal search spell. On activation,
+                Inclusion adds any Crystron card from your deck to your hand. It
+                gives your monsters battle protection while it is on your field,
+                but usually it is used instead as a free card for your Crystron
+                monster effects to destroy. It can also banish itself from the
+                GY to special summon a Crystron monster from your GY for more
+                extension.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Cluster')">
+              <td><img src="images/cards/3576031.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Cluster (x1)</span
+                ><br /><br />The archetypal interruption trap. Once per turn,
+                you can destroy 1 face-up card on the field by shuffling 1
+                Crystron card from your GY or banishment into the Deck, or
+                destroy up to 2 if you control a Crystron synchro monster. It
+                also prevents any of your Crystron cards from being banished by
+                your opponent. Cluster is an important part of your turn 1
+                endboard, providing valuable layered interaction.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Impact')">
+              <td><img src="images/cards/99274184.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Impact (x0)</span
+                ><br /><br />Impact special summons a banished Crystron monster
+                and sets your opponent's face-up monsters' DEF to 0, getting you
+                a free body for synchro summoning in your opponent's turn while
+                putting back a banished monster to the GY. Impact also negates
+                an effect that targets a Crystron monster by banishing itself
+                from the GY, which is a neat protection. Though many combos are
+                able to search both Cluster and Impact on turn 1 if needed, it
+                is usually not worth a slot in the deck.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Entry')">
+              <td><img src="images/cards/52176579.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Entry (x0)</span
+                ><br /><br />Entry special summons a Crystron tuner from both
+                the hand and GY, and can banish itself from the GY to send a
+                Crystron monster from your deck to the GY and change a Crystron
+                monster's level to the level of the sent monster. The first
+                effect requires very specific setups, and the second effect
+                cannot be used during the turn it is sent to the GY, making
+                Entry not worth playing in most cases.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Quandax')">
+              <td><img src="images/cards/39964797.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Quandax (x0-1)</span
+                ><br /><br />Quandax is a tuner synchro monster that has a quick
+                effect to synchro summon any synchro monster using materials
+                from your field. When destroyed, it special summons a
+                non-synchro Crystron monster from your GY. If you play any
+                non-machine synchro monsters, Quandax is your main way of
+                synchro summoning them during your opponent's turn.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Ametrix')">
+              <td><img src="images/cards/76359406.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Ametrix (x0-1)</span
+                ><br /><br />When synchro summoned, Ametrix changes all special
+                summoned monsters your opponent controls to defense position.
+                When destroyed, it special summons a non-synchro Crystron
+                monster from your GY. Ametrix is rarely used for its position
+                changing effect, and is usually used as a lv5 Machine non-tuner
+                synchro monster that can be summoned under the Machine synchro
+                lock, and be popped by the GY effect of Tristaros to get 3
+                bodies on the field.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Eleskeleus')">
+              <td><img src="images/cards/3576031.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Eleskeleus (x2)</span
+                ><br /><br />When synchro summoned, Eleskeleus adds a Crystron
+                card from your GY or banishment to your hand. When destroyed, it
+                special summons any Crystron monster from your GY or banishment.
+                Both effects are crucial in combos to recycle banished Crystrons
+                and gain card advantage, and it usually doesn't stay on the
+                field for long before getting popped by the GY effect of
+                Tristaros to get 3 bodies on the field. It also has a nice bonus
+                continuous effect that lowers the ATK and DEF of all of your
+                opponent's monsters by 500.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Phoenix')">
+              <td><img src="images/cards/2743001.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Phoenix (x0)</span
+                ><br /><br />Phoenix has a difficult summoning condition of
+                needing 2 synchro monsters as material. When synchro summoned,
+                Phoenix banishes all spells and traps from your opponent's field
+                and GY. When destroyed, it special summons any monster from your
+                GY except itself. Phoenix is pretty much only useful if you go
+                first against a backrow heavy deck, and requires a lot of
+                resources to do so, making it generally not worth playing.
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr onclick="displayCard('Crystron Quariongandrax')">
+              <td><img src="images/cards/13455674.jpg" /></td>
+              <td>
+                <span style="font-size: 1.7vw; font-weight: bold"
+                  >Crystron Quariongandrax (x1-2)</span
+                ><br /><br />Quariongandrax has a unique summoning condition of
+                needing 1 non-tuner and 2 (or more) tuners as material. When
+                synchro summoned, Quariongandrax banishes 3 monsters from your
+                opponent's field and GY (more if you use more than 2 tuners).
+                When destroyed, it special summons any monster from your
+                banishment except itself. Quariongandrax is one of the strongest
+                monster removals you have easy access to, and can be made in
+                your own turn to clear boards or in your opponent's turn using
+                Tristaros' effect to disrupt your opponent's plays. If made in
+                your own turn, you can summon this card, attack, then pop it in
+                Main Phase 2 using Tristaros and convert it into 3 bodies to
+                prepare for your opponent's next turn.
+              </td>
+            </tr>
+          </tbody>
+        </table>`;
+          break;
+        case "Deck Variations":
+          document.getElementById("content").innerHTML = `
+        <h1>Deck Variations</h1>
+        <br />
+        <p>
+          Working in progress...
+        </p>`;
+          break;
+        case "Decklists":
+          document.getElementById("content").innerHTML = `
+          <h1>Decklists</h1>
+        <br />
+        <div class="flexdivc">
+          <div>
+            <p>Pure Crystrons</p>
+            <br />
+            <div id="deck1"></div>
+          </div>
+        </div>
+        <br />
+        <div class="flexdivc">
+          <div>
+            <p>Fiendsmith Crystrons</p>
+            <br />
+            <div id="deck2"></div>
+          </div>
+        </div>`;
+          document
+            .getElementById("deck1")
+            .appendChild(
+              newDeckElement(
+                "F--ZVJbTgKQSOoTJi0LDY3YPS8OkA6DaQMAdWw4AMUrOEGP8XCkkgXhX49zS9-D0wEfFCA0dGzTVtuQMWXQdL5rCm3UJA8pOmg7syGwxl5Y453Ve7xy-rp3lt3vrN2x2FYowNYuG2smZh0Wrfbo4_-1_F2P%20Dragonmaid",
+                "tcg",
+                _isMobile ? "85" : "50",
+                _isMobile ? "_AUTO" : "60",
+                _isMobile ? "14" : "4.8"
+              )
+            );
+          break;
+        case "Combos":
+          document.getElementById("content").style.width = "35vw";
+          document.getElementById("ygolDiv").style.display = "inline";
+          let html = "";
+          for (let el of jsonCrystronCombos) {
+            html += `<p class="comboName" onclick="(()=>{document.querySelector('ygol').setAttribute('replay', '${el.replay}');})()">${el.name} (Click to play replay)</p><br /><p class="comboText">${el.text}</p><br /><br />`;
+          }
+          document.getElementById("content").innerHTML = `
+        <h1>Combos</h1><br />
+        <p>
+          All combos are written in the format:<br />
+          [Action | Active Card] &lt;Cost&gt; {Effect}
+        </p>
+        <br /><br />
+        ${html}`;
+          break;
+        default:
+          document.getElementById("content").innerHTML = "";
+          break;
+      }
+    }
+    function displayCard(name) {
+      let cardObj = jsonResponseDl.filter((a) => a.name == name)[0];
+      cardinfoImg.src = `images/cards/${cardObj.konamiID}.jpg`;
+      cardinfoName.innerHTML = cardObj.name;
+      cardinfoRace.innerHTML = "Type: " + cardObj.race;
+      if (cardObj.attribute == null) {
+        cardinfoAttribute.innerHTML = "";
+      } else {
+        cardinfoAttribute.innerHTML = "Attribute: " + cardObj.attribute;
+      }
+      if (cardObj.level == null) {
+        cardinfoLevel.innerHTML = "";
+      } else {
+        cardinfoLevel.innerHTML = "Level/Rank: " + cardObj.level;
+      }
+      cardinfoEffect.innerHTML = cardObj.description
+        .replace(/\r\n----------------------------------------\r\n/g, "<br>")
+        .replace(/\n/g, "<br>");
+      if (cardObj.atk === undefined || cardObj.atk === null) {
+        cardinfoAtk.innerHTML = "";
+      } else {
+        cardinfoAtk.innerHTML = "ATK: " + cardObj.atk;
+      }
+      if (cardObj.def === undefined || cardObj.def === null) {
+        cardinfoDef.innerHTML = "";
+      } else {
+        cardinfoDef.innerHTML = "DEF: " + cardObj.def;
+      }
+      cardinfoObtain.innerHTML = "";
+      showPopup();
+    }
+    switchPage("Home");
+  </script>
+</html>
