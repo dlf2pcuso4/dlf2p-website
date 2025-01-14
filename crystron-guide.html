@@ -8,9 +8,10 @@
       content="The ultimate Yu-Gi-Oh Crystron guide, with card explanations, decklists and combos."
     />
     <link rel="icon" type="image/x-icon" href="images/logo.png" />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+    />
     <script src="lib/css-picker.js"></script>
     <script src="lib/carddb-dl.js"></script>
     <script src="lib/carddb-md.js"></script>
@@ -202,7 +203,7 @@
                   >Crystron Smiger (x3)</span
                 ><br /><br />The spell/trap searcher. Smiger can banish itself
                 from your GY to search for any Crystron spell/trap. Smiger is a
-                1 card starter by including Almiraj in the extra deck, so play
+                1 card starter by linking it off with Clockwork Knight, so play
                 as many copies of it as you can.
               </td>
             </tr>
@@ -240,7 +241,7 @@
               <td><img src="images/cards/99471856.jpg" /></td>
               <td>
                 <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Tristaros (x2-3)</span
+                  >Crystron Tristaros (x3)</span
                 ><br /><br />The tuner that summons from the deck. Tristaros is
                 easily the best main deck Crystron tuner, because unlike the
                 other tuners, it activates in response to your opponent's card
@@ -464,17 +465,49 @@
           document.getElementById("content").innerHTML = `
         <h1>General Tips</h1>
         <br />
-        <p>
-          Working in progress...
-        </p>`;
+        <div style="white-space: pre-line;">
+<h2>Tristaros Target Dodging</h2>
+It is almost always a good idea to have a copy of Tristaros on the field before you commit to any plays, both going first and second. It functions similarly to S:P Little Knight, letting you chain to your opponent's targeting effects and removing the target from the field.
+
+For example, if you have Tristaros on the field and your opponent tries to chain Effect Veiler to negate the effect of your Sulfador, you can chain the first effect of Tristaros, summon a Citree from your deck, and synchro summon an Eleskeletus using Citree and the targeted Sulfador. Since Sulfador is no longer on the field, Effect Veiler loses its target and the effect of Sulfador resolves.
+
+<h2>Forcing Interactions with S:P</h2>
+When you go second, you can sometimes make an S:P before being machine-locked, usually when you have access to Sulfefnir. You can use its effect to summon Sulfador, send Rosenix, banish it for a token, convert it into Clockwork Knight, and use it as S:P material.
+
+Many supplementary engines in Crystron decks can also make an early S:P, such as using Speedroid Terrortop and Taketomborg by first making a Clockwork Knight.
+
+<h2>Playing Around Nibiru</h2>
+Crystrons have several ways to play around the turn ending rock. Obviously making an early Cyber Dragon Infinity lets you directly negate Nibiru, but in situations where this is not possible, here are some other ways you can recover from a Nibiru effect.
+
+If your opponent activates Nibiru when you have Cyber Dragon Nova on the field, this will trigger Nova's secret graveyard effect to special summon a machine fusion monster. The best target is Invoked Mechaba, which is a negate whose cost can be easily fulfilled by the many searching and recycling effects of your Crystrons.
+
+If you have Tristaros on your field, you can chain Tristaros to the Nibiru to synchro summon Samurai Destroyer. Nibiru's effect will then resolve and tribute the Samurai Destroyer, triggering its graveyard effect to revive any machine monster. Not only can it revive any Crystron you need or a Cyber Dragon Nova, it can also revive itself, which gives you a target for the graveyard effect of Tristaros.
+
+It is also a good idea to keep your Inclusions and Sulfefnirs in your graveyard before you make your Cyber Dragon Infinity so that you have something to do if your board gets wiped.
+
+<h2>Playing Around Droll</h2>
+Despite having many search effects, Crystrons can play around Droll fairly well. You can still summon from your deck using Tristaros and Sulfefnir, and you can still access Cluster by sending it to the graveyard with Sulfador then adding it back with Eleskeletus. Very rarely does Droll completely end your turn, for example if you open Smiger and nothing else.
+
+<h2>Playing Around Mulcharmies</h2>
+Crystrons summon from all locations, but aren't really extremely vulnerable to any specific Mulcharmy because they don't summon that much in any specific location. Fuwalos is the strongest one against the deck, but even then the deck can still make a decent endboard under it. If your opponent stacks multiple Mulcharmies against you, passing on Tristaros (and sometimes Cluster) is always an option.
+
+Purulia isn't really a concern because it usually only gets your opponent 2 draws even when you do your full combo.
+
+Fuwalos is slightly more impactful, but the deck can play around it pretty easily by not summoning Cyber Dragon Infinity. Using the graveyard effect of Tristaros to summon 2 monsters only gives your opponent 1 draw because they are summoned simultaneously.
+
+Meowls usually gets your opponent about 3 draws when you do your full combo. You can give them 1 less draw by not activating the effect of Eleskeletus when it is destroyed by Tristaros, if you already have a strong enough endboard.
+
+<h2>Dawn Dragster is not Hard Once Per Turn</h2>
+Nothing is stopping you from making a second one.
+        </div>`;
           break;
         case "Decklists":
           document.getElementById("content").innerHTML = `
-          <h1>Decklists</h1>
+          <h1>Sample Decklists</h1>
         <br />
         <div class="flexdivc">
           <div>
-            <p>Pure Crystrons</p>
+            <p>Pure Crystron</p>
             <br />
             <div id="deck1"></div>
           </div>
@@ -482,16 +515,46 @@
         <br />
         <div class="flexdivc">
           <div>
-            <p>More decklists working in progress...</p>
+            <p>Fiendsmith Crystron</p>
             <br />
             <div id="deck2"></div>
+          </div>
+        </div>
+        <br />
+        <div class="flexdivc">
+          <div>
+            <p>Azamina Kashtira Crystron</p>
+            <br />
+            <div id="deck3"></div>
           </div>
         </div>`;
           document
             .getElementById("deck1")
             .appendChild(
               newDeckElement(
-                "66ajl4ibYxt2GxkDeVesda6psYXHpZqwFhr1y4CtriIrH4eGUK2RM1yta05t6y9e9mbEw4X5xkNqqF8nx70MABONm6yt0-nuAt4MKbnn3logTE0jZGerKEEE2pc6YkI0xsBXj3To62GE4SCU0vx-516PFlWBjFRbpcduZuT5v0SL_-1_Pure%20Crystron_Clockwork%20Knight",
+                "ds2QhjXo5ZXk1eFDGtNeMGqyh-uiY6bL2qCTMS2VOTp3HkbE2as-J2PSxjZkxGqMooH-yISmPQH6SViDd8sWyc0nXHiH6N7PFakKXvSK8JyM49kSERkLpdW-ObCRX0b6r96SnzbtLPzHsKzYULeWHWZSWmANAuwfI4PqMxOY-NvZ6DJml1_-1_Pure%20Crystron",
+                "tcg",
+                _isMobile ? "85" : "50",
+                _isMobile ? "_AUTO" : "60",
+                _isMobile ? "14" : "4.8"
+              )
+            );
+          document
+            .getElementById("deck2")
+            .appendChild(
+              newDeckElement(
+                "GDop0Wrl7l2sHN-QIv2ll2wxAoi5sGxL7aE6VneweQoQzTpOwAf7meY4IDQdc4-9uad1shXA6qvScValyy5XxkJkGRqcgepkL2-PWlqQc9rj5dDmsiXyxd7cKtoK-H6YS6DhGU0Grk3Uj6OqkYX9WMmtjkVACvezDpNgPDfGRgnCNvGudRwCA7ZiuvHNUKelg2zFN9Dv_-1_Fiendsmith%20Crystron",
+                "tcg",
+                _isMobile ? "85" : "50",
+                _isMobile ? "_AUTO" : "60",
+                _isMobile ? "14" : "4.8"
+              )
+            );
+          document
+            .getElementById("deck3")
+            .appendChild(
+              newDeckElement(
+                "dwy8XBh7aOtzblngXsvvmMkZ94iUR3HO8mK5YP49pGKpexvY6mRmQnsWc07jRzrHYbqxHYwKIoYc8kudpw4yn6yZdbKSf2hfwAPqUfNiy5gXDf-8YGQwCQYWutSMiNrHLGlGWB8qTJfOoN82gBpGCSqSgvEdxhzWvz1dg6bebIfuTpCj6kNeSDVrTRW6S3oGaMxevoanGamq_-1_Azamina%20Kashtira%20Crystron",
                 "tcg",
                 _isMobile ? "85" : "50",
                 _isMobile ? "_AUTO" : "60",
@@ -504,7 +567,11 @@
           document.getElementById("ygolDiv").style.display = "inline";
           let html = "";
           for (let el of jsonCrystronCombos) {
-            html += `<p class="comboName" onclick="(()=>{document.querySelector('ygol').setAttribute('replay', '${el.replay}');})()">${el.name} (Click to play replay)</p><br /><p class="comboText">${el.text}</p><br /><br />`;
+            html += `<p class="comboName" onclick="(()=>{document.querySelector('ygol').setAttribute('replay', '${
+              el.replay
+            }');})()">${el.name}${
+              el.replay ? " (Click to play replay)" : ""
+            }</p><br /><p class="comboText">${el.text}</p><br /><br />`;
           }
           document.getElementById("content").innerHTML = `
         <h1>Combos</h1><br />
@@ -513,8 +580,7 @@
           [Action | Active Card] &lt;Cost&gt; {Effect}
         </p>
         <br /><br />
-        ${html}
-        <p>More combos working in progress...</p>`;
+        ${html}`;
           break;
         default:
           document.getElementById("content").innerHTML = "";
