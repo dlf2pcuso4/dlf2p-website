@@ -25,6 +25,7 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
         background-color: #000000;
+        text-align: left;
       }
       nav {
         background-color: #00000080;
@@ -50,11 +51,29 @@
         background-color: #5e3cb3;
         font-size: 1.6vw;
       }
+      #_navbar {
+        width: 55%;
+        cursor: pointer;
+      }
+      #_navbar img {
+        width: 12vw;
+      }
+      #_navtgl img {
+        width: 12vw;
+        cursor: pointer;
+      }
+      #_navbar p {
+        font-size: 4vw;
+        margin: 3vh;
+      }
       #content {
         background-color: #000000c0;
         width: 70vw;
         height: 70vh;
         padding: 3vw;
+        overflow: scroll;
+      }
+      #content2 {
         overflow: scroll;
       }
       #ygolDiv {
@@ -66,9 +85,17 @@
       }
       table {
         width: 65vw;
+        margin: 0px;
+      }
+      td span {
+        font-size: 1.7vw;
+        font-weight: bold;
       }
       td {
         font-size: 1.2vw;
+      }
+      td img {
+        width: 10vw;
       }
       .comboName {
         font-weight: bold;
@@ -76,9 +103,19 @@
         cursor: pointer;
         color: #8b91ff;
       }
+      .comboNameMobile {
+        font-weight: bold;
+        font-size: 3.4vw;
+        cursor: pointer;
+        color: #8b91ff;
+      }
       .comboText {
         white-space: pre-line;
         font-size: 1vw;
+      }
+      .comboTextMobile {
+        white-space: pre-line;
+        font-size: 2.5vw;
       }
       canvas {
         width: 30vw;
@@ -103,11 +140,23 @@
         <p>Replay Player</p>
         <br />
         <ygol
-          yld="rAWnkizgeXb3tTUSaVX6IjRmXi7d45fpuPwoaaQc79FOAKYBXe4s_MyHd5_nK4hcEViheu_SaaPi0XKGB0iS-2AZMBEWwf5AudoTdCErBSHIYNjMIfbNVmOyN79KUg0OX"
+          yld="DJeqPGnhtZ6023dOLnDrsep0uPymGyaW_afxT659Pa1s8VGIp5WqRjXWeQ1I2hVHliIY4htAz8bEp6PoO0KN80XwhZskPDitICqoDL1xO3Js7lXePPinv0i2UPDxibiDaujiqMrmyTA0I1QTviJqwB"
           autoplay="true"
           simple-ui="true"
         ></ygol>
+        <div id="content2"></div>
       </div>
+    </div>
+    <div id="_navtgl" onclick="showNav()">
+      <img src="images/navtgl.png" />
+    </div>
+    <div id="_navbar" onclick="hideNav()">
+      <p onclick="switchPage(this.innerHTML)">Home</p>
+      <p onclick="switchPage(this.innerHTML)">Card Overview</p>
+      <p onclick="switchPage(this.innerHTML)">Deck Variations</p>
+      <p onclick="switchPage(this.innerHTML)">General Tips</p>
+      <p onclick="switchPage(this.innerHTML)">Decklists</p>
+      <p onclick="switchPage(this.innerHTML)">Combos</p>
     </div>
   </body>
   <script src="lib/deckcode-handler.js"></script>
@@ -117,9 +166,41 @@
   <script src="lib/temp-fix.js"></script>
   <script src="https://dlf2pcuso4.github.io/ygo-lightning-solo/v1/main.js"></script>
   <script>
+    //handle mobile ui
+
+    if (_isMobile) {
+      document.querySelector("nav").style.display = "none";
+      document.getElementById("_navtgl").style.cssText =
+        "position:fixed;height:min-content;width:min-content;margin:5px;inset:0px;z-index:4;";
+      document.getElementById("_navbar").style.cssText =
+        "position:fixed;height:100%;inset:0px;background-color:#000000;z-index:3;";
+      document.getElementById("_navbar").style.display = "none";
+      document.getElementById("_navbar").innerHTML =
+        '<div style="margin:5px;">' +
+        document.getElementById("_navtgl").innerHTML +
+        '</div><div style="display:flex;justify-content:center;"><div id="_navlinks">' +
+        document.getElementById("_navbar").innerHTML +
+        "</div></div>";
+      function showNav() {
+        document.getElementById("_navbar").style.display = "block";
+        document.getElementById("_navtgl").style.display = "none";
+      }
+      function hideNav() {
+        document.getElementById("_navbar").style.display = "none";
+        document.getElementById("_navtgl").style.display = "block";
+      }
+      document.getElementById("content").style.height = "95vh";
+    } else {
+      document.getElementById("_navtgl").style.display = "none";
+      document.getElementById("_navbar").style.display = "none";
+    }
+    //functions
     function switchPage(page) {
       if (page != "Combos") {
-        document.getElementById("content").style.width = "70vw";
+        document.getElementById("content").style.width = _isMobile
+          ? "80vw"
+          : "70vw";
+        document.getElementById("content").style.display = "block";
         document.getElementById("ygolDiv").style.display = "none";
       }
       switch (page) {
@@ -140,9 +221,28 @@
         <p>Website made by: DLF2P</p>`;
           break;
         case "Card Overview":
+          if (_isMobile)
+            document.head.insertAdjacentHTML(
+              "beforeend",
+              `<style>
+      table {
+        width: 80vw;
+      }
+      #f2pTable td {
+        font-size: 3vw;
+      }
+      #f2pTable td span {
+        font-size: 3.6vw;
+        font-weight: bold;
+      }
+      #f2pTable td img {
+        width: 15vw;
+      }
+    </style>`
+            );
           document.getElementById("content").innerHTML = `
         <h1>Card Overview</h1>
-        <p>Click on the cards for card information.</p>
+        <p>Click on the cards for card information.</p><br />
         <table id="f2pTable">
           <tbody>
             <tr>
@@ -154,8 +254,7 @@
             <tr onclick="displayCard('Crystron Sulfefnir')">
               <td><img src="images/cards/3422200.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Sulfefnir (x3)</span
+                <span>Crystron Sulfefnir (x3)</span
                 ><br /><br />Sulfefnir can summon itself from your hand or GY by
                 discarding a Crystron card, then destroying a card on your field
                 (usually itself). This will trigger its second effect that
@@ -169,8 +268,7 @@
             <tr onclick="displayCard('Crystron Sulfador')">
               <td><img src="images/cards/25865565.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Sulfador (x2-3)</span
+                <span>Crystron Sulfador (x2-3)</span
                 ><br /><br />The archetypal double foolish burial. Sulfador can
                 summon itself from your hand or GY by popping a face-up Crystron
                 card, then locks into Machine monsters from the extra deck. When
@@ -186,8 +284,7 @@
             <tr onclick="displayCard('Crystron Thystvern')">
               <td><img src="images/cards/29838323.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Thystvern (x1)</span
+                <span>Crystron Thystvern (x1)</span
                 ><br /><br />The monster searcher. Thystvern can banish itself
                 from your GY to search for any Crystron monster. Unlike Smiger,
                 Thystvern is not a 1 card starter on its own, so playing 1 copy
@@ -199,8 +296,7 @@
             <tr onclick="displayCard('Crystron Smiger')">
               <td><img src="images/cards/83443619.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Smiger (x3)</span
+                <span>Crystron Smiger (x3)</span
                 ><br /><br />The spell/trap searcher. Smiger can banish itself
                 from your GY to search for any Crystron spell/trap. Smiger is a
                 1 card starter by linking it off with Clockwork Knight, so play
@@ -212,8 +308,7 @@
             <tr onclick="displayCard('Crystron Rosenix')">
               <td><img src="images/cards/55326322.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Rosenix (x0-1)</span
+                <span>Crystron Rosenix (x0-1)</span
                 ><br /><br />Rosenix can banish itself from your GY to generate
                 a lv.1 token which can be used as synchro or link material.
                 Rosenix is commonly used for its tuner summoning effect when you
@@ -226,8 +321,7 @@
             <tr onclick="displayCard('Crystron Prasiortle')">
               <td><img src="images/cards/56049970.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Prasiortle (x0-1)</span
+                <span>Crystron Prasiortle (x0-1)</span
                 ><br /><br />Prasiortle can banish itself from your GY to
                 special summon a Crystron monster from your hand. This effect is
                 usually not very useful unless you draw too many Crystron
@@ -240,8 +334,7 @@
             <tr onclick="displayCard('Crystron Tristaros')">
               <td><img src="images/cards/99471856.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Tristaros (x3)</span
+                <span>Crystron Tristaros (x3)</span
                 ><br /><br />The tuner that summons from the deck. Tristaros is
                 easily the best main deck Crystron tuner, because unlike the
                 other tuners, it activates in response to your opponent's card
@@ -261,8 +354,7 @@
             <tr onclick="displayCard('Crystron Citree')">
               <td><img src="images/cards/20050865.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Citree (x0-1)</span
+                <span>Crystron Citree (x0-1)</span
                 ><br /><br />The tuner that summons from the GY, and banishes
                 the materials after synchro summoning. The best of the
                 non-Tristaros tuners, and although it is technically fine to
@@ -275,8 +367,7 @@
             <tr onclick="displayCard('Crystron Rion')">
               <td><img src="images/cards/66938505.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Rion (x0-1)</span
+                <span>Crystron Rion (x0-1)</span
                 ><br /><br />The tuner that summons from banishment, and
                 shuffles the materials back to your deck after synchro
                 summoning. Rion is a lot less useful than Tristaros and Citree,
@@ -290,8 +381,7 @@
             <tr onclick="displayCard('Crystron Quan')">
               <td><img src="images/cards/93665266.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Quan (x0)</span
+                <span>Crystron Quan (x0)</span
                 ><br /><br />The tuner that summons from hand. Quan is terrible
                 and only sees play in very specific builds that can reliably get
                 a non-tuner in your hand that is worth sending to the GY during
@@ -303,8 +393,7 @@
             <tr onclick="displayCard('Crystron Inclusion')">
               <td><img src="images/cards/31552317.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Inclusion (x3)</span
+                <span>Crystron Inclusion (x3)</span
                 ><br /><br />The archetypal search spell. On activation,
                 Inclusion adds any Crystron card from your deck to your hand. It
                 gives your monsters battle protection while it is on your field,
@@ -319,8 +408,7 @@
             <tr onclick="displayCard('Crystron Cluster')">
               <td><img src="images/cards/53829527.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Cluster (x1)</span
+                <span>Crystron Cluster (x1)</span
                 ><br /><br />The archetypal interruption trap. Once per turn,
                 you can destroy 1 face-up card on the field by shuffling 1
                 Crystron card from your GY or banishment into the Deck, or
@@ -335,8 +423,7 @@
             <tr onclick="displayCard('Crystron Impact')">
               <td><img src="images/cards/99274184.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Impact (x0)</span
+                <span>Crystron Impact (x0)</span
                 ><br /><br />Impact special summons a banished Crystron monster
                 and sets your opponent's face-up monsters' DEF to 0, getting you
                 a free body for synchro summoning in your opponent's turn while
@@ -352,8 +439,7 @@
             <tr onclick="displayCard('Crystron Entry')">
               <td><img src="images/cards/52176579.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Entry (x0)</span
+                <span>Crystron Entry (x0)</span
                 ><br /><br />Entry special summons a Crystron tuner from both
                 the hand and GY, and can banish itself from the GY to send a
                 Crystron monster from your deck to the GY and change a Crystron
@@ -368,8 +454,7 @@
             <tr onclick="displayCard('Crystron Quandax')">
               <td><img src="images/cards/39964797.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Quandax (x0-1)</span
+                <span>Crystron Quandax (x0-1)</span
                 ><br /><br />Quandax is a tuner synchro monster that has a quick
                 effect to synchro summon any synchro monster using materials
                 from your field. When destroyed, it special summons a
@@ -383,8 +468,7 @@
             <tr onclick="displayCard('Crystron Ametrix')">
               <td><img src="images/cards/76359406.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Ametrix (x0-1)</span
+                <span>Crystron Ametrix (x0-1)</span
                 ><br /><br />When synchro summoned, Ametrix changes all special
                 summoned monsters your opponent controls to defense position.
                 When destroyed, it special summons a non-synchro Crystron
@@ -400,8 +484,7 @@
             <tr onclick="displayCard('Crystron Eleskeleus')">
               <td><img src="images/cards/47736165.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Eleskeleus (x2)</span
+                <span>Crystron Eleskeleus (x2)</span
                 ><br /><br />When synchro summoned, Eleskeleus adds a Crystron
                 card from your GY or banishment to your hand. When destroyed, it
                 special summons any Crystron monster from your GY or banishment.
@@ -418,8 +501,7 @@
             <tr onclick="displayCard('Crystron Phoenix')">
               <td><img src="images/cards/2743001.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Phoenix (x0)</span
+                <span>Crystron Phoenix (x0)</span
                 ><br /><br />Phoenix has a difficult summoning condition of
                 needing 2 synchro monsters as material. When synchro summoned,
                 Phoenix banishes all spells and traps from your opponent's field
@@ -434,8 +516,7 @@
             <tr onclick="displayCard('Crystron Quariongandrax')">
               <td><img src="images/cards/13455674.jpg" /></td>
               <td>
-                <span style="font-size: 1.7vw; font-weight: bold"
-                  >Crystron Quariongandrax (x1-2)</span
+                <span>Crystron Quariongandrax (x1-2)</span
                 ><br /><br />Quariongandrax has a unique summoning condition of
                 needing 1 non-tuner and 2 (or more) tuners as material. When
                 synchro summoned, Quariongandrax banishes 3 monsters from your
@@ -532,7 +613,7 @@ Nothing is stopping you from making a second one.
             .getElementById("deck1")
             .appendChild(
               newDeckElement(
-                "ds2QhjXo5ZXk1eFDGtNeMGqyh-uiY6bL2qCTMS2VOTp3HkbE2as-J2PSxjZkxGqMooH-yISmPQH6SViDd8sWyc0nXHiH6N7PFakKXvSK8JyM49kSERkLpdW-ObCRX0b6r96SnzbtLPzHsKzYULeWHWZSWmANAuwfI4PqMxOY-NvZ6DJml1_-1_Pure%20Crystron",
+                "ds2QhjZxO6mewPLUQZLg7a6gV1KyXVQJpLTClBzfiy93QITZfFFYammmGIH8S20cOgw-2D8wa0gJV2cCbVfATbcdVCpwQoC9zi10CkAn5SQbD76xd8NHd2OGK6hKWla3W-zMMoTFkTIxnyvIhg8OQYqzg28KoiB90Qq4rLUN9uyLGRqjGg_-1_Pure%20Crystron",
                 "tcg",
                 _isMobile ? "85" : "50",
                 _isMobile ? "_AUTO" : "60",
@@ -563,17 +644,27 @@ Nothing is stopping you from making a second one.
             );
           break;
         case "Combos":
-          document.getElementById("content").style.width = "35vw";
           document.getElementById("ygolDiv").style.display = "inline";
           let html = "";
           for (let el of jsonCrystronCombos) {
-            html += `<p class="comboName" onclick="(()=>{document.querySelector('ygol').setAttribute('replay', '${
+            html += `<p class="${
+              _isMobile ? "comboNameMobile" : "comboName"
+            }" onclick="(()=>{document.querySelector('ygol').setAttribute('replay', '${
               el.replay
             }');})()">${el.name}${
               el.replay ? " (Click to play replay)" : ""
-            }</p><br /><p class="comboText">${el.text}</p><br /><br />`;
+            }</p><br /><p class="${
+              _isMobile ? "comboTextMobile" : "comboText"
+            }">${el.text}</p><br /><br />`;
           }
-          document.getElementById("content").innerHTML = `
+          if (_isMobile) {
+            document.querySelector("canvas").style.width = "80vw";
+            document.getElementById("content").style.display = "none";
+            document.getElementById("ygolDiv").style.width = "80vw";
+            document.getElementById("ygolDiv").style.height = "95vh";
+            document.getElementById("content").innerHTML = "";
+            document.getElementById("content2").style.height = "65vh";
+            document.getElementById("content2").innerHTML = `
         <h1>Combos</h1><br />
         <p>
           All combos are written in the format:<br />
@@ -581,6 +672,17 @@ Nothing is stopping you from making a second one.
         </p>
         <br /><br />
         ${html}`;
+          } else {
+            document.getElementById("content").style.width = "35vw";
+            document.getElementById("content").innerHTML = `
+        <h1>Combos</h1><br />
+        <p>
+          All combos are written in the format:<br />
+          [Action | Active Card] &lt;Cost&gt; {Effect}
+        </p>
+        <br /><br />
+        ${html}`;
+          }
           break;
         default:
           document.getElementById("content").innerHTML = "";
