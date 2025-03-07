@@ -98,11 +98,14 @@
             bw: 1.88,
             bh: 1.88,
           };
-      innerHTML += `<img src="images/cards/${item.konamiID}.jpg" style="width:${
-        cardsizes.w
-      }vw;height:${cardsizes.h}vw;margin:${cardsizes.rh + cardsizes.m}vw ${
+      console.log(item.konamiID ? item.konamiID : item.name);
+      innerHTML += `<img src="images/cards/${
+        item.konamiID ? item.konamiID : item.name
+      }.jpg" style="width:${cardsizes.w}vw;height:${cardsizes.h}vw;margin:${
+        cardsizes.rh + cardsizes.m
+      }vw ${cardsizes.m}vw ${cardsizes.m}vw ${
         cardsizes.m
-      }vw ${cardsizes.m}vw ${cardsizes.m}vw;" onclick="cardPopup(${
+      }vw;" onclick="cardPopup(${
         item.konamiID
       })" onerror="this.onerror=null;this.src='images/noimage.jpg';" />`;
       if (item.rarity) {
