@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Top Zero Gem Decks</title>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="A list of tournament winning decklists in the Zero Gem Duel Links format."
+    />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+    </style>
+    <script src="lib/css-picker.js"></script>
+    <script src="lib/dlzgdeckdb.js"></script>
+    <script src="lib/no-gem-banlist-db.js"></script>
+    <script src="lib/carddb-dl.js"></script>
+    <script>
+      //temp hacky fix to implement dlzg banlist
+      for (let el of jsonResponseDl) {
+        el.banStatus = null;
+      }
+      for (let card of jsonNoGemBanlist) {
+        for (let el of jsonResponseDl) {
+          if (el.name == card.name) {
+            el.banStatus = card.banStatus;
+          }
+        }
+      }
+    </script>
+    <script src="lib/carddb-md.js"></script>
+    <script src="lib/skilldb-dl.js"></script>
+    <script src="lib/dlf2pID.js"></script>
+  </head>
+  <body>
+    <div class="flexdivc">
+      <div>
+        <h1 style="text-align: center">Top Zero Gem Decks</h1>
+        <br />
+        <div class="flexdivc">List of tournament topping decks</div>
+        <div id="decks" style="width: min-content"></div>
+      </div>
+    </div>
+  </body>
+  <script src="lib/navbar-handler.js"></script>
+  <script src="lib/deckcode-handler.js"></script>
+  <script src="lib/priority-handler.js"></script>
+  <script src="lib/popup-handler.js"></script>
+  <script src="lib/deck-viewer-handler.js"></script>
+  <script>
+    const params = new URL(document.location).searchParams;
+    const t = params.get("t");
+    var jsonTopZgfiltered = jsonResponseTopZg.filter((a) => a.id == t)[0];
+    if (!jsonTopZgfiltered)
+      jsonTopZgfiltered = jsonResponseTopZg[jsonResponseTopZg.length - 1];
+    document.querySelector("h1").innerHTML = jsonTopZgfiltered.name;
+    for (let i = 0; i < jsonTopZgfiltered.decks.length; i++) {
+      const flexdiv = document.createElement("div");
+      if (!_isMobile) flexdiv.classList = "flexdiv";
+      document.getElementById("decks").appendChild(flexdiv);
+      const innerDiv = document.createElement("div");
+      innerDiv.style.padding = "1vw";
+      flexdiv.appendChild(innerDiv);
+      innerDiv.appendChild(
+        newDeckElement(
+          jsonTopZgfiltered.decks[i].link.split("d=")[1],
+          "dl",
+          _isMobile ? "85" : "50",
+          _isMobile ? "_AUTO" : "60",
+          _isMobile ? "14" : "4.8"
+        )
+      );
+      const text = document.createElement("p");
+      text.style.padding = "1vw";
+      text.style.width = _isMobile ? "80vw" : "30vw";
+      text.style.textAlign = "left";
+      text.style.fontSize = _isMobile ? "5vw" : "1.6vw";
+      text.innerHTML =
+        jsonTopZgfiltered.decks[i].text.replace(/\n/g, "<br><br>") + "<br><br>";
+      if (_isMobile) {
+        text.innerHTML += "<br><br>";
+        const mobilediv = document.createElement("div");
+        mobilediv.classList = "flexdivc";
+        flexdiv.appendChild(mobilediv);
+        mobilediv.appendChild(text);
+      } else {
+        flexdiv.appendChild(text);
+      }
+    }
+  </script>
+</html>
