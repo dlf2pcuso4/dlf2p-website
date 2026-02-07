@@ -107,7 +107,9 @@
         cardsizes.m
       }vw;" onclick="cardPopup(${
         item.konamiID
-      })" onerror="this.onerror=null;this.src='images/noimage.jpg';" />`;
+      })" onerror="this.onerror=null;this.src='https://images.ygoprodeck.com/images/cards/${
+        item.konamiID
+      }.jpg';" />`;
       if (item.rarity) {
         innerHTML += `<img src="images/dltag${item.rarity}.png" style="width:${
           cardsizes.rw
