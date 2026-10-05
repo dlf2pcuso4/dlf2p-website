@@ -1,49 +1,1937 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <title>Deck Builder</title>
     <meta charset="utf-8" />
     <meta
       name="description"
-      content="Deck builder for Duel Links, Master Duel, TCG and OCG."
+      content="Deck builder for Duel Links, Master Duel, TCG or OCG in the browser. Includes a solo testing feature for test hands and practising combos."
     />
     <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <title>DLF2P Editor</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
-    </style>
-    <style>
-      h1 {
-        display: none;
+      /* ===== colour scheme "Indigo": every colour in this page is defined here ===== */
+      :root {
+        --page-bg: #07060c;
+        --text: #dee0f7;
+        --text-muted: #98a1ec; /* secondary text and placeholders */
+        --frame-border: #8672cb; /* outline around the whole page */
+        --panel-bg: #0e0b1e; /* boxes inside the frame */
+        --panel-border: #8672cb;
+        --input-bg: #2a2e54;
+        --input-text: #dee0f7;
+        --btn-bg: #2a2e54;
+        --btn-border: #4a50be;
+        --btn-text: #dee0f7;
+        --highlight-bg: #4474c9; /* hovered/selected buttons (blues) */
+        --highlight-border: #93e3fa; /* also used for focus outlines */
+        --highlight-text: #cfeaff;
+        --highlight-glow: #2f58c2cc;
+        --popup-bg: #07060cf0; /* popups (semi-transparent) */
+        --skill-text: #ffff77;
+        --scroll-track: #0c0c24;
+        --scroll-thumb: #34358f;
       }
-      iframe {
+      /* Barlow (SIL Open Font License, see fonts/OFL.txt), bundled so every system shows the same font */
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-300-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-300-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-500-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-500-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      :root {
+        /* Barlow is bundled in fonts/; the rest are each system's closest match if it can't load */
+        --font: "Barlow", "Bahnschrift", "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      }
+      body {
+        background-color: var(--page-bg);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: var(--font);
+        font-weight: lighter;
+        font-size: 1.7vw;
+        color: var(--text);
+      }
+      #body {
+        display: flex;
+        border-width: max(0.14vw, 2px);
+        border-color: var(--frame-border);
+        border-style: solid;
+      }
+      #body > div {
+        margin: 10px;
+      }
+      .purple {
+        background-color: var(--panel-bg);
+        border-width: max(0.28vw, 2px);
+        border-color: var(--panel-border);
+        border-style: solid;
+      }
+      p {
+        margin-top: 2vh;
+      }
+      input {
+        padding: 0.35vw;
+        font-size: 1.74vw;
+        font-family: var(--font);
+        font-weight: lighter;
+        color: var(--input-text);
+        background-color: var(--input-bg);
+        border: none;
+        width: 21vw;
+        margin-bottom: 1vh;
+      }
+      button {
+        width: 13.9vw;
+        height: 6.48vh;
+        background-color: var(--btn-bg);
+        font-family: var(--font);
+        font-weight: lighter;
+        font-size: 1.4vw;
+        color: var(--btn-text);
+        border-width: max(0.28vw, 2px);
+        border-color: var(--btn-border);
+        border-style: solid;
+        cursor: pointer;
+        padding: 0px;
+        outline: none;
+        margin-bottom: 1vh;
+        /* fades both ways: lighting up on hover and dimming when the cursor leaves */
+        transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      /* hovered buttons, and selected filter/sort buttons, light up in blue */
+      button:hover,
+      button.selected {
+        background-color: var(--highlight-bg);
+        border-color: var(--highlight-border);
+        color: var(--highlight-text);
+        box-shadow: 0 0 max(0.7vw, 6px) var(--highlight-glow);
+      }
+      button:focus-visible {
+        border-color: var(--highlight-border);
+      }
+      input::placeholder {
+        color: var(--text-muted);
+        opacity: 1;
+      }
+      input:focus {
+        outline: max(0.14vw, 2px) solid var(--highlight-border);
+        outline-offset: 0;
+      }
+      #main,
+      #extra,
+      #searchResult,
+      #popup {
+        scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+      }
+      ::-webkit-scrollbar {
+        width: max(0.6vw, 8px);
+        height: max(0.6vw, 8px);
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--scroll-track);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--scroll-thumb);
+      }
+      ::-webkit-scrollbar-corner {
+        background: var(--scroll-track);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        button {
+          transition: none;
+        }
+      }
+      .minibtn {
+        width: 10.4vw;
+        height: 5.2vh;
+        font-size: 1vw;
+        border-width: max(0.2vw, 2px);
+      }
+      .filterbtn {
+        width: 6.9vw;
+        height: 5.2vh;
+        font-size: 1vw;
+        border-width: max(0.2vw, 2px);
+      }
+      #main {
+        margin-bottom: 1.3vh;
+        padding: 0.7vw;
+        width: 43.5vw;
+        height: 50vh;
+        overflow-y: scroll;
+      }
+      #extra {
+        padding: 0.7vw;
+        width: 43.5vw;
+        height: 25vh;
+        overflow-y: scroll;
+      }
+      #searchResult {
+        width: 29vw;
+        height: 50vh;
+        overflow-y: scroll;
+        margin-bottom: 1.3vh;
+      }
+      #popupCss1 {
         width: 100vw;
-        height: 90vh;
+        height: 100vh;
+        margin: 0px;
+        padding: 0px;
+        z-index: 9999;
+        position: fixed;
+        display: none;
+        justify-content: center;
+      }
+      #popupCss2 {
+        height: 100vh;
+        margin: 0px;
+        padding: 0px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      #popup {
+        width: 55.6vw;
+        height: 80vh;
+        overflow: scroll;
+        background-color: var(--popup-bg);
+        padding: 1.4vw;
+        justify-content: center;
+        font-size: 1vw;
+        position: relative;
+      }
+      .cardname {
+        font-size: 1.4vw;
+        text-align: center;
+      }
+      .skilltext {
+        color: var(--skill-text);
+        cursor: pointer;
+      }
+      .filterheader {
+        font-size: 1.7vw;
+        margin-bottom: 0.7vw;
+      }
+      img {
+        transition: filter 0.5s ease-out;
+        user-select: none;
+      }
+      .white-out {
+        filter: brightness(1000%);
       }
     </style>
-    <script src="lib/css-picker.js"></script>
-    <script src="lib/carddb-dl.js"></script>
-    <script src="lib/skilldb-dl.js"></script>
-    <script src="lib/carddb-md.js"></script>
   </head>
   <body>
-    <h1>Deck Builder</h1>
-    <div id="iframediv" class="flexdivc"></div>
+    <div id="popupCss1">
+      <div id="popupCss2">
+        <div id="popup"></div>
+      </div>
+    </div>
+    <div id="body">
+      <div id="deck">
+        <button id="btnFormat" class="minibtn" onclick="switchFormat()">
+          Format: TCG
+        </button>
+        <button class="minibtn" onclick="sortDeck()">Sort Deck</button>
+        <button class="minibtn" id="btnControl" onclick="showControls()">
+          Editor Menu
+        </button>
+        <button id="switchMainSide" class="minibtn" onclick="switchMainSide()">
+          View Side Deck
+        </button>
+        <button id="switchMode" class="minibtn" onclick="switchMode()">
+          Mode: View
+        </button>
+        <div class="cardname skilltext" id="skillname">Skill Not Set</div>
+        <div id="main" class="purple"></div>
+        <div id="extra" class="purple"></div>
+      </div>
+      <div id="controls">
+        <input
+          id="deckName"
+          value="Untitled Deck"
+          type="text"
+          placeholder="Deck name..."
+          autocomplete="off"
+        />
+        <button class="filterbtn" id="btnViewDeck" onclick="showControls()">
+          View Deck</button
+        ><br />
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search card..."
+          onkeyup="cardSearch()"
+          autocomplete="off"
+        />
+        <button class="filterbtn" onclick="openFilter()">Options</button>
+        <br />
+        <input
+          id="skillInput"
+          type="text"
+          placeholder="Search skill..."
+          onkeyup="skillSearch()"
+          autocomplete="off"
+        />
+        <div id="searchResult" class="purple"></div>
+        <button id="testhands" onclick="testHands()">Test Hands</button>
+        <button id="copyYdke" onclick="copyYdke()">Copy ydke</button><br />
+        <button id="download" onclick="downloadDeck()">Download</button>
+        <button id="upload" onclick="uploadDeck()">Upload</button>
+        <input
+          id="uploadInput"
+          type="file"
+          accept=".yld"
+          style="display: none"
+          onchange="loadUploadedDeck(this)"
+        />
+      </div>
+    </div>
   </body>
-  <script src="lib/navbar-handler.js"></script>
-  <script src="lib/popup-handler.js"></script>
   <script>
-    if (_isMobile)
+    //=== YgolDeck: deck format conversion (yld / ydk / ydke / dlf2pV2) ===
+    class YgolDeck {
+      constructor(db, ygolID, isRush) {
+        this.db = db;
+        this.ygolID = ygolID;
+        this.isRush = isRush;
+        //cards skipped by the last convert() because they aren't in the database
+        this.missing = [];
+      }
+      hasCard(name) {
+        if (!this.dbNames) this.dbNames = new Set(this.db.map((a) => a.name));
+        return this.dbNames.has(name);
+      }
+      convert(d, format) {
+        this.missing = [];
+        switch (format) {
+          case "yld":
+            return this.namelist_to_yld(this.toNamelist(d));
+          case "ydk":
+            return this.namelist_to_ydk(this.toNamelist(d));
+          case "ydke":
+            return this.ydk_to_ydke(this.namelist_to_ydk(this.toNamelist(d)));
+          case "dlf2pV2":
+            return this.namelist_to_dlf2pV2(this.toNamelist(d));
+          case "namelist":
+            return this.toNamelist(d);
+        }
+      }
+      toNamelist(d) {
+        if (d.includes("#main") || d.includes("#extra")) {
+          return this.ydk_to_namelist(d);
+        } else if (d.includes("ydke://")) {
+          return this.ydk_to_namelist(this.ydke_to_ydk(d));
+        } else if (d.includes("yld://")) {
+          return this.yld_to_namelist(d);
+        } else if (d.slice(0, 2) == "3_") {
+          //dlf2pv3
+        } else {
+          return this.dlf2pV2_to_namelist(d);
+        }
+      }
+      isEDMonster(name) {
+        let card = this.db.filter((a) => a.name == name)[0];
+        if (!card) return false;
+        return (
+          card.monsterType.includes("Fusion") ||
+          card.monsterType.includes("Synchro") ||
+          card.monsterType.includes("Xyz") ||
+          card.monsterType.includes("XYZ") ||
+          card.monsterType.includes("Link")
+        );
+      }
+      ydk_to_ydke(ydk) {
+        function Uint32Array_to_ydke(main, extra, side) {
+          function passcodesToBase64(passcodes) {
+            const bytes = new Uint8Array(passcodes.buffer);
+            let binaryString = "";
+            for (let i = 0; i < bytes.length; i++) {
+              binaryString += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binaryString);
+          }
+          return (
+            "ydke://" +
+            passcodesToBase64(main) +
+            "!" +
+            passcodesToBase64(extra) +
+            "!" +
+            passcodesToBase64(side) +
+            "!"
+          );
+        }
+        function stringsToUint32Array(stringsArray) {
+          const uint32Array = new Uint32Array(stringsArray.length);
+          for (let i = 0; i < stringsArray.length; i++)
+            uint32Array[i] = parseInt(stringsArray[i], 10);
+          return uint32Array;
+        }
+        let main = ydk
+          .split("#main")[1]
+          .split("#extra")[0]
+          .split("\n")
+          .filter((a) => a != "");
+        let extra = ydk
+          .split("#extra")[1]
+          .split("!side")[0]
+          .split("\n")
+          .filter((a) => a != "");
+        let side = ydk
+          .split("!side")[1]
+          .split("\n")
+          .filter((a) => a != "");
+        return Uint32Array_to_ydke(
+          stringsToUint32Array(main),
+          stringsToUint32Array(extra),
+          stringsToUint32Array(side)
+        );
+      }
+      ydke_to_ydk(ydke) {
+        function ydke_to_Uint32Array(ydke) {
+          function base64ToPasscodes(base64) {
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new Uint32Array(bytes.buffer);
+          }
+          const components = ydke.slice("ydke://".length).split("!");
+          return {
+            main: base64ToPasscodes(components[0]),
+            extra: base64ToPasscodes(components[1]),
+            side: base64ToPasscodes(components[2]),
+          };
+        }
+        return JSON.stringify(ydke_to_Uint32Array(ydke))
+          .replace('"main"', "#main")
+          .replace('"extra"', "#extra")
+          .replace('"side"', "!side")
+          .replace(/{/g, "")
+          .replace(/}/g, "")
+          .replace(/:/g, ",")
+          .split(",")
+          .filter((a) => !a.includes('"'))
+          .join("\n");
+      }
+      ydk_to_namelist(ydk) {
+        let arr = ydk.split("\n").filter((a) => a != "");
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i][0] != "#" && arr[i][0] != "!") {
+            if (isNaN(arr[i])) {
+              console.log(ydk);
+              return ydk;
+            } else {
+              console.log(arr[i]);
+              let card = this.db.filter((a) => a.konamiID == Number(arr[i]));
+              if (card.length) {
+                arr[i] = card[0].name;
+              } else {
+                card = this.db.filter(
+                  (a) =>
+                    a.konamiID == Number(arr[i]) + 1 ||
+                    a.konamiID == Number(arr[i]) - 1
+                );
+                if (!card.length) this.missing.push(`Unknown card (ID ${arr[i]})`);
+                arr[i] = card.length ? card[0].name : "";
+              }
+            }
+          }
+        }
+        return arr.filter((a) => a != "").join("\n");
+      }
+      namelist_to_ydk(namelist) {
+        let arr = namelist.split("\n");
+        for (let i = 0; i < arr.length; i++) {
+          let card = this.db.filter(
+            (a) => a.name == arr[i] && (this.isRush ? a.rush : !a.rush)
+          );
+          if (card.length) arr[i] = card[0].konamiID || arr[i];
+        }
+        if (!namelist.includes("!side")) arr.push("!side");
+        return arr.join("\n");
+      }
+      yld_to_namelist(yld) {
+        let arr = this.base13Encode(this.base64Decode(yld.replace("yld://", "")))
+          .slice(1)
+          .replace(/a/g, "xxxxx")
+          .replace(/b/g, "xxxxxxxxxx")
+          .replace(/c/g, "yyyyy")
+          .match(/.{1,5}/g);
+        let d = "#main\n";
+        let prev = 0;
+        for (let el of arr) {
+          if (el == "yyyyy" && !d.includes("!side")) {
+            d += d.includes("#extra") ? "!side\n" : "#extra\n";
+          } else {
+            //a chunk that isn't a 5-digit id means the code itself is corrupted
+            if (el != "xxxxx" && !/^\d{5}$/.test(el))
+              throw new Error("Invalid yld deck code");
+            let idx = el == "xxxxx" ? prev : Number(el);
+            let name = this.ygolID[idx];
+            if (name !== undefined && this.hasCard(name)) {
+              d += name + "\n";
+            } else {
+              //skip cards that aren't in the database instead of failing
+              this.missing.push(name !== undefined ? name : `Unknown card (ID ${idx})`);
+            }
+            if (el != "xxxxx") prev = Number(el);
+          }
+        }
+        return d;
+      }
+      namelist_to_yld(namelist) {
+        let d = "1";
+        let prev = "";
+        for (let el of namelist.split("\n")) {
+          if (el.includes("#extra") || el.includes("!side")) {
+            d += "c";
+          } else if (this.ygolID.indexOf(el) != -1) {
+            let curr = ("0000" + this.ygolID.indexOf(el)).slice(-5);
+            d += prev == curr ? "a" : curr;
+            prev = curr;
+            d = d.replace("aa", "b");
+          }
+        }
+        return "yld://" + this.base64Encode(this.base13Decode(d));
+      }
+      dlf2pV2_to_namelist(dlf2pV2) {
+        let c = dlf2pV2.split("_")[0] == "2" ? dlf2pV2.slice(2) : dlf2pV2;
+        let split = decodeURIComponent(c).split("_");
+        let arr = this.base13Encode(this.base63Decode(split[0]));
+        if (arr[0] != "a") arr = "0" + arr;
+        arr = arr
+          .replace(/a/g, "00")
+          .replace(/c/g, "bb")
+          .replace(/b/g, "xxxxxxxxxx")
+          .match(/.{1,10}/g);
+        let d = [];
+        let prev = null; //last decoded card, null if it was skipped
+        for (let el of arr) {
+          if (el != "xxxxxxxxxx") {
+            let card = this.db.filter((a) => a.konamiID == Number(el))[0];
+            prev = card ? card.name : null;
+            if (!card) this.missing.push(`Unknown card (ID ${Number(el)})`);
+          } else if (prev === null) {
+            this.missing.push(this.missing.at(-1) || "Unknown card");
+          }
+          //skip cards that aren't in the database instead of failing
+          if (prev !== null) d.push(prev);
+        }
+        let main = d.filter((a) => !this.isEDMonster(a));
+        let extra = d.filter((a) => this.isEDMonster(a));
+        if (split[3])
+          for (let el of split[3].split("-")) {
+            if (!this.hasCard(el)) {
+              this.missing.push(el);
+            } else if (this.isEDMonster(el)) {
+              extra.push(el);
+            } else {
+              main.push(el);
+            }
+          }
+        return `#main\n${main.join("\n")}\n#extra\n${extra.join("\n")}`;
+      }
+      namelist_to_dlf2pV2(namelist) {
+        let darr = [];
+        let special = [];
+        let prev = "";
+        for (let el of namelist.split("\n")) {
+          if (el.includes("!side")) break;
+          if (!el.includes("#main") && !el.includes("#extra")) {
+            let card = this.db.filter((a) => a.name == el)[0];
+            if (card.konamiID) {
+              let id = ("000000000" + card.konamiID).slice(-10);
+              darr.push(id == prev ? "b" : id);
+              prev = id;
+            } else {
+              special.push(el);
+            }
+          }
+        }
+        return `${this.base63Encode(
+          this.base13Decode(darr.join("").replace(/bb/g, "c").replace(/00/g, "a"))
+        )}_-1_Deck${special.length ? `_${special.join("-")}` : ""}`;
+      }
+      base64Encode(str) {
+        if (str == "-1") return "-1";
+        let input = BigInt(str);
+        let chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        let result = "";
+        while (input > 0n) {
+          result = chars[input - (input / 64n) * 64n] + result;
+          input = BigInt(input / 64n);
+        }
+        return result;
+      }
+      base64Decode(str) {
+        if (str == "-1") return "-1";
+        let result = 0n;
+        let chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        for (let i = str.length - 1; i >= 0; i--) {
+          result +=
+            BigInt(chars.indexOf(str[i])) * 64n ** BigInt(str.length - 1 - i);
+        }
+        return result;
+      }
+      base13Encode(str) {
+        if (str == "-1") return "-1";
+        let input = BigInt(str);
+        let chars = "0123456789abc";
+        let result = "";
+        while (input > 0n) {
+          result = chars[input - (input / 13n) * 13n] + result;
+          input = BigInt(input / 13n);
+        }
+        return result;
+      }
+      base13Decode(str) {
+        if (str == "-1") return "-1";
+        let result = 0n;
+        let chars = "0123456789abc";
+        for (let i = str.length - 1; i >= 0; i--) {
+          result +=
+            BigInt(chars.indexOf(str[i])) * 13n ** BigInt(str.length - 1 - i);
+        }
+        return result;
+      }
+      base63Encode(str) {
+        if (str == "-1") return "-1";
+        let input = BigInt(str);
+        let chars =
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+        let result = "";
+        while (input > 0n) {
+          result = chars[input - (input / 63n) * 63n] + result;
+          input = BigInt(input / 63n);
+        }
+        return result;
+      }
+      base63Decode(str) {
+        if (str == "-1") return "-1";
+        let result = 0n;
+        let chars =
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+        for (let i = str.length - 1; i >= 0; i--) {
+          result +=
+            BigInt(chars.indexOf(str[i])) * 63n ** BigInt(str.length - 1 - i);
+        }
+        return result;
+      }
+    }
+
+    //=== DeckBuilder: deck state, card search/filters, rendering ===
+    class DeckBuilder {
+      constructor(ygolDb, name = "Untitiled Deck", cards = [], side = []) {
+        this.ygolDb = ygolDb;
+        this.name = name;
+        this.cards = cards; //card objects from ygolID
+        this.side = side;
+        this.format = "tcg";
+        this.banlists = [];
+        this.editingDeck = "main";
+        this.errorimage = this.url("images/errorimage.jpg");
+      }
+      url(url) {
+        return url;
+      }
+      name_url(str) {
+        let fileName = str.replace(/[^a-zA-Z0-9\s_\-\.\(\)%]/g, "");
+        fileName = fileName.replace(/\s/g, "_");
+        return fileName.substring(0, 255);
+      }
+      htmlEncode(str) {
+        if (str.includes("!htm!")) {
+          return str;
+        } else {
+          return "!htm!" + str.replace(/"/g, "{quot}");
+        }
+      }
+      htmlDecode(str) {
+        if (str.includes("!htm!")) {
+          return str.replace("!htm!", "").replace(/{quot}/g, '"');
+        } else {
+          return str;
+        }
+      }
+      renameDeck(name) {
+        this.name = name;
+      }
+      changeFormat(format) {
+        this.format = format;
+      }
+      addBanlist(format, arrBanlist) {
+        this.banlists.push({ format: format, banlist: arrBanlist });
+      }
+      switchEditingDeck(mainDiv, extraDiv, width) {
+        if (this.editingDeck == "main") {
+          this.editingDeck = "side";
+          this.appendSide(mainDiv, extraDiv, width);
+          return `View Main Deck`;
+        } else {
+          this.editingDeck = "main";
+          this.appendDeck(mainDiv, extraDiv, width);
+          return `View Side Deck`;
+        }
+      }
+      appendCards(arrNames, targetDiv, width, location) {
+        let cardno = -1;
+        for (let el of arrNames) {
+          cardno++;
+          let altSrc = this.errorimage;
+          altSrc = el.altimg;
+          //if (el.konamiID) altSrc = `https://images.ygoprodeck.com/images/cards/${Number(el.konamiID)}.jpg`;
+          let noRarity = false;
+          if (this.format == "dl" || this.format == "dlzg") {
+            if (el.rarityDl) {
+              targetDiv.insertAdjacentHTML(
+                "beforeend",
+                `<img src="images/dltag${el.rarityDl}.png" style="width:${
+                  (width * 2) / 3
+                }px;height:${width / 6}px;margin-left:${
+                  width / 3
+                }px;vertical-align: top;">`
+              );
+            } else {
+              noRarity = true;
+            }
+          }
+          if (this.format == "md") {
+            if (el.rarityMd) {
+              targetDiv.insertAdjacentHTML(
+                "beforeend",
+                `<img src="images/mdtag${el.rarityMd}.png" style="width:${
+                  (width * 2) / 3
+                }px;height:${width / 6}px;margin-left:${
+                  width / 3
+                }px;vertical-align: top;">`
+              );
+            } else {
+              noRarity = true;
+            }
+          }
+          targetDiv.insertAdjacentHTML(
+            "beforeend",
+            `<img src="${this.url(`images/cards/${this.name_url(el.name)}.jpg`)}" alt="${
+              el.name
+            }" cardno="${cardno}" location="${location}" style="width:${width}px;margin:${
+              (this.format == "dl" ||
+                this.format == "dlzg" ||
+                this.format == "md") &&
+              noRarity == false
+                ? `${width / 6}px 0px 0px -${width}px`
+                : "0px"
+            }" onmousedown="cardClicked(\`${targetDiv.id}\`,\`${this.htmlEncode(
+              el.name
+            )}\`,this)" onmouseup="cardReleased(this)" onerror="if(this.src==\`${altSrc}\`){this.onerror=null; this.src=\`${
+              this.errorimage
+            }\`;}else{this.src=\`${altSrc}\`}" draggable="false">`
+          );
+          let banlistCard = this.banlists
+            .filter((a) => a.format == this.format)[0]
+            .banlist.filter((a) => a.name == el.name)[0];
+          if (banlistCard) {
+            targetDiv.insertAdjacentHTML(
+              "beforeend",
+              `<img src="images/${banlistCard.banStatus}.png" style="width:${
+                width / 3
+              }px;margin:-${(width * 35) / 24}px ${(width * 2) / 3}px ${
+                (width * 9) / 8
+              }px -${width}px ;">`
+            );
+          }
+        }
+      }
+      appendDeck(mainDiv, extraDiv, width) {
+        mainDiv.innerHTML = "";
+        extraDiv.innerHTML = "";
+        let main = this.cards.filter((a) => a.priorityDl < 2000000000);
+        let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
+        this.appendCards(main, mainDiv, width, "main");
+        this.appendCards(extra, extraDiv, width, "extra");
+      }
+      appendSide(mainDiv, extraDiv, width) {
+        mainDiv.innerHTML = "";
+        extraDiv.innerHTML = "";
+        this.appendCards(this.side, mainDiv, width, "side");
+      }
+      importNamelist(namelist, mainDiv, extraDiv, width) {
+        for (let line of namelist.split("\n")) {
+          if (line.includes("!side"))
+            this.switchEditingDeck(mainDiv, extraDiv, width);
+          if (
+            !line.includes("#main") &&
+            !line.includes("#extra") &&
+            !line.includes("!side") &&
+            line.length
+          ) {
+            this.addCard(line, mainDiv, extraDiv, width);
+          }
+        }
+        if (this.editingDeck == "side")
+          this.switchEditingDeck(mainDiv, extraDiv, width);
+      }
+      sortDeck(mainDiv, extraDiv, width, format = "dl") {
+        if (this.editingDeck == "main") {
+          this.cards.sort((a, b) =>
+            format == "dl" || format == "dlzg"
+              ? b.priorityDl - a.priorityDl
+              : b.priorityMd - a.priorityMd
+          );
+          this.appendDeck(mainDiv, extraDiv, width);
+        } else {
+          this.side.sort((a, b) =>
+            format == "dl" || format == "dlzg"
+              ? b.priorityDl - a.priorityDl
+              : b.priorityMd - a.priorityMd
+          );
+          this.appendSide(mainDiv, extraDiv, width);
+        }
+      }
+      swapCards(cardno1, cardno2, location, mainDiv, extraDiv, width) {
+        let main = this.cards.filter((a) => a.priorityDl < 2000000000);
+        let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
+        let side = this.side;
+        if (location == "side") {
+          let temp = side[cardno1];
+          side.splice(cardno1, 1);
+          side.splice(cardno2, 0, temp);
+          this.side = side;
+          mainDiv.innerHTML = "";
+          extraDiv.innerHTML = "";
+          this.appendCards(side, mainDiv, width, "side");
+        } else {
+          if (location == "main") {
+            let temp = main[cardno1];
+            main.splice(cardno1, 1);
+            main.splice(cardno2, 0, temp);
+          }
+          if (location == "extra") {
+            let temp = extra[cardno1];
+            extra.splice(cardno1, 1);
+            extra.splice(cardno2, 0, temp);
+          }
+          this.cards = main.concat(extra);
+          mainDiv.innerHTML = "";
+          extraDiv.innerHTML = "";
+          this.appendCards(main, mainDiv, width, "main");
+          this.appendCards(extra, extraDiv, width, "extra");
+        }
+      }
+      displayCard(name, targetDiv, width) {
+        let cardObj = this.ygolDb.filter((a) => a.name == this.htmlDecode(name))[0];
+        let altSrc = this.errorimage;
+        altSrc = cardObj.altimg;
+        //if (cardObj.konamiID) altSrc = `https://images.ygoprodeck.com/images/cards/${Number(cardObj.konamiID)}.jpg`;
+        targetDiv.innerHTML = "";
+        targetDiv.insertAdjacentHTML(
+          "beforeend",
+          `<div style="display: flex; justify-content: center">
+            <img src="${this.url(
+              `images/cards/${this.name_url(name)}.jpg`
+            )}" alt="${name}" style="width:${width}px;" onerror="if(this.src==\`${altSrc}\`){this.onerror=null; this.src=\`${
+            this.errorimage
+          }\`;}else{this.src=\`${altSrc}\`}" >
+          </div>
+          <p class="cardname">${cardObj.name}</p>
+          <p>${cardObj.description}</p>`
+        );
+      }
+      searchCard(name, targetDiv, width, criterias = [], sort = "", limit = 300) {
+        targetDiv.innerHTML = "";
+        let filtered = this.ygolDb.filter((a) => {
+          let n = a.name.toLowerCase();
+          let d = a.description.toLowerCase();
+          return n.includes(name.toLowerCase()) || d.includes(name.toLowerCase());
+        });
+        //apply filters
+        let showall = false;
+        for (let term of criterias) {
+          if (term.includes("Monster")) {
+            filtered = filtered.filter((a) => a.type == "Monster");
+            if (term != "Monster") {
+              let monsterType = term.replace(" Monster", "");
+              if (monsterType == "Main Deck") {
+                filtered = filtered.filter(
+                  (a) =>
+                    !(
+                      a.monsterType.includes("Fusion") ||
+                      a.monsterType.includes("Synchro") ||
+                      a.monsterType.includes("Xyz") ||
+                      a.monsterType.includes("Link")
+                    )
+                );
+              } else if (monsterType == "Extra Deck") {
+                filtered = filtered.filter(
+                  (a) =>
+                    a.monsterType.includes("Fusion") ||
+                    a.monsterType.includes("Synchro") ||
+                    a.monsterType.includes("Xyz") ||
+                    a.monsterType.includes("Link")
+                );
+              } else if (monsterType == "Non-Effect") {
+                filtered = filtered.filter(
+                  (a) => !a.monsterType.includes("Effect")
+                );
+              } else {
+                filtered = filtered.filter((a) =>
+                  a.monsterType.includes(monsterType)
+                );
+              }
+            }
+          } else if (term.includes("Spell") && !term.includes("caster")) {
+            filtered = filtered.filter((a) => a.type == "Spell");
+            if (term != "Spell") {
+              let spellType = term.replace(" Spell", "");
+              filtered = filtered.filter((a) => (a.race || "").includes(spellType));
+            }
+          } else if (term.includes("Trap")) {
+            filtered = filtered.filter((a) => a.type == "Trap");
+            if (term != "Trap") {
+              let trapType = term.replace(" Trap", "");
+              filtered = filtered.filter((a) => (a.race || "").includes(trapType));
+            }
+          } else if (term.includes("Level/Rank")) {
+            let levelrank = term.replace("Level/Rank ", "");
+            filtered = filtered.filter((a) => a.level == levelrank);
+          } else if (term.includes("Link")) {
+            let link = term.replace("Link ", "");
+            filtered = filtered.filter((a) => a.linkRating == link);
+          } else if (term.includes("(DL)")) {
+            if (term.includes("Free")) {
+              filtered = filtered.filter((a) => a.zeroGem);
+            } else if (term.includes("Released")) {
+              if (term.includes("Not")) {
+                filtered = filtered.filter((a) => !a.rarityDl);
+              } else {
+                filtered = filtered.filter((a) => a.rarityDl);
+              }
+            } else {
+              filtered = filtered.filter(
+                (a) => a.rarityDl == term.replace(" (DL)", "")
+              );
+            }
+          } else if (term.includes("(MD)")) {
+            if (term.includes("Released")) {
+              if (term.includes("Not")) {
+                filtered = filtered.filter((a) => !a.rarityMd);
+              } else {
+                filtered = filtered.filter((a) => a.rarityMd);
+              }
+            } else {
+              filtered = filtered.filter(
+                (a) => a.rarityMd == term.replace(" (MD)", "")
+              );
+            }
+          } else if (term == "Handtrap") {
+            filtered = filtered.filter((a) => a.handtrap);
+          } else if (term == "Floodgate") {
+            filtered = filtered.filter((a) => a.floodgate);
+          } else if (term == "Show Rush") {
+            filtered = filtered.filter((a) => a.rush);
+            showall = true;
+          } else if (term == "Show All") {
+            showall = true;
+          } else if (term.toUpperCase() == term) {
+            filtered = filtered.filter((a) => a.attribute == term);
+          } else {
+            filtered = filtered.filter((a) => a.race == term);
+          }
+        }
+        if (!showall) filtered = filtered.filter((a) => !a.rush);
+        if (sort == "Popularity") {
+          if (format == "dl" || format == "dlzg")
+            filtered.sort((a, b) => a.popularityDl - b.popularityDl);
+          if (format == "md")
+            filtered.sort((a, b) => a.popularityMd - b.popularityMd);
+          if (format == "tcg")
+            filtered.sort((a, b) => a.popularityTcg - b.popularityTcg);
+          if (format == "ocg")
+            filtered.sort((a, b) => a.popularityOcg - b.popularityOcg);
+        } else if (sort == "Rarity") {
+          const rarityOrder = ["UR", "SR", "R", "N"];
+          if (format == "dl" || format == "dlzg")
+            filtered.sort((a, b) => {
+              if (!a.rarityDl && b.rarityDl) return 1;
+              if (a.rarityDl && !b.rarityDl) return -1;
+              return (
+                rarityOrder.indexOf(a.rarityDl) - rarityOrder.indexOf(b.rarityDl)
+              );
+            });
+          if (format == "md")
+            filtered.sort((a, b) => {
+              if (!a.rarityMd && b.rarityMd) return 1;
+              if (a.rarityMd && !b.rarityMd) return -1;
+              return (
+                rarityOrder.indexOf(a.rarityMd) - rarityOrder.indexOf(b.rarityMd)
+              );
+            });
+        } else {
+          filtered.sort((a, b) => a.name.localeCompare(b.name));
+        }
+        if (filtered.length > limit) filtered.length = limit;
+        this.appendCards(filtered, targetDiv, width, "search");
+      }
+      addCard(name, mainDiv, extraDiv, width) {
+        if (!this.ygolDb.some((a) => a.name == this.htmlDecode(name))) return;
+        if (
+          this.cards.filter((a) => a.name == this.htmlDecode(name)).length +
+            this.side.filter((a) => a.name == this.htmlDecode(name)).length <
+            3 ||
+          window.location.href.includes("UNLIMITED_MODE=ON")
+        ) {
+          if (this.editingDeck == "main") {
+            this.cards.push(
+              this.ygolDb.filter((a) => a.name == this.htmlDecode(name))[0]
+            );
+            this.appendDeck(mainDiv, extraDiv, width);
+          } else {
+            this.side.push(
+              this.ygolDb.filter((a) => a.name == this.htmlDecode(name))[0]
+            );
+            this.appendSide(mainDiv, extraDiv, width);
+          }
+        }
+      }
+      removeCard(cardno1, location, mainDiv, extraDiv, width) {
+        let main = this.cards.filter((a) => a.priorityDl < 2000000000);
+        let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
+        let side = this.side;
+        if (location == "side") {
+          side.splice(cardno1, 1);
+          this.side = side;
+          mainDiv.innerHTML = "";
+          extraDiv.innerHTML = "";
+          this.appendCards(side, mainDiv, width, "side");
+        } else {
+          if (location == "main") {
+            main.splice(cardno1, 1);
+          }
+          if (location == "extra") {
+            extra.splice(cardno1, 1);
+          }
+          this.cards = main.concat(extra);
+          mainDiv.innerHTML = "";
+          extraDiv.innerHTML = "";
+          this.appendCards(main, mainDiv, width, "main");
+          this.appendCards(extra, extraDiv, width, "extra");
+        }
+      }
+      exportNamelist() {
+        let main = "#main\n";
+        let extra = "#extra\n";
+        let side = "!side\n";
+        for (let el of this.cards) {
+          if (el.priorityDl < 2000000000) {
+            main += el.name + "\n";
+          } else {
+            extra += el.name + "\n";
+          }
+        }
+        for (let el of this.side) {
+          side += el.name + "\n";
+        }
+        return main + extra + side;
+      }
+    }
+    let editorFilters = `
+    <p class="filterheader">Sort By</p>
+    <button class="minibtn" onmousedown="selectSort(this.innerHTML)">
+      Popularity
+    </button>
+    <button class="minibtn" onmousedown="selectSort(this.innerHTML)">
+      Name
+    </button>
+    <button class="minibtn" onmousedown="selectSort(this.innerHTML)">
+      Rarity
+    </button>
+    <p class="filterheader">Alternate Formats</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Show Rush
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Show All
+    </button>
+    <p class="filterheader">Card Type</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Spell
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Trap
+    </button>
+    <p class="filterheader">Monster Type</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Normal Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Effect Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Fusion Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Ritual Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Synchro Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Xyz Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Pendulum Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Link Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Main Deck Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Extra Deck Monster
+    </button>
+    <br />
+    <br />
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Tuner Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Union Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Spirit Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Flip Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Gemini Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Toon Monster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Non-Effect Monster
+    </button>
+    <p class="filterheader">Spell Type</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Normal Spell
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Continuous Spell
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Equip Spell
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Field Spell
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Ritual Spell
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Quick-Play Spell
+    </button>
+    <p class="filterheader">Trap Type</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Normal Trap
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Continuous Trap
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Counter Trap
+    </button>
+    <p class="filterheader">Level/Rank</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 1
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 2
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 3
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 4
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 5
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 6
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 7
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 8
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 9
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 10
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 11
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 12
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Level/Rank 13
+    </button>
+    <p class="filterheader">Link Rating</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Link 1
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Link 2
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Link 3
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Link 4
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Link 5
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Link 6
+    </button>
+    <p class="filterheader">Attribute</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      LIGHT
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      DARK
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      EARTH
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      WIND
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      WATER
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      FIRE
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      DIVINE
+    </button>
+    <p class="filterheader">Type</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Aqua
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Beast
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Beast-Warrior
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Creator-God
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Cyberse
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Dinosaur
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Divine-Beast
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Dragon
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Fairy
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Fiend
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Fish
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Insect
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Machine
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Plant
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Psychic
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Pyro
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Reptile
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Rock
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Sea Serpent
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Spellcaster
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Thunder
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Warrior
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Winged Beast
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Wyrm
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Zombie
+    </button>
+    <p class="filterheader">Staples</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Handtrap
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Floodgate
+    </button>
+    <p class="filterheader">Duel Links</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Free (DL)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      UR (DL)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      SR (DL)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      R (DL)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      N (DL)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Released (DL)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Not Released (DL)
+    </button>
+    <p class="filterheader">Master Duel</p>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      UR (MD)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      SR (MD)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      R (MD)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      N (MD)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Released (MD)
+    </button>
+    <button class="minibtn" onmousedown="selectFilter(this.innerHTML)">
+      Not Released (MD)
+    </button>
+    <br />
+    <div style="position: sticky; text-align: end; bottom: 10px; right: 10px;">
+      <button onmousedown="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+    `;
+  </script>
+  <script>
+    //=== Editor page ===
+    //1438 772
+    //hold click to view card
+    let cardwidth = window.innerWidth * 0.043; //65px when vw is 14141px
+    let main = document.getElementById("main");
+    let extra = document.getElementById("extra");
+    let searchResult = document.getElementById("searchResult");
+    let ygolDeck; //created in loadData()
+    let deckBuilder; //created in loadData()
+    let format = "tcg";
+    let currentCard = "";
+    let currentCardEl = null;
+    let cardDivId = "";
+    let mousedown = false;
+    let mousehold = false;
+    let mousemove = false;
+    let mousemovemode = false;
+    let clicksInHoldThreshold = 0;
+    let mouseMoveTimeout;
+    let poppingup = false;
+    let selectingFilters = false;
+    let filters = [];
+    //the "Free (DL)" filter is switched on automatically in the DLZG format;
+    //true only while it's on because of that (not because the user picked it)
+    const FREE_DL_FILTER = "Free (DL)";
+    let freeFilterAutoOn = false;
+    let sort = "Popularity";
+    let holdThreshold = 500;
+    let _isMobile = window.innerHeight > window.innerWidth;
+    let editMode = "edit";
+    document.getElementById("skillname").style.display = "none";
+    document.getElementById("skillInput").style.display = "none";
+
+    //mobile view
+    if (_isMobile) {
+      editMode = "view";
+      cardwidth = window.innerWidth / 8;
       document.head.insertAdjacentHTML(
         "beforeend",
-        `<style>iframe{width:100vw;height:100vh;}</style>`
+        `<style>
+          *{font-weight: 500;}
+          #deck{width: 90vw;}
+          #main{width: 80vw; height: 50vh;}
+          #extra{width: 80vw; height: 20vh;}
+          input{width: 55vw; height: 5.5vw; font-size: 3.8vw;}
+          .minibtn{width: 30vw; height: 7vw; font-size: 3.2vw;}
+          .filterbtn{width: 20vw; height: 7vw; font-size: 2.7vw;}
+          button{width: 40vw; height: 8vw; font-size: 4vw; font-weight: 500;}
+          #popup{font-size: 3.5vw;}
+          .cardname{font-size: 4.2vw;}
+          .skilltext {font-size: 4.2vw;}
+          #controls{display: none;}
+          #searchResult{width: 80vw; height: 62vh;}
+          #popup{width: 95vw;}
+          .filterheader {font-size: 4.2vw;}
+        </style>`
       );
-    const params = new URL(document.location).searchParams;
+      for (let el of document.querySelectorAll("button")) {
+        if (el.classList.contains("minibtn")) {
+          el.style.width = "27vw";
+        }
+      }
+      document.getElementById("controls").style.display = "none";
+    } else {
+      document.getElementById("btnControl").style.display = "none";
+      document.getElementById("btnViewDeck").style.display = "none";
+      document.getElementById("switchMode").style.display = "none";
+    }
+
+    function showControls() {
+      if (document.getElementById("controls").style.display == "none") {
+        document.getElementById("controls").style.display = "block";
+        document.getElementById("deck").style.display = "none";
+      } else {
+        document.getElementById("controls").style.display = "none";
+        document.getElementById("deck").style.display = "block";
+      }
+    }
+
+    function switchMode() {
+      if (editMode == "view") {
+        editMode = "edit";
+        document.getElementById("switchMode").innerHTML = "Mode: Edit";
+      } else {
+        editMode = "view";
+        document.getElementById("switchMode").innerHTML = "Mode: View";
+      }
+    }
+
+    document.addEventListener("mousedown", (event) => {
+      mousedown = true;
+      clicksInHoldThreshold += 1;
+      setTimeout(() => {
+        if (mousedown && clicksInHoldThreshold == 1 && !mousemove)
+          mousehold = true;
+        clicksInHoldThreshold -= 1;
+      }, holdThreshold);
+    });
+    document.addEventListener("mouseup", (event) => {
+      if (currentCardEl) {
+        currentCardEl.style.position = "static";
+        currentCardEl.style.pointerEvents = "auto";
+        currentCardEl.style.left = "0px";
+        currentCardEl.style.top = "0px";
+      }
+      if (
+        !mousehold &&
+        !mousemove &&
+        (cardDivId == "main" ||
+          cardDivId == "extra" ||
+          cardDivId == "searchResult")
+      ) {
+        if (editMode == "edit") {
+          if (cardDivId == "searchResult") {
+            deckBuilder.addCard(currentCard, main, extra, cardwidth);
+            for (let el of document.querySelectorAll("img")) {
+              if (el.alt == currentCard) {
+                el.classList.add("white-out");
+                setTimeout(() => {
+                  el.classList.remove("white-out");
+                }, 100);
+              }
+            }
+          } else if (!mousemovemode) {
+            deckBuilder.removeCard(
+              currentCardEl.getAttribute("cardno"),
+              currentCardEl.getAttribute("location"),
+              main,
+              extra,
+              cardwidth
+            );
+          }
+        } else {
+          document.getElementById("popupCss1").style.display = "flex";
+          deckBuilder.displayCard(
+            currentCard,
+            document.getElementById("popup"),
+            window.innerWidth / 3
+          );
+        }
+      }
+      if (poppingup)
+        document.getElementById("popupCss1").style.display = "none";
+      mousedown = false;
+      mousemovemode = false;
+      mousehold = false;
+      poppingup = false;
+      currentCard = "";
+      cardDivId = "";
+    });
+    document.addEventListener("mousemove", (event) => {
+      mousemove = true;
+      if (mousedown) mousemovemode = true;
+      clearTimeout(mouseMoveTimeout);
+      mouseMoveTimeout = setTimeout(() => {
+        mousemove = false;
+      }, 100);
+      if (currentCardEl && mousedown) {
+        currentCardEl.style.position = "absolute";
+        currentCardEl.style.pointerEvents = "none";
+        currentCardEl.style.left = event.pageX - currentCardEl.width / 2 + "px";
+        currentCardEl.style.top = event.pageY - currentCardEl.height / 2 + "px";
+      }
+    });
     document
-      .getElementById("iframediv")
-      .insertAdjacentHTML(
-        "beforeend",
-        `<iframe src="https://dlf2pcuso4.github.io/ygo-lightning-solo/editor.html?dlf2p=true${
-          params.get("d") ? `&d=${params.get("d")}` : ""
-        }" frameborder="0"></iframe>`
+      .getElementById("popupCss1")
+      .addEventListener("mouseup", (event) => {
+        if (!selectingFilters) {
+          document.getElementById("popupCss1").style.display = "none";
+          let input = document.getElementById("searchInput").value;
+          if (input.length > 2 || filters.length) {
+            deckBuilder.searchCard(
+              input,
+              searchResult,
+              cardwidth,
+              filters,
+              sort
+            );
+          }
+        }
+        selectingFilters = false;
+      });
+    setInterval(() => {
+      if (mousehold && currentCard && !poppingup) {
+        poppingup = true;
+        document.getElementById("popupCss1").style.display = "flex";
+        deckBuilder.displayCard(
+          currentCard,
+          document.getElementById("popup"),
+          160
+        );
+      }
+    }, 100);
+    //a filter/sort button's label without the whitespace from its HTML layout
+    function filterLabel(html) {
+      return html.replace(/\s+/g, " ").trim();
+    }
+    function updateFilterDisplay() {
+      for (let el of document
+        .getElementById("popup")
+        .querySelectorAll("button")) {
+        //selected = the current sort or an active filter; styled by button.selected in the css
+        const label = filterLabel(el.innerHTML);
+        el.classList.toggle("selected", label == sort || filters.includes(label));
+      }
+    }
+
+    function cardClicked(divid, cardname, el) {
+      currentCard = cardname;
+      currentCardEl = el;
+      cardDivId = divid;
+    }
+    function cardReleased(el) {
+      if (
+        currentCardEl.getAttribute("location") == el.getAttribute("location") &&
+        el.getAttribute("location") != "search"
+      ) {
+        deckBuilder.swapCards(
+          currentCardEl.getAttribute("cardno"),
+          el.getAttribute("cardno"),
+          el.getAttribute("location"),
+          main,
+          extra,
+          cardwidth
+        );
+      }
+    }
+    function cardSearch() {
+      let input = document.getElementById("searchInput").value;
+      setTimeout(() => {
+        if (
+          (input.length > 2 || filters.length) &&
+          input == document.getElementById("searchInput").value
+        ) {
+          deckBuilder.searchCard(input, searchResult, cardwidth, filters, sort);
+        }
+      }, 500);
+    }
+    function skillSearch() {
+      let input = document.getElementById("skillInput").value;
+      setTimeout(() => {
+        if (
+          (input.length > 2 || filters.length) &&
+          input == document.getElementById("skillInput").value
+        ) {
+          let results = skillDb.filter(
+            (a) =>
+              a.name.toLowerCase().includes(input.toLowerCase()) ||
+              a.description.toLowerCase().includes(input.toLowerCase())
+          );
+          searchResult.innerHTML = "";
+          for (let item of results) {
+            if (format != "dlzg" || banlistDlzgSkill.indexOf(item.name) == -1)
+              searchResult.innerHTML += `<div class="skilltext" onclick="selectSkill('${item.name.replace(
+                /"/g,
+                "&quot;"
+              )}')">✦ ${item.name}</div>`;
+          }
+        }
+      }, 500);
+    }
+    function selectSkill(name) {
+      document.getElementById("skillname").innerHTML = `✦ ${name}`;
+    }
+    function openFilter() {
+      document.getElementById("popup").innerHTML = editorFilters;
+      document.getElementById("popupCss1").style.display = "flex";
+      updateFilterDisplay();
+    }
+    function selectFilter(innerHTMLWithSpaces) {
+      let innerHTML = filterLabel(innerHTMLWithSpaces);
+      selectingFilters = true;
+      //once the user toggles it, the filter is theirs: leaving DLZG won't switch it off
+      if (innerHTML == FREE_DL_FILTER) freeFilterAutoOn = false;
+      if (filters.includes(innerHTML)) {
+        filters = filters.filter((a) => a != innerHTML);
+      } else {
+        filters.push(innerHTML);
+      }
+      updateFilterDisplay();
+    }
+    function clearFilters() {
+      selectingFilters = true;
+      filters.length = 0;
+      freeFilterAutoOn = false;
+      updateFilterDisplay();
+    }
+    function selectSort(innerHTMLWithSpaces) {
+      selectingFilters = true;
+      sort = filterLabel(innerHTMLWithSpaces);
+      updateFilterDisplay();
+    }
+    function switchMainSide() {
+      document.getElementById("switchMainSide").innerHTML =
+        deckBuilder.switchEditingDeck(main, extra, cardwidth);
+    }
+    function switchFormat() {
+      let arrFormats = ["dl", "dlzg", "md", "tcg", "ocg", "unlimited"];
+      format = arrFormats[(arrFormats.indexOf(format) + 1) % arrFormats.length];
+      document.getElementById(
+        "btnFormat"
+      ).innerHTML = `Format: ${format.toUpperCase()}`;
+      deckBuilder.changeFormat(format);
+      let freeFilterAutoRemoved = false;
+      if (format == "dlzg") {
+        //switch "Free (DL)" on, unless the user already has it on
+        if (!filters.includes(FREE_DL_FILTER)) {
+          filters.push(FREE_DL_FILTER);
+          freeFilterAutoOn = true;
+        }
+      } else if (freeFilterAutoOn) {
+        //leaving DLZG: undo only what switching to DLZG did
+        filters = filters.filter((a) => a != FREE_DL_FILTER);
+        freeFilterAutoOn = false;
+        freeFilterAutoRemoved = true;
+      }
+      if (format.includes("dl")) {
+        document.getElementById("skillname").style.display = "block";
+        document.getElementById("skillInput").style.display = "block";
+      } else {
+        document.getElementById("skillname").style.display = "none";
+        document.getElementById("skillInput").style.display = "none";
+      }
+      if (deckBuilder.editingDeck == "main") {
+        deckBuilder.appendDeck(main, extra, cardwidth);
+      } else {
+        deckBuilder.appendSide(main, extra, cardwidth);
+      }
+      let input = document.getElementById("searchInput").value;
+      if (input.length > 2 || filters.length) {
+        deckBuilder.searchCard(input, searchResult, cardwidth, filters, sort);
+      } else if (
+        format.includes("dl") &&
+        document.getElementById("skillInput").value.length > 2
+      ) {
+        skillSearch();
+      } else if (freeFilterAutoRemoved) {
+        //the results were only showing because of the automatic filter
+        searchResult.innerHTML = "";
+      }
+    }
+    function sortDeck() {
+      deckBuilder.sortDeck(main, extra, cardwidth, format);
+    }
+    function testHands() {
+      if (!document.getElementById("deckName").value)
+        document.getElementById("deckName").value = "Untitled Deck";
+      let namelist = deckBuilder.exportNamelist();
+      let yld = ygolDeck.namelist_to_yld(namelist).replace("yld://", "");
+      window.open(`test-hands.html?yld=${yld}`);
+    }
+    function copyYdke() {
+      let input = document.createElement("textarea");
+      input.innerHTML = ygolDeck.convert(deckBuilder.exportNamelist(), "ydke");
+      document.body.appendChild(input);
+      input.select();
+      if (document.execCommand("copy")) {
+        document.body.removeChild(input);
+        document.getElementById("copyYdke").innerHTML = "Copied!";
+        setTimeout(() => {
+          document.getElementById("copyYdke").innerHTML = "Copy ydke";
+        }, 2000);
+      }
+    }
+    function downloadDeck() {
+      if (!document.getElementById("deckName").value)
+        document.getElementById("deckName").value = "Untitled Deck";
+      let name = document.getElementById("deckName").value;
+      let yld = ygolDeck.convert(deckBuilder.exportNamelist(), "yld");
+      //strip characters that aren't allowed in file names
+      let fileName =
+        name.replace(/[\/:*?"<>|]/g, "").trim() || "Untitled Deck";
+      const blob = new Blob([yld], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName + ".yld";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    //tell the user which cards were skipped by the last ygolDeck.convert()
+    function reportMissingCards() {
+      if (!ygolDeck.missing.length) return;
+      let counts = {};
+      for (let name of ygolDeck.missing) counts[name] = (counts[name] || 0) + 1;
+      let lines = Object.entries(counts).map(
+        ([name, n]) => `- ${name}${n > 1 ? ` x${n}` : ""}`
       );
+      if (lines.length > 20)
+        lines = lines.slice(0, 20).concat(`...and ${lines.length - 20} more`);
+      alert(
+        `${ygolDeck.missing.length} card(s) in this deck are not in the card database and were skipped:\n${lines.join("\n")}`
+      );
+    }
+    function uploadDeck() {
+      document.getElementById("uploadInput").click();
+    }
+    function loadUploadedDeck(input) {
+      const file = input.files[0];
+      input.value = ""; //allow re-uploading the same file
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        let yld = reader.result.trim();
+        let namelist;
+        try {
+          if (!yld.startsWith("yld://")) throw new Error();
+          namelist = ygolDeck.convert(yld, "namelist");
+          //unknown cards are skipped, but a file with no valid cards at all is rejected
+          let validCards = namelist
+            .split("\n")
+            .filter((a) => a && a != "#main" && a != "#extra" && a != "!side");
+          if (!validCards.length && ygolDeck.missing.length) throw new Error();
+        } catch (e) {
+          alert("Error: Invalid .yld file");
+          return;
+        }
+        //clear the current deck, then load the uploaded one
+        if (deckBuilder.editingDeck == "side") switchMainSide();
+        deckBuilder.cards = [];
+        deckBuilder.side = [];
+        deckBuilder.importNamelist(namelist, main, extra, cardwidth);
+        deckBuilder.appendDeck(main, extra, cardwidth);
+        document.getElementById("deckName").value =
+          file.name.replace(/\.yld$/i, "") || "Untitled Deck";
+        reportMissingCards();
+      };
+      reader.readAsText(file);
+    }
+    const params = new URL(document.location).searchParams;
+
+    //load the card/skill/banlist data arrays, then initialise
+    function addScript(name) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = name;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    async function loadData() {
+      await Promise.all(
+        [
+          "data/ygolDb.js",
+          "data/ygolID.js",
+          "data/skillDb.js",
+          "data/banlistDl.js",
+          "data/banlistDlzg.js",
+          "data/banlistMd.js",
+          "data/banlistTcg.js",
+          "data/banlistOcg.js",
+        ].map(addScript)
+      );
+      ygolDeck = new YgolDeck(cardDb, ygolID, false);
+      deckBuilder = new DeckBuilder(cardDb);
+      deckBuilder.addBanlist("dl", banlistDl);
+      deckBuilder.addBanlist("dlzg", banlistDlzg);
+      deckBuilder.addBanlist("md", banlistMd);
+      deckBuilder.addBanlist("tcg", banlistTcg);
+      deckBuilder.addBanlist("ocg", banlistOcg);
+      deckBuilder.addBanlist("unlimited", []);
+      deckBuilder.changeFormat(format);
+      //dlf2p.com special controls
+      if (window.location.href.includes("dlf2p=true")) {
+        document.getElementById("testhands").style.display = "none";
+        format = "dl";
+        deckBuilder.changeFormat("dl");
+        document.getElementById("btnFormat").innerHTML = "Format: DL";
+        document.getElementById("skillname").style.display = "block";
+        document.getElementById("skillInput").style.display = "block";
+      }
+      if (params.get("dlf2p") == "true" && params.get("d")) {
+        document.getElementById("deckName").value = params
+          .get("d")
+          .slice(2)
+          .split("_")[2];
+        deckBuilder.importNamelist(
+          ygolDeck.convert(params.get("d"), "namelist"),
+          main,
+          extra,
+          cardwidth
+        );
+        reportMissingCards();
+        //d is 2_<cards>_<skill index>_<deck name>; skill may be -1 or no longer exist
+        let skill = skillDb[params.get("d").split("_")[2]];
+        if (skill)
+          document.getElementById("skillname").innerHTML = `✦ ${skill.name}`;
+      }
+      //normal ygol: load deck from ?yld=
+      if (params.get("yld")) {
+        let namelist;
+        try {
+          namelist = ygolDeck.convert("yld://" + params.get("yld"), "namelist");
+        } catch (e) {
+          alert("Error: Invalid deck code in URL");
+        }
+        if (namelist) {
+          deckBuilder.importNamelist(namelist, main, extra, cardwidth);
+          reportMissingCards();
+        }
+      }
+    }
+    loadData();
   </script>
+  <script src="data/ygol-nav.js"></script>
 </html>

@@ -1,68 +1,660 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Duel Links F2P</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Ad-free website for the cheapest F2P decks in Duel Links. The DLF2P website contains a list of top 5 F2P decks, best F2P techs, and a deck builder for both Duel Links and Master Duel."
+      content="Ad-free website for the DLF2P YT channel containing deck building utilities and information for the custom Duel Links Zero Gem format."
     />
     <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <title>DLF2P Home</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+      /* ===== colour scheme "Indigo": every colour in this page is defined here ===== */
+      :root {
+        --page-bg: #07060c;
+        --text: #dee0f7;
+        --text-muted: #98a1ec; /* secondary text and placeholders */
+        --frame-border: #8672cb; /* outline around the whole page */
+        --panel-bg: #0e0b1e; /* boxes inside the frame */
+        --panel-border: #8672cb;
+        --input-bg: #2a2e54;
+        --input-text: #dee0f7;
+        --btn-bg: #2a2e54;
+        --btn-border: #4a50be;
+        --btn-text: #dee0f7;
+        --highlight-bg: #4474c9; /* hovered/selected buttons (blues) */
+        --highlight-border: #93e3fa; /* also used for focus outlines */
+        --highlight-text: #cfeaff;
+        --highlight-glow: #2f58c2cc;
+        --popup-bg: #07060cf0; /* popups (semi-transparent) */
+        --skill-text: #ffff77;
+        --scroll-track: #0c0c24;
+        --scroll-thumb: #34358f;
+        --shadow: #00000099; /* under the hand of cards */
+        --divider: #2a2e54; /* line above the footer */
+        --notice-text: #ff0000; /* the important notice */
+        --placeholder-hatch-bg: #0c0c24; /* placeholder images */
+        --placeholder-hatch-line: #182458;
+        --placeholder-text-line: #2a2e54;
+      }
+      /* Barlow (SIL Open Font License, see fonts/OFL.txt), bundled so every system shows the same font */
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-300-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-300-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-500-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-500-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      :root {
+        --frame-border-w: max(0.14vw, 2px);
+        --panel-border-w: max(0.28vw, 2px);
+        /* Barlow is bundled in fonts/; the rest are each system's closest match if it can't load */
+        --font: "Barlow", "Bahnschrift", "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+        --font-condensed: "Barlow Semi Condensed", "Bahnschrift SemiCondensed", "Roboto Condensed", "Arial Narrow", sans-serif;
+
+        /* hand of cards (hero) */
+        --card-w: 10.4vw;
+        --fan-step: 5.4vw;
+        --fan-angle: 6deg;
+        --fan-arc: 0.55vw;
+      }
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      html {
+        background-color: var(--page-bg);
+      }
+      body {
+        background-color: var(--page-bg);
+        color: var(--text);
+        font-family: var(--font);
+        font-weight: lighter;
+        font-size: 1.25vw;
+        line-height: 1.5;
+        padding: 3vw 0;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto; /* keep the width/height attributes' aspect ratio when scaled */
+      }
+      a {
+        color: inherit;
+      }
+      :focus-visible {
+        outline: max(0.14vw, 2px) solid var(--highlight-border);
+        outline-offset: max(0.14vw, 2px);
+      }
+
+      /* the bordered frame around everything, like #body in the editor */
+      .frame {
+        width: 88vw;
+        margin: 0 auto;
+        border: var(--frame-border-w) solid var(--frame-border);
+        padding: 2.2vw;
+        display: flex;
+        flex-direction: column;
+        gap: 2.2vw;
+      }
+
+      /* editor-style buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 13.9vw;
+        height: 3.6vw;
+        padding: 0 1.6vw;
+        background-color: var(--btn-bg);
+        border: var(--panel-border-w) solid var(--btn-border);
+        color: var(--btn-text);
+        font-family: var(--font);
+        font-weight: lighter;
+        font-size: 1.4vw;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        /* fades both ways: lighting up on hover and dimming when the cursor leaves */
+        transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      .btn:hover,
+      .btn.filled {
+        background-color: var(--highlight-bg);
+        border-color: var(--highlight-border);
+        color: var(--highlight-text);
+      }
+      .btn:hover {
+        box-shadow: 0 0 max(0.7vw, 6px) var(--highlight-glow);
+      }
+      .btn.mini {
+        min-width: 10.4vw;
+        height: 2.7vw;
+        font-size: 1vw;
+        border-width: max(0.2vw, 2px);
+      }
+
+      .panel {
+        background-color: var(--panel-bg);
+        border: var(--panel-border-w) solid var(--panel-border);
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        gap: 3.2vw;
+      }
+
+      /* ===== header ===== */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .wordmark {
+        font-family: var(--font-condensed);
+        font-stretch: condensed;
+        font-weight: normal;
+        font-size: 1.9vw;
+        letter-spacing: 0.02em;
+        text-decoration: none;
+      }
+      .wordmark svg {
+        height: 1.4vw;
+        width: auto;
+        margin-right: 0.5vw;
+        vertical-align: -0.12vw;
+      }
+      header nav {
+        display: flex;
+        gap: 1.6vw;
+        font-size: 1.1vw;
+      }
+      header nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        border-bottom: max(0.14vw, 1px) solid transparent;
+      }
+      header nav a:hover {
+        color: var(--text);
+        border-bottom-color: var(--highlight-border);
+      }
+
+      /* ===== hero ===== */
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 2vw;
+        min-height: 30vw;
+      }
+      .hero h1 {
+        font-family: var(--font-condensed);
+        font-stretch: condensed;
+        font-weight: normal;
+        font-size: 5.4vw;
+        line-height: 0.98;
+        letter-spacing: -0.01em;
+        max-width: 20ch;
+      }
+      .hero .lede {
+        margin-top: 1.6vw;
+        max-width: 34em;
+        font-size: 1.4vw;
+        color: var(--text-muted);
+      }
+      .hero .lede.notice {
+        color: var(--notice-text);
+      }
+      .hero .actions {
+        margin-top: 2.2vw;
+        display: flex;
+        gap: 1vw;
+        flex-wrap: wrap;
+      }
+
+      .table {
+        position: relative;
+        height: 28vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .hand {
+        position: relative;
+        width: 100%;
+        height: 22vw;
+        list-style: none;
+      }
+      .hand li {
+        --o: calc(var(--i) - 2); /* -2..2, offset from the middle card */
+        --lift: 0vw;
+        position: absolute;
+        left: calc(50% - var(--card-w) / 2);
+        bottom: 1vw;
+        width: var(--card-w);
+        transform-origin: 50% 130%;
+        /* dealt position: fanned out along a shallow arc */
+        transform: translateX(calc(var(--o) * var(--fan-step)))
+          translateY(calc(var(--o) * var(--o) * var(--fan-arc) - var(--lift)))
+          rotate(calc(var(--o) * var(--fan-angle)));
+        transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.25, 1)
+            calc(var(--i) * 0.08s),
+          opacity 0.3s ease calc(var(--i) * 0.08s);
+      }
+      .hand li img {
+        width: 100%;
+        box-shadow: 0 0.6vw 1.4vw var(--shadow);
+      }
+      /* before dealing: a face-down stack below the table */
+      .hand:not(.dealt) li {
+        transform: translateY(14vw) rotate(0deg);
+        opacity: 0;
+        transition-delay: 0s;
+      }
+      .hand.dealt li:hover {
+        --lift: 1.4vw;
+        transition-delay: 0s;
+      }
+      .deal-again {
+        margin-top: 1.2vw;
+      }
+
+      /* ===== feature rows ===== */
+      .tools {
+        display: flex;
+        flex-direction: column;
+        gap: 1.6vw;
+      }
+      .tool {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        align-items: center;
+        gap: 2.4vw;
+        padding: 1.6vw;
+      }
+      .tool.flip {
+        grid-template-columns: 1fr 1.35fr;
+      }
+      .tool.flip .shot {
+        order: 2;
+      }
+      .shot {
+        border: var(--panel-border-w) solid var(--panel-border);
+        background-color: var(--btn-bg);
+      }
+      .tool h2 {
+        font-family: var(--font-condensed);
+        font-stretch: condensed;
+        font-weight: normal;
+        font-size: 2.6vw;
+        line-height: 1.1;
+      }
+      .tool p {
+        margin-top: 0.9vw;
+        max-width: 30em;
+        color: var(--text-muted);
+      }
+      .tool .btn {
+        margin-top: 1.6vw;
+      }
+
+      .data-band {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2vw;
+        padding: 1.2vw 1.6vw;
+      }
+      .data-band p {
+        max-width: 52em;
+        color: var(--text-muted);
+      }
+      .data-band strong {
+        color: var(--text);
+        font-weight: normal;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 2vw;
+        font-size: 0.95vw;
+        color: var(--text-muted);
+        border-top: var(--frame-border-w) solid var(--divider);
+        padding-top: 1.2vw;
+      }
+
+      /* ===== portrait / phones: stack everything and scale up, like the editor's mobile view ===== */
+      @media (max-aspect-ratio: 1/1) {
+        :root {
+          --card-w: 22vw;
+          --fan-step: 12vw;
+          --fan-arc: 1.2vw;
+        }
+        body {
+          font-size: 3.8vw;
+          padding: 11vh 0 4vw; /* clears the ygol-nav icon if that script is added */
+        }
+        .frame {
+          width: 94vw;
+          padding: 4vw;
+          gap: 6vw;
+        }
+        .btn {
+          min-width: 40vw;
+          height: 11vw;
+          font-size: 4.2vw;
+          padding: 0 4vw;
+        }
+        .btn.mini {
+          min-width: 30vw;
+          height: 8vw;
+          font-size: 3.4vw;
+        }
+        .wordmark {
+          font-size: 5.6vw;
+        }
+        .wordmark svg {
+          height: 4.2vw;
+        }
+        header nav {
+          display: none;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 4vw;
+        }
+        .hero h1 {
+          font-size: 13vw;
+        }
+        .hero .lede {
+          font-size: 4.2vw;
+          margin-top: 4vw;
+        }
+        .hero .actions {
+          margin-top: 5vw;
+          gap: 3vw;
+        }
+        .table {
+          height: 58vw;
+        }
+        .hand {
+          height: 46vw;
+        }
+        .hand:not(.dealt) li {
+          transform: translateY(30vw);
+        }
+        .deal-again {
+          margin-top: 3vw;
+        }
+        main {
+          gap: 8vw;
+        }
+        .tools {
+          gap: 5vw;
+        }
+        .tool,
+        .tool.flip {
+          grid-template-columns: 1fr;
+          gap: 4vw;
+          padding: 4vw;
+        }
+        .tool.flip .shot {
+          order: 0;
+        }
+        .tool h2 {
+          font-size: 7.5vw;
+        }
+        .tool p {
+          margin-top: 2.5vw;
+        }
+        .tool .btn {
+          margin-top: 4vw;
+        }
+        .data-band {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 4vw;
+          gap: 4vw;
+        }
+        footer {
+          flex-direction: column;
+          font-size: 3.2vw;
+          gap: 2vw;
+          padding-top: 4vw;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hand li,
+        .hand:not(.dealt) li {
+          transition: none !important;
+        }
+        .hand:not(.dealt) li {
+          transform: translateX(calc(var(--o) * var(--fan-step)))
+            translateY(calc(var(--o) * var(--o) * var(--fan-arc)))
+            rotate(calc(var(--o) * var(--fan-angle)));
+          opacity: 1;
+        }
+      }
     </style>
-    <script src="lib/css-picker.js"></script>
-    <script src="lib/carddb-dl.js"></script>
-    <script src="lib/carddb-md.js"></script>
-    <script src="lib/skilldb-dl.js"></script>
   </head>
   <body>
-    <div class="flexdivc">
-      <div style="text-align: center; width: min-content">
-        <h1>Duel Links F2P</h1>
-        <p>F2P decks and guides for Duel Links</p>
-        <div class="flexdivc">
-          <a href="https://www.youtube.com/channel/UCt5t08cwSNARxntZtQLDeXg">
-            <div class="flexdiv m20" style="align-items: center">
-              <img src="images/icon-yt.png" class="icon" />
-              <p>Youtube</p>
+    <div class="frame">
+      <header>
+        <a class="wordmark" href="#">
+          DLF2P.com
+        </a>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div>
+            <h1>The Official DLF2P Website</h1>
+            <p class="lede notice">
+              IMPORTANT: The website is currently undergoing a major update and many things are still a work in progress.
+            </p>
+            <p class="lede">
+              A website for the DLF2P YT channel containing deck building utilities and information for the custom Duel Links Zero Gem format.
+            </p>
+            <p class="lede">
+              This is entirely a passion project that started off as a deck builder I made for myself, so the website is paid out of my own pockets and won't ever have ads. Consider showing support by checking out my YT channel.
+            </p>
+            <div class="actions">
+              <a class="btn filled" href="https://www.youtube.com/channel/UCt5t08cwSNARxntZtQLDeXg" target="_blank">YouTube</a>
+              <a class="btn" href="https://discord.gg/SFdTtHj" target="_blank">Discord</a>
+              <a class="btn" href="https://www.twitch.tv/duellinksf2p" target="_blank">Twitch</a>
             </div>
-          </a>
-          <a href="https://discord.gg/SFdTtHj">
-            <div class="flexdiv m20" style="align-items: center">
-              <img src="images/icon-discord.png" class="icon" />
-              <p>Discord</p>
+          </div>
+        </section>
+
+        <section class="tools" aria-label="Tools">
+          <article class="tool panel">
+            <img
+              src="images/banner-editor.jpg"
+              class="shot"
+              data-placeholder="screenshot"
+              data-label="Placeholder image"
+              width="1600"
+              height="900"
+              alt="The deck editor, with search results next to a 40-card main deck"
+            />
+            <div>
+              <h2>Deck editor</h2>
+              <p>
+                Build your deck from Duel Links, Master Duel, TCG or OCG in the browser. Includes a solo testing feature for test hands and practising combos.
+              </p>
+              <a class="btn" href="editor.html">Open the deck editor</a>
             </div>
-          </a>
-          <a href="https://www.twitch.tv/duellinksf2p">
-            <div class="flexdiv m20" style="align-items: center">
-              <img src="images/icon-twitch.png" class="icon" />
-              <p>Twitch</p>
+          </article>
+
+          <article class="tool panel flip">
+            <img
+              class="shot"
+              data-placeholder="screenshot"
+              data-label="Placeholder image"
+              width="1600"
+              height="900"
+              alt="The hand tester, with five cards drawn onto a playmat"
+            />
+            <div>
+              <h2>DLZG</h2>
+              <p>
+                Learn more about the custom Duel Links Zero Gem format here.
+              </p>
+              <a class="btn" href="#">DLZG Info</a>
             </div>
-          </a>
-        </div>
-        <div id="whatsnew">
-          <p>What's new (Oct 21):</p>
-          <p>- Updated deck builder GUI</p>
-        </div>
-        <a href="top-f2p-decks">
-          <img class="banner" src="images/bannerTopF2PDecks.jpg" />
-        </a>
-        <a href="f2p-decks">
-          <img class="banner" src="images/bannerF2PDecks.jpg" />
-        </a>
-        <a href="guides">
-          <img class="banner" src="images/bannerDuelLinksGuides.jpg" />
-        </a>
-        <a href="best-techs">
-          <img class="banner" src="images/bannerBestF2PTechs.jpg" />
-        </a>
-        <a href="deck-builder">
-          <img class="banner" src="images/bannerDeckBuilder.jpg" />
-        </a>
-      </div>
+          </article>
+        </section>
+      </main>
+
+      <footer>
+        <span>DLF2P.com is a fan project and is not affiliated with Konami.</span>
+      </footer>
     </div>
+
+    <script>
+      //=== placeholder images ===
+      //any <img data-placeholder> without a src gets a drawn placeholder;
+      //give it a real src and the placeholder is skipped
+      function svgURI(svg) {
+        return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      }
+      function escapeXML(s) {
+        return s.replace(/[<>&"']/g, (c) => `&#${c.charCodeAt(0)};`);
+      }
+      //placeholder colours are read from the colour scheme at the top of the css
+      const css = getComputedStyle(document.documentElement);
+      const C = (name) => css.getPropertyValue(name).trim();
+      const PH = {
+        hatchBg: C("--placeholder-hatch-bg"),
+        hatchLine: C("--placeholder-hatch-line"),
+        cardBg: C("--btn-bg"),
+        boxBg: C("--panel-bg"),
+        edge: C("--panel-border"),
+        accent: C("--frame-border"),
+        textLine: C("--placeholder-text-line"),
+        text: C("--text"),
+      };
+      const HATCH = `<pattern id="h" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" fill="${PH.hatchBg}"/><line x1="0" y1="0" x2="0" y2="16" stroke="${PH.hatchLine}" stroke-width="6"/></pattern>`;
+      function cardPlaceholder(label) {
+        //proportions of a real card: name bar, square art window, text box
+        return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 421 614">
+          <defs>${HATCH}</defs>
+          <rect x="3" y="3" width="415" height="608" fill="${PH.cardBg}" stroke="${PH.edge}" stroke-width="6"/>
+          <rect x="28" y="26" width="365" height="44" fill="${PH.boxBg}" stroke="${PH.edge}" stroke-width="3"/>
+          <text x="44" y="56" font-family="Barlow, Bahnschrift, Segoe UI, Roboto, -apple-system, Helvetica Neue, Arial, sans-serif" font-size="24" fill="${PH.text}">${escapeXML(label)}</text>
+          <rect x="50" y="110" width="321" height="321" fill="url(#h)" stroke="${PH.edge}" stroke-width="3"/>
+          <path d="M226 200l-48 74h34l-14 62 62-82h-36l14-54z" fill="${PH.accent}"/>
+          <rect x="28" y="454" width="365" height="130" fill="${PH.boxBg}" stroke="${PH.edge}" stroke-width="3"/>
+          <rect x="46" y="476" width="250" height="10" fill="${PH.textLine}"/>
+          <rect x="46" y="500" width="320" height="10" fill="${PH.textLine}"/>
+          <rect x="46" y="524" width="200" height="10" fill="${PH.textLine}"/>
+        </svg>`);
+      }
+      function screenshotPlaceholder(label, w, h) {
+        return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">
+          <defs>${HATCH}</defs>
+          <rect width="${w}" height="${h}" fill="url(#h)"/>
+          <rect x="${w / 2 - 300}" y="${h / 2 - 50}" width="600" height="100" fill="${PH.boxBg}" stroke="${PH.edge}" stroke-width="4"/>
+          <text x="${w / 2}" y="${h / 2 + 14}" text-anchor="middle" font-family="Barlow, Bahnschrift, Segoe UI, Roboto, -apple-system, Helvetica Neue, Arial, sans-serif" font-size="40" fill="${PH.text}">${escapeXML(label)}</text>
+        </svg>`);
+      }
+      for (const img of document.querySelectorAll("img[data-placeholder]")) {
+        if (img.getAttribute("src")) continue;
+        const label = img.dataset.label || "Image";
+        img.src =
+          img.dataset.placeholder === "card"
+            ? cardPlaceholder(label)
+            : screenshotPlaceholder(label, +img.getAttribute("width") || 1600, +img.getAttribute("height") || 900);
+      }
+
+      //=== dealing the hand ===
+      const hand = document.getElementById("hand");
+      function deal() {
+        requestAnimationFrame(() => requestAnimationFrame(() => hand.classList.add("dealt")));
+      }
+      //the hand of cards is optional: skip this when it isn't on the page
+      if (hand) document.getElementById("dealAgain")?.addEventListener("click", () => {
+        hand.classList.remove("dealt");
+        //shuffle the cards, then deal them out again once they're back in the stack
+        setTimeout(() => {
+          const cards = [...hand.children];
+          for (let i = cards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cards[i], cards[j]] = [cards[j], cards[i]];
+          }
+          cards.forEach((li, i) => {
+            li.style.setProperty("--i", i);
+            hand.appendChild(li);
+          });
+          deal();
+        }, 350);
+      });
+      if (hand) deal();
+    </script>
+    <script src="data/ygol-nav.js"></script>
   </body>
-  <script src="lib/navbar-handler.js"></script>
-  <script src="lib/popup-handler.js"></script>
 </html>

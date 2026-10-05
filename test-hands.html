@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <title>DLF2P Test Hands</title>
+    <style>
+      /* ===== colour scheme "Indigo": every colour in this page is defined here ===== */
+      :root {
+        --page-bg: #07060c;
+        --text: #dee0f7;
+        --text-muted: #98a1ec; /* secondary text and placeholders */
+        --frame-border: #8672cb; /* outline around the whole page */
+        --panel-bg: #0e0b1e; /* boxes inside the frame */
+        --panel-border: #8672cb;
+        --input-bg: #2a2e54;
+        --input-text: #dee0f7;
+        --btn-bg: #2a2e54;
+        --btn-border: #4a50be;
+        --btn-text: #dee0f7;
+        --highlight-bg: #4474c9; /* hovered/selected buttons (blues) */
+        --highlight-border: #93e3fa; /* also used for focus outlines */
+        --highlight-text: #cfeaff;
+        --highlight-glow: #2f58c2cc;
+        --popup-bg: #07060cf0; /* popups (semi-transparent) */
+        --skill-text: #ffff77;
+        --scroll-track: #0c0c24;
+        --scroll-thumb: #34358f;
+        --canvas-text: #dee0f7; /* text drawn on the field */
+        --canvas-lp-editing: #93e3fa; /* life points while being edited */
+        --canvas-lp-box: #07060c66; /* box behind the life points */
+        --canvas-menu-bg: #07060ccc; /* menu overlay */
+        --canvas-popup-bg: #07060cf0; /* card info overlay */
+        --canvas-list-bg: #07060caa; /* deck/graveyard list overlay */
+        --canvas-hitbox: #ff000088; /* debug: visible hitboxes */
+        --canvas-none: #00000000; /* debug: hidden hitboxes */
+      }
+      /* Barlow (SIL Open Font License, see fonts/OFL.txt), bundled so every system shows the same font */
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-300-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-300-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-500-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-500-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        background-color: var(--page-bg);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      ygol {
+        width: 1280px;
+        height: 720px;
+      }
+    </style>
+  </head>
+  <body>
+    <ygol style="width: min-content"></ygol>
+  </body>
+  <script>
+    //canvas text font: Barlow (bundled in fonts/), then each system's closest match
+    const FONT_STACK =
+      '"Barlow", "Bahnschrift", "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
+    //a canvas doesn't make the browser download a web font, so ask for it directly;
+    //the field redraws continuously, so text switches to Barlow as soon as it arrives
+    if (document.fonts) document.fonts.load('40pt "Barlow"').catch(() => {});
+    //canvas colours, read from the colour scheme at the top of the css
+    const COLOR = (() => {
+      const css = getComputedStyle(document.documentElement);
+      const c = (name) => css.getPropertyValue(name).trim();
+      return {
+        text: c("--canvas-text"),
+        lpEditing: c("--canvas-lp-editing"),
+        lpBox: c("--canvas-lp-box"),
+        menuBg: c("--canvas-menu-bg"),
+        popupBg: c("--canvas-popup-bg"),
+        listBg: c("--canvas-list-bg"),
+        hitbox: c("--canvas-hitbox"),
+        none: c("--canvas-none"),
+      };
+    })();
+
+    //=== Screen: list of objects to render and the render function ===
+    //screen class containing list of objects to render and the render function
+    class Screen {
+      constructor(width, height) {
+        this.width = width;
+        this.height = height;
+        this.canvas = document.createElement("canvas");
+        this.ctx = this.canvas.getContext("2d");
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.objectList = [];
+        document.body.insertAdjacentHTML(
+          "beforeend",
+          "<div id='ygol-cnv-images' style='display: none;'></div>"
+        );
+      }
+      addObjectRect(id, color, x, y, width, height, meta = {}) {
+        this.objectList.push({
+          id: id,
+          type: "CNV_RECT",
+          color: color,
+          src: null,
+          width: width,
+          height: height,
+          x: x,
+          y: y,
+          meta: meta,
+        });
+      }
+      addObjectImg(id, src, x, y, width, height, meta = {}) {
+        //supported metadata: angle (degrees)
+        this.objectList.push({
+          id: id,
+          type: "CNV_IMG",
+          color: COLOR.text,
+          src: src,
+          width: width,
+          height: height,
+          x: x,
+          y: y,
+          meta: meta,
+        });
+        return new Promise((resolve, reject) => {
+          const i = document.createElement("img");
+          i.id = id;
+          i.src = src;
+          i.onload = resolve;
+          i.onerror = () => {
+            if (i.src == meta.altSrc) {
+              i.src = meta.errorSrc;
+            } else if (i.src == meta.errorSrc) {
+              i.onerror = null;
+              reject;
+            } else if (meta.altSrc) {
+              i.src = meta.altSrc;
+            } else {
+              i.src = meta.errorSrc;
+            }
+          };
+          document.getElementById("ygol-cnv-images").appendChild(i);
+        });
+      }
+      addObjectText(id, color, x, y, width, meta = {}) {
+        this.objectList.push({
+          id: id,
+          type: "CNV_TXT",
+          color: color,
+          src: null,
+          width: width,
+          height: null,
+          x: x,
+          y: y,
+          meta: meta,
+        });
+      }
+      removeObject(id) {
+        this.objectList = this.objectList.filter((a) => a.id != id);
+        if (document.getElementById(id)) document.getElementById(id).remove();
+      }
+      drawRotatedImg(ctx, angle, id, x, y, width, height) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate((angle * Math.PI) / 180);
+        ctx.drawImage(id, -width / 2, -height / 2, width, height);
+        ctx.restore();
+      }
+      render() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        for (let obj of this.objectList) {
+          switch (obj.type) {
+            case "CNV_RECT":
+              this.ctx.fillStyle = obj.color;
+              this.ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+              break;
+            case "CNV_IMG":
+              if (obj.meta.angle) {
+                this.drawRotatedImg(
+                  this.ctx,
+                  obj.meta.angle,
+                  document.getElementById(obj.id),
+                  obj.x + obj.width / 2,
+                  obj.y + obj.height / 2,
+                  obj.width,
+                  obj.height
+                );
+              } else {
+                this.ctx.drawImage(
+                  document.getElementById(obj.id),
+                  obj.x,
+                  obj.y,
+                  obj.width,
+                  obj.height
+                );
+              }
+              break;
+            case "CNV_TXT":
+              function drawWrappedText(
+                ctx,
+                text,
+                color = COLOR.text,
+                width = Infinity,
+                x = 0,
+                y = 0,
+                fontWeight = "",
+                fontSize = "10pt",
+                fontFamily = "Arial"
+              ) {
+                ctx.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+                ctx.fillStyle = color;
+                ctx.textBaseline = "top";
+                const words = text.split(" ");
+                let line = "";
+                let lineHeight = parseInt(fontSize, 10) * 1.6;
+                function renderLine(line, x, y) {
+                  ctx.fillText(line, x, y);
+                  return y + lineHeight;
+                }
+                let currentY = y;
+                for (let word of words) {
+                  const testLine = line + word + " ";
+                  const metrics = ctx.measureText(testLine);
+                  const testLineWidth = metrics.width;
+                  if (testLineWidth > width && line.length > 0) {
+                    currentY = renderLine(line, x, currentY);
+                    line = word + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                if (line.length > 0) {
+                  renderLine(line, x, currentY);
+                }
+              }
+              drawWrappedText(
+                this.ctx,
+                obj.meta.text,
+                obj.color,
+                obj.width,
+                obj.x,
+                obj.y,
+                obj.meta.fontWeight,
+                obj.meta.fontSize,
+                obj.meta.fontFamily
+              );
+          }
+        }
+      }
+      clickedObjects(x, y) {
+        let objs = [];
+        for (let obj of this.objectList) {
+          if (
+            obj.x < x &&
+            x < obj.x + obj.width &&
+            obj.y < y &&
+            y < obj.y + obj.height
+          ) {
+            objs.push(obj);
+          }
+        }
+        return objs;
+      }
+      moveToFront(id) {
+        let target = false;
+        for (let obj of this.objectList) {
+          if (obj.id == id) target = obj;
+        }
+        this.objectList = this.objectList.filter((a) => a.id != id);
+        if (target) this.objectList.push(target);
+      }
+    }
+
+    //=== YgolDeck: deck format conversion (yld / ydk / ydke / dlf2pV2) ===
+    class YgolDeck {
+      constructor(db, ygolID, isRush) {
+        this.db = db;
+        this.ygolID = ygolID;
+        this.isRush = isRush;
+      }
+      convert(d, format) {
+        switch (format) {
+          case "yld":
+            return this.namelist_to_yld(this.toNamelist(d));
+          case "ydk":
+            return this.namelist_to_ydk(this.toNamelist(d));
+          case "ydke":
+            return this.ydk_to_ydke(this.namelist_to_ydk(this.toNamelist(d)));
+          case "dlf2pV2":
+            return this.namelist_to_dlf2pV2(this.toNamelist(d));
+          case "namelist":
+            return this.toNamelist(d);
+        }
+      }
+      toNamelist(d) {
+        if (d.includes("#main") || d.includes("#extra")) {
+          return this.ydk_to_namelist(d);
+        } else if (d.includes("ydke://")) {
+          return this.ydk_to_namelist(this.ydke_to_ydk(d));
+        } else if (d.includes("yld://")) {
+          return this.yld_to_namelist(d);
+        } else if (d.slice(0, 2) == "3_") {
+          //dlf2pv3
+        } else {
+          return this.dlf2pV2_to_namelist(d);
+        }
+      }
+      isEDMonster(name) {
+        let card = this.db.filter((a) => a.name == name)[0];
+        return (
+          card.monsterType.includes("Fusion") ||
+          card.monsterType.includes("Synchro") ||
+          card.monsterType.includes("Xyz") ||
+          card.monsterType.includes("XYZ") ||
+          card.monsterType.includes("Link")
+        );
+      }
+      ydk_to_ydke(ydk) {
+        function Uint32Array_to_ydke(main, extra, side) {
+          function passcodesToBase64(passcodes) {
+            const bytes = new Uint8Array(passcodes.buffer);
+            let binaryString = "";
+            for (let i = 0; i < bytes.length; i++) {
+              binaryString += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binaryString);
+          }
+          return (
+            "ydke://" +
+            passcodesToBase64(main) +
+            "!" +
+            passcodesToBase64(extra) +
+            "!" +
+            passcodesToBase64(side) +
+            "!"
+          );
+        }
+        function stringsToUint32Array(stringsArray) {
+          const uint32Array = new Uint32Array(stringsArray.length);
+          for (let i = 0; i < stringsArray.length; i++)
+            uint32Array[i] = parseInt(stringsArray[i], 10);
+          return uint32Array;
+        }
+        let main = ydk
+          .split("#main")[1]
+          .split("#extra")[0]
+          .split("\n")
+          .filter((a) => a != "");
+        let extra = ydk
+          .split("#extra")[1]
+          .split("!side")[0]
+          .split("\n")
+          .filter((a) => a != "");
+        let side = ydk
+          .split("!side")[1]
+          .split("\n")
+          .filter((a) => a != "");
+        return Uint32Array_to_ydke(
+          stringsToUint32Array(main),
+          stringsToUint32Array(extra),
+          stringsToUint32Array(side)
+        );
+      }
+      ydke_to_ydk(ydke) {
+        function ydke_to_Uint32Array(ydke) {
+          function base64ToPasscodes(base64) {
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new Uint32Array(bytes.buffer);
+          }
+          const components = ydke.slice("ydke://".length).split("!");
+          return {
+            main: base64ToPasscodes(components[0]),
+            extra: base64ToPasscodes(components[1]),
+            side: base64ToPasscodes(components[2]),
+          };
+        }
+        return JSON.stringify(ydke_to_Uint32Array(ydke))
+          .replace('"main"', "#main")
+          .replace('"extra"', "#extra")
+          .replace('"side"', "!side")
+          .replace(/{/g, "")
+          .replace(/}/g, "")
+          .replace(/:/g, ",")
+          .split(",")
+          .filter((a) => !a.includes('"'))
+          .join("\n");
+      }
+      ydk_to_namelist(ydk) {
+        let arr = ydk.split("\n").filter((a) => a != "");
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i][0] != "#" && arr[i][0] != "!") {
+            if (isNaN(arr[i])) {
+              console.log(ydk);
+              return ydk;
+            } else {
+              console.log(arr[i]);
+              let card = this.db.filter((a) => a.konamiID == Number(arr[i]));
+              if (card.length) {
+                arr[i] = card[0].name;
+              } else {
+                card = this.db.filter(
+                  (a) =>
+                    a.konamiID == Number(arr[i]) + 1 ||
+                    a.konamiID == Number(arr[i]) - 1
+                );
+                arr[i] = card.length ? card[0].name : "";
+              }
+            }
+          }
+        }
+        return arr.filter((a) => a != "").join("\n");
+      }
+      namelist_to_ydk(namelist) {
+        let arr = namelist.split("\n");
+        for (let i = 0; i < arr.length; i++) {
+          let card = this.db.filter(
+            (a) => a.name == arr[i] && (this.isRush ? a.rush : !a.rush)
+          );
+          if (card.length) arr[i] = card[0].konamiID || arr[i];
+        }
+        if (!namelist.includes("!side")) arr.push("!side");
+        return arr.join("\n");
+      }
+      yld_to_namelist(yld) {
+        let arr = this.base13Encode(this.base64Decode(yld.replace("yld://", "")))
+          .slice(1)
+          .replace(/a/g, "xxxxx")
+          .replace(/b/g, "xxxxxxxxxx")
+          .replace(/c/g, "yyyyy")
+          .match(/.{1,5}/g);
+        let d = "#main\n";
+        let prev = 0;
+        for (let el of arr) {
+          if (el == "yyyyy" && !d.includes("!side")) {
+            d += d.includes("#extra") ? "!side\n" : "#extra\n";
+          } else {
+            d += this.ygolID[el == "xxxxx" ? prev : Number(el)] + "\n";
+            if (el != "xxxxx") prev = Number(el);
+          }
+        }
+        return d;
+      }
+      namelist_to_yld(namelist) {
+        let d = "1";
+        let prev = "";
+        for (let el of namelist.split("\n")) {
+          if (el.includes("#extra") || el.includes("!side")) {
+            d += "c";
+          } else if (this.ygolID.indexOf(el) != -1) {
+            let curr = ("0000" + this.ygolID.indexOf(el)).slice(-5);
+            d += prev == curr ? "a" : curr;
+            prev = curr;
+            d = d.replace("aa", "b");
+          }
+        }
+        return "yld://" + this.base64Encode(this.base13Decode(d));
+      }
+      dlf2pV2_to_namelist(dlf2pV2) {
+        let c = dlf2pV2.split("_")[0] == "2" ? dlf2pV2.slice(2) : dlf2pV2;
+        let split = decodeURIComponent(c).split("_");
+        let arr = this.base13Encode(this.base63Decode(split[0]));
+        if (arr[0] != "a") arr = "0" + arr;
+        arr = arr
+          .replace(/a/g, "00")
+          .replace(/c/g, "bb")
+          .replace(/b/g, "xxxxxxxxxx")
+          .match(/.{1,10}/g);
+        let d = [];
+        for (let el of arr) {
+          d.push(
+            el == "xxxxxxxxxx"
+              ? d.at(-1)
+              : this.db.filter((a) => a.konamiID == Number(el))[0].name
+          );
+        }
+        let main = d.filter((a) => !this.isEDMonster(a));
+        let extra = d.filter((a) => this.isEDMonster(a));
+        if (split[3])
+          for (let el of split[3].split("-")) {
+            if (this.isEDMonster(el)) {
+              extra.push(el);
+            } else {
+              main.push(el);
+            }
+          }
+        return `#main\n${main.join("\n")}\n#extra\n${extra.join("\n")}`;
+      }
+      namelist_to_dlf2pV2(namelist) {
+        let darr = [];
+        let special = [];
+        let prev = "";
+        for (let el of namelist.split("\n")) {
+          if (el.includes("!side")) break;
+          if (!el.includes("#main") && !el.includes("#extra")) {
+            let card = this.db.filter((a) => a.name == el)[0];
+            if (card.konamiID) {
+              let id = ("000000000" + card.konamiID).slice(-10);
+              darr.push(id == prev ? "b" : id);
+              prev = id;
+            } else {
+              special.push(el);
+            }
+          }
+        }
+        return `${this.base63Encode(
+          this.base13Decode(darr.join("").replace(/bb/g, "c").replace(/00/g, "a"))
+        )}_-1_Deck${special.length ? `_${special.join("-")}` : ""}`;
+      }
+      base64Encode(str) {
+        if (str == "-1") return "-1";
+        let input = BigInt(str);
+        let chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        let result = "";
+        while (input > 0n) {
+          result = chars[input - (input / 64n) * 64n] + result;
+          input = BigInt(input / 64n);
+        }
+        return result;
+      }
+      base64Decode(str) {
+        if (str == "-1") return "-1";
+        let result = 0n;
+        let chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        for (let i = str.length - 1; i >= 0; i--) {
+          result +=
+            BigInt(chars.indexOf(str[i])) * 64n ** BigInt(str.length - 1 - i);
+        }
+        return result;
+      }
+      base13Encode(str) {
+        if (str == "-1") return "-1";
+        let input = BigInt(str);
+        let chars = "0123456789abc";
+        let result = "";
+        while (input > 0n) {
+          result = chars[input - (input / 13n) * 13n] + result;
+          input = BigInt(input / 13n);
+        }
+        return result;
+      }
+      base13Decode(str) {
+        if (str == "-1") return "-1";
+        let result = 0n;
+        let chars = "0123456789abc";
+        for (let i = str.length - 1; i >= 0; i--) {
+          result +=
+            BigInt(chars.indexOf(str[i])) * 13n ** BigInt(str.length - 1 - i);
+        }
+        return result;
+      }
+      base63Encode(str) {
+        if (str == "-1") return "-1";
+        let input = BigInt(str);
+        let chars =
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+        let result = "";
+        while (input > 0n) {
+          result = chars[input - (input / 63n) * 63n] + result;
+          input = BigInt(input / 63n);
+        }
+        return result;
+      }
+      base63Decode(str) {
+        if (str == "-1") return "-1";
+        let result = 0n;
+        let chars =
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+        for (let i = str.length - 1; i >= 0; i--) {
+          result +=
+            BigInt(chars.indexOf(str[i])) * 63n ** BigInt(str.length - 1 - i);
+        }
+        return result;
+      }
+    }
+
+    //=== Renderer: field, input handling, replays ===
+    class Renderer {
+      constructor(
+        width,
+        height,
+        fps,
+        snapTolerance,
+        mouseHoldDelay,
+        cardDb,
+        ygolID,
+        isRush
+      ) {
+        this.screen = new Screen(width, height);
+        this.fps = fps;
+        this.snapTolerance = snapTolerance;
+        this.mouseHoldDelay = mouseHoldDelay;
+        this.mousedownPos = { x: 0, y: 0 };
+        this.mouseupPos = { x: 0, y: 0 };
+        this.isMouseDown = false;
+        this.clicksWithinDelay = 0;
+        this.mouseHoldingDown = "false";
+        this.movingObject = "";
+        this.movingObjectOgPos = null;
+        this.scrollY = 0;
+        this.originalObjectList;
+        this.shuffling = false;
+        this.changingLifePoints = false;
+        this.movingCard = false;
+        this.playingReplay = false;
+        this.autoplay = false;
+        this.simpleUI = false;
+        this.ygolDeck = new YgolDeck(cardDb, ygolID, isRush);
+        this.namelist = "";
+        this.yld = "";
+        this.ydk = "";
+        this.noimage = this.url("images/noimage.jpg");
+        this.errorimage = this.url("images/errorimage.jpg");
+        this.replay = "";
+        //debug
+        this.showHitboxes = false;
+        this.hitboxColor = this.showHitboxes ? COLOR.hitbox : COLOR.none;
+        this.allowIllegalPlacement = false;
+      }
+      url(url) {
+        return url;
+      }
+      name_url(str) {
+        let fileName = str.replace(/[^a-zA-Z0-9\s_\-\.\(\)%]/g, "");
+        fileName = fileName.replace(/\s/g, "_");
+        return fileName.substring(0, 255);
+      }
+      async loadField() {
+        if (document.querySelector("ygol").getAttribute("autoplay"))
+          this.autoplay =
+            document.querySelector("ygol").getAttribute("autoplay") == "true";
+        if (document.querySelector("ygol").getAttribute("simple-ui"))
+          this.simpleUI =
+            document.querySelector("ygol").getAttribute("simple-ui") == "true";
+        await this.screen.addObjectImg(
+          "fieldbg",
+          this.url("images/fieldbg.png"),
+          0,
+          0,
+          1280,
+          720
+        );
+        await this.screen.addObjectImg(
+          "field",
+          this.url("images/field.png"),
+          0,
+          0,
+          1280,
+          720
+        );
+        for (let i = 0; i < 5; i++) {
+          this.screen.addObjectRect(
+            `snapzone-m${i}`,
+            this.hitboxColor,
+            181 + 184.5 * i,
+            233,
+            180,
+            175
+          );
+        }
+        for (let i = 0; i < 5; i++) {
+          this.screen.addObjectRect(
+            `snapzone-st${i}`,
+            this.hitboxColor,
+            181 + 184.5 * i,
+            420,
+            180,
+            175
+          );
+        }
+        this.screen.addObjectRect(
+          `snapzone-me1`,
+          this.hitboxColor,
+          363,
+          26,
+          180,
+          175
+        );
+        this.screen.addObjectRect(
+          `snapzone-me2`,
+          this.hitboxColor,
+          737,
+          26,
+          180,
+          175
+        );
+        for (let i = 0; i < 3; i++) {
+          this.screen.addObjectRect(
+            `snapzone-${["pb", "pg", "pd"][i]}`,
+            this.hitboxColor,
+            1104,
+            139 + 187.5 * i,
+            180,
+            175
+          );
+        }
+        this.screen.addObjectRect(
+          `snapzone-f`,
+          this.hitboxColor,
+          -4,
+          327,
+          180,
+          175
+        );
+        this.screen.addObjectRect(
+          `snapzone-pe`,
+          this.hitboxColor,
+          -4,
+          514,
+          180,
+          175
+        );
+        this.screen.addObjectRect(
+          `snapzone-hand`,
+          this.hitboxColor,
+          200,
+          600,
+          880,
+          120
+        );
+        if (!this.simpleUI) {
+          await this.screen.addObjectImg(
+            "menu-toggle",
+            this.url("images/menu.png"),
+            10,
+            10,
+            80,
+            80
+          );
+          this.screen.addObjectRect(`lp-box`, COLOR.lpBox, 10, 90, 240, 70);
+          this.screen.addObjectText("lp-txt", COLOR.text, 20, 100, 800, {
+            text: "LP:",
+            fontSize: "40pt",
+            fontFamily: FONT_STACK,
+          });
+          this.screen.addObjectText("lp-num", COLOR.text, 100, 100, 800, {
+            text: "8000",
+            fontSize: "40pt",
+            fontFamily: FONT_STACK,
+          });
+          await this.screen.addObjectImg(
+            "dice",
+            this.url("images/1.png"),
+            1180,
+            30,
+            60,
+            60
+          );
+        }
+        setInterval(async () => {
+          //show card info when holding down mouse
+          if (this.mouseHoldingDown == "true") {
+            if (
+              !this.screen.objectList.filter((a) => a.id == "popup-card").length
+            ) {
+              this.screen.addObjectRect("popup-bg", COLOR.popupBg, 0, 0, 1280, 720);
+              let cardname = this.screen
+                .clickedObjects(this.mousedownPos.x, this.mousedownPos.y)
+                .filter((a) => a.meta.cardname)
+                .at(-1).meta.cardname;
+              let card = this.ygolDeck.db.filter((a) => a.name == cardname)[0];
+              await this.screen.addObjectImg(
+                "popup-card",
+                this.url(`images/cards/${this.name_url(cardname)}.jpg`),
+                0,
+                0,
+                360,
+                525,
+                {
+                  altSrc: card.altimg,
+                  errorSrc: this.errorimage,
+                }
+              );
+              this.screen.addObjectText("popup-txt", COLOR.text, 400, 30, 800, {
+                text: card.description,
+                fontSize: "20pt",
+                fontFamily: FONT_STACK,
+              });
+            }
+          } else {
+            this.screen.removeObject("popup-bg");
+            this.screen.removeObject("popup-card");
+            this.screen.removeObject("popup-txt");
+          }
+          this.screen.render();
+        }, 1000 / this.fps);
+        this.screen.canvas.addEventListener("mousedown", (event) =>
+          this.mousedown(event)
+        );
+        this.screen.canvas.addEventListener("mousemove", (event) =>
+          this.mousemove(event)
+        );
+        this.screen.canvas.addEventListener("mouseup", (event) =>
+          this.mouseup(event)
+        );
+        window.addEventListener("wheel", (event) => this.wheel(event));
+        window.addEventListener("keydown", (event) => this.keydown(event));
+        if (document.querySelector("ygol").getAttribute("matsrc"))
+          this.changeMat(document.querySelector("ygol").getAttribute("matsrc"));
+        if (document.querySelector("ygol").getAttribute("sleevesrc"))
+          this.changeSleeve(
+            document.querySelector("ygol").getAttribute("sleevesrc")
+          );
+        const observer = new MutationObserver(this.mutationUpdate.bind(this));
+        observer.observe(document.querySelector("ygol"), {
+          attributes: true,
+        });
+      }
+      //update when attributes of <ygol> are changed
+      mutationUpdate(mutations) {
+        for (let mutation of mutations) {
+          if (mutation.type === "attributes") {
+            switch (mutation.attributeName) {
+              case "matsrc":
+                this.changeMat(
+                  document.querySelector("ygol").getAttribute("matsrc")
+                );
+                break;
+              case "sleevesrc":
+                this.changeSleeve(
+                  document.querySelector("ygol").getAttribute("sleevesrc")
+                );
+                break;
+              case "replay":
+                if (this.playingReplay) {
+                  this.playingReplay = false;
+                } else {
+                  this.resetField();
+                  this.loadReplay(
+                    document.querySelector("ygol").getAttribute("replay")
+                  );
+                }
+                break;
+              case "autoplay":
+                this.autoplay =
+                  document.querySelector("ygol").getAttribute("autoplay") == "true";
+                break;
+              case "simple-ui":
+                this.simpleUI =
+                  document.querySelector("ygol").getAttribute("simple-ui") ==
+                  "true";
+                break;
+              default:
+                if (document.querySelector("ygol").getAttribute("yld")) {
+                  this.loadYld(document.querySelector("ygol").getAttribute("yld"));
+                } else if (document.querySelector("ygol").getAttribute("ydk")) {
+                  this.loadYdk(document.querySelector("ygol").getAttribute("ydk"));
+                } else if (document.querySelector("ygol").getAttribute("dlf2pV2")) {
+                  this.loadDlf2pV2(
+                    document.querySelector("ygol").getAttribute("dlf2pV2")
+                  );
+                }
+            }
+            break;
+          }
+        }
+      }
+      async loadDeckFromNamelist(namelist) {
+        this.namelist = namelist;
+        this.deleteDeck();
+        let maindeck = namelist.split("#main")[1].split("#extra")[0].split("\n");
+        let extradeck = namelist.split("#extra")[1].split("!side")[0].split("\n");
+        for (let i = 0; i < maindeck.length; i++) {
+          if (maindeck[i] && maindeck[i] != "\r") {
+            let card = this.ygolDeck.db.filter((a) => a.name == maindeck[i])[0];
+            let konamiID = card.konamiID;
+            if (konamiID == "") konamiID = "error";
+            await this.screen.addObjectImg(
+              `main${i}`,
+              this.noimage,
+              1134,
+              514,
+              120, //360
+              175, //525
+              {
+                angle: 0,
+                isDraggable: true,
+                cardname: maindeck[i],
+                list: null,
+                isFaceup: false,
+                altSrc: card.altimg,
+                errorSrc: this.errorimage,
+              }
+            );
+          }
+        }
+        for (let i = 0; i < extradeck.length; i++) {
+          if (extradeck[i] && extradeck[i] != "\r") {
+            let card = this.ygolDeck.db.filter((a) => a.name == extradeck[i])[0];
+            let konamiID = card.konamiID;
+            if (konamiID == "") konamiID = "error";
+            await this.screen.addObjectImg(
+              `extra${i}`,
+              this.noimage,
+              26,
+              514,
+              120,
+              175,
+              {
+                angle: 0,
+                isDraggable: true,
+                cardname: extradeck[i],
+                list: null,
+                isFaceup: false,
+                altSrc: card.altimg,
+                errorSrc: this.errorimage,
+              }
+            );
+          }
+        }
+        this.originalObjectList = structuredClone(this.screen.objectList);
+        this.preloadImages();
+        for (let el of this.screen.objectList) {
+          if (el.id == "lp-num")
+            el.meta.text = maindeck.length < 40 ? "4000" : "8000";
+        }
+        let l = this.screen.objectList;
+        console.log({ l });
+      }
+      loadYld(yld) {
+        this.yld = yld;
+        this.loadDeckFromNamelist(this.ygolDeck.yld_to_namelist(yld));
+      }
+      loadYdk(ydk) {
+        this.ydk = ydk;
+        this.loadDeckFromNamelist(this.ygolDeck.ydk_to_namelist(ydk));
+      }
+      loadYdke(ydke) {
+        this.loadYdk(this.ygolDeck.ydke_to_ydk("ydke://" + ydke));
+      }
+      loadDlf2pV2(dlf2pV2) {
+        this.loadDeckFromNamelist(this.ygolDeck.dlf2pV2_to_namelist(dlf2pV2));
+      }
+      deleteDeck() {
+        for (let el of this.screen.objectList) {
+          if (el.id.includes("main") || el.id.includes("extra"))
+            this.screen.removeObject(el.id);
+        }
+      }
+      preloadImages() {
+        for (let el of this.screen.objectList) {
+          if (el.meta.cardname) {
+            const i = document.createElement("img");
+            i.src = this.url(`images/cards/${this.name_url(el.meta.cardname)}.jpg`);
+            document.getElementById("ygol-cnv-images").appendChild(i);
+          }
+        }
+      }
+      shuffle(arr) {
+        let array = JSON.parse(JSON.stringify(arr));
+        let currentIndex = array.length;
+        while (currentIndex) {
+          let randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex],
+            array[currentIndex],
+          ];
+        }
+        return array;
+      }
+      openMenu() {
+        this.screen.addObjectRect("menu-bg", COLOR.menuBg, 0, 0, 1280, 720, {
+          isDraggable: false,
+        });
+        this.screen.moveToFront("menu-toggle");
+        this.screen.addObjectRect(
+          "menu-btn-import",
+          this.hitboxColor,
+          20,
+          100,
+          500,
+          30
+        );
+        this.screen.addObjectText("menu-txt-import", COLOR.text, 20, 100, 1000, {
+          text: "Import deck from clipboard",
+          fontSize: "30pt",
+          fontFamily: FONT_STACK,
+        });
+        this.screen.addObjectRect(
+          "menu-btn-reset",
+          this.hitboxColor,
+          20,
+          180,
+          500,
+          30
+        );
+        this.screen.addObjectText("menu-txt-reset", COLOR.text, 20, 180, 1000, {
+          text: "Reset field",
+          fontSize: "30pt",
+          fontFamily: FONT_STACK,
+        });
+        this.screen.addObjectText("info-txt1", COLOR.text, 700, 430, 800, {
+          text: "How to use:",
+          fontSize: "15pt",
+          fontFamily: FONT_STACK,
+        });
+        this.screen.addObjectText("info-txt2", COLOR.text, 700, 470, 800, {
+          text: "Drag: place cards",
+          fontSize: "15pt",
+          fontFamily: FONT_STACK,
+        });
+        this.screen.addObjectText("info-txt3", COLOR.text, 700, 510, 800, {
+          text: "Left click: view deck/extra deck/gy, change battle position",
+          fontSize: "15pt",
+          fontFamily: FONT_STACK,
+        });
+        this.screen.addObjectText("info-txt4", COLOR.text, 700, 550, 800, {
+          text: "Left click (hold): check card details",
+          fontSize: "15pt",
+          fontFamily: FONT_STACK,
+        });
+        this.screen.addObjectText("info-txt5", COLOR.text, 700, 590, 800, {
+          text: "Right click: flip card, shuffle deck",
+          fontSize: "15pt",
+          fontFamily: FONT_STACK,
+        });
+      }
+      closeMenu() {
+        this.screen.removeObject("menu-bg");
+        this.screen.removeObject("menu-btn-import");
+        this.screen.removeObject("menu-txt-import");
+        this.screen.removeObject("menu-btn-reset");
+        this.screen.removeObject("menu-txt-reset");
+        for (let i = 1; i < 6; i++) {
+          this.screen.removeObject(`info-txt${i}`);
+        }
+      }
+      //list depends on mouseupPos
+      openCardList() {
+        this.scrollY = 0;
+        this.screen.addObjectRect("list-bg", COLOR.listBg, 0, 0, 1280, 720, {
+          isDraggable: false,
+        });
+        let pos = { x: 0, y: 0 };
+        for (let obj of this.screen.clickedObjects(
+          this.mouseupPos.x,
+          this.mouseupPos.y
+        )) {
+          if (obj.meta.cardname) {
+            const pile = this.screen
+              .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+              .filter((a) => a.id.includes("snapzone-p"))[0];
+            obj.meta.list = { x: pile.x, y: pile.y };
+            obj.x = pos.x;
+            obj.y = pos.y;
+            document.getElementById(obj.id).src = this.url(
+              `images/cards/${this.name_url(obj.meta.cardname)}.jpg`
+            );
+            this.screen.moveToFront(obj.id);
+            pos.x += 120;
+            if (pos.x == 1200) {
+              pos.x = 0;
+              pos.y += 175;
+            }
+          }
+        }
+      }
+      closeCardList() {
+        this.screen.removeObject("list-bg");
+        for (let obj of this.screen.objectList) {
+          if (obj.meta.list) {
+            obj.x = obj.meta.list.x + 30;
+            obj.y = obj.meta.list.y;
+            obj.meta.list = null;
+            document.getElementById(obj.id).src = obj.meta.isFaceup
+              ? this.url(`images/cards/${this.name_url(obj.meta.cardname)}.jpg`)
+              : this.noimage;
+          }
+        }
+      }
+      flipCard(el) {
+        if (el.meta.cardname) {
+          document.getElementById(el.id).src = el.meta.isFaceup
+            ? this.noimage
+            : this.url(`images/cards/${this.name_url(el.meta.cardname)}.jpg`);
+          el.meta.isFaceup = el.meta.isFaceup ? false : true;
+        }
+      }
+      spreadHand() {
+        let handcount = this.screen.objectList.filter((a) => a.y == 545).length;
+        let x = 640 - 60 * handcount;
+        let hand = this.screen.objectList
+          .filter((a) => a.y == 545)
+          .sort((a, b) => a.x - b.x);
+        let nonhand = this.screen.objectList.filter((a) => a.y != 545);
+        for (let el of hand) {
+          el.x = x;
+          x += 120;
+        }
+        this.screen.objectList = nonhand.concat(hand);
+      }
+      async shuffleDeck() {
+        if (!this.shuffling) {
+          this.shuffling = true;
+          let isDeckOpen = this.screen.objectList.filter(
+            (a) => a.x == 1134 && a.y == 514
+          ).length
+            ? false
+            : true;
+          if (isDeckOpen) this.closeCardList();
+          let deckCards = this.screen.objectList.filter(
+            (a) => a.x == 1134 && a.y == 514
+          );
+          let nonDeckCards = this.screen.objectList.filter(
+            (a) => a.x != 1134 || a.y != 514
+          );
+          deckCards = this.shuffle(deckCards);
+          this.screen.objectList = nonDeckCards.concat(deckCards);
+          this.mouseupPos = { x: 1164, y: 554 };
+          if (isDeckOpen) {
+            this.openCardList();
+            this.shuffling = false;
+          } else {
+            for (let i = 0; i < 5; i++) {
+              await this.screen.addObjectImg(
+                `shuffle${i}`,
+                this.noimage,
+                1134,
+                464 + 30 * i,
+                120,
+                175,
+                {
+                  isDraggable: false,
+                }
+              );
+            }
+            setTimeout(() => {
+              for (let i = 0; i < 5; i++) {
+                this.screen.removeObject(`shuffle${i}`);
+              }
+              this.shuffling = false;
+            }, 100);
+          }
+        }
+      }
+      resetField() {
+        for (let el of this.screen.objectList) {
+          if (el.meta.cardname) document.getElementById(el.id).src = this.noimage;
+        }
+        this.screen.objectList = structuredClone(this.originalObjectList);
+      }
+      mousedown(event) {
+        this.isMouseDown = true;
+        this.mouseHoldingDown = "pending";
+        this.clicksWithinDelay += 1;
+        if (!this.playingReplay) {
+          const rect = this.screen.canvas.getBoundingClientRect();
+          this.mousedownPos = {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+          };
+          this.movingObject = this.screen
+            .clickedObjects(this.mousedownPos.x, this.mousedownPos.y)
+            .at(-1).id;
+        }
+        setTimeout(() => {
+          if (this.mouseHoldingDown == "pending" && this.clicksWithinDelay == 1)
+            this.mouseHoldingDown = "true";
+          this.clicksWithinDelay -= 1;
+        }, this.mouseHoldDelay * 1000);
+      }
+      mousemove(event) {
+        if (this.isMouseDown && !this.playingReplay) {
+          //drag card
+          const rect = this.screen.canvas.getBoundingClientRect();
+          if (
+            this.mousedownPos.x != event.clientX - rect.left ||
+            this.mousedownPos.y != event.clientY - rect.top
+          ) {
+            this.mouseHoldingDown = "false";
+            for (let obj of this.screen.objectList) {
+              if (obj.id == this.movingObject && obj.meta.isDraggable) {
+                if (!this.movingObjectOgPos)
+                  this.movingObjectOgPos = {
+                    x: obj.x,
+                    y: obj.y,
+                    isList: !!obj.meta.list,
+                  };
+                obj.x = event.clientX - rect.left - obj.width / 2;
+                obj.y = event.clientY - rect.top - obj.height / 2;
+                this.screen.moveToFront(this.movingObject);
+                if (obj.meta.list) {
+                  obj.meta.list = null;
+                  obj.meta.isFaceup = true;
+                }
+                this.closeCardList();
+              }
+            }
+          }
+        }
+      }
+      async mouseup(event) {
+        this.isMouseDown = false;
+        if (this.mouseHoldingDown == "true") {
+          this.mouseHoldingDown = "false";
+        } else {
+          this.mouseHoldingDown = "false";
+          if (!this.playingReplay) {
+            const rect = this.screen.canvas.getBoundingClientRect();
+            this.mouseupPos = {
+              x: event.clientX - rect.left,
+              y: event.clientY - rect.top,
+            };
+            if (
+              this.mousedownPos.x != this.mouseupPos.x ||
+              this.mousedownPos.y != this.mouseupPos.y
+            ) {
+              //handle drag
+              //snap card to zone
+              let illegal = this.screen.objectList.filter(
+                (a) => a.id == this.movingObject
+              )[0].meta.isDraggable;
+              for (let clicked of this.screen.clickedObjects(
+                this.mouseupPos.x,
+                this.mouseupPos.y
+              )) {
+                if (clicked.id.includes("snapzone")) {
+                  illegal = false;
+                  for (let obj of this.screen.objectList) {
+                    if (obj.id == this.movingObject && obj.meta.isDraggable) {
+                      if (clicked.id == "snapzone-hand") {
+                        obj.y = 545;
+                        if (!obj.meta.isFaceup) this.flipCard(obj);
+                      } else {
+                        obj.x = clicked.x + 30;
+                        obj.y = clicked.y;
+                      }
+                      if (!clicked.id.includes("snapzone-m")) obj.meta.angle = 0;
+                    }
+                  }
+                }
+              }
+              //return to original pos if not snapped
+              if (illegal && !this.allowIllegalPlacement) {
+                for (let obj of this.screen.objectList) {
+                  if (obj.id == this.movingObject) {
+                    if (this.movingObjectOgPos.isList) {
+                      obj.x = 300;
+                      obj.y = 545;
+                    } else {
+                      obj.x = this.movingObjectOgPos.x;
+                      obj.y = this.movingObjectOgPos.y;
+                    }
+                  }
+                }
+              }
+              this.movingObjectOgPos = null;
+            }
+            this.spreadHand();
+            if (
+              Math.abs(this.mousedownPos.x - this.mouseupPos.x) <
+                this.snapTolerance &&
+              Math.abs(this.mousedownPos.y - this.mouseupPos.y) < this.snapTolerance
+            ) {
+              //handle click
+              if (event.which == 1) {
+                let closedCardList = false;
+                //left click
+                if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id == "list-bg").length
+                ) {
+                  this.closeCardList();
+                  closedCardList = true;
+                }
+                if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id.includes("snapzone-m")).length
+                ) {
+                  //rotate card
+                  let el = this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .at(-1);
+                  if (el.meta.cardname)
+                    el.meta.angle = el.meta.angle == 270 ? 0 : 270;
+                }
+                if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id.includes("snapzone-p")).length &&
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.meta.cardname).length
+                ) {
+                  this.openCardList();
+                }
+                if (
+                  this.screen.objectList.filter((a) => a.id == "menu-bg").length
+                ) {
+                  //handle clicked menu button
+                  if (
+                    this.screen
+                      .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                      .filter((a) => a.id == "menu-btn-reset").length
+                  ) {
+                    this.resetField();
+                  }
+                  if (
+                    this.screen
+                      .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                      .filter((a) => a.id == "menu-btn-import").length
+                  ) {
+                    let clip = await navigator.clipboard.readText();
+                    if (!clip) {
+                      alert("Error: No deck in clipboard");
+                    } else {
+                      try {
+                        this.loadYdk(this.ygolDeck.convert(clip, "ydk"));
+                      } catch (e) {
+                        alert("Error: Invalid deck in clipboard");
+                      }
+                    }
+                  }
+                  this.closeMenu();
+                } else if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id == "menu-toggle").length
+                ) {
+                  this.openMenu();
+                } else if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id == "lp-box").length &&
+                  !closedCardList
+                ) {
+                  for (let el of this.screen.objectList) {
+                    if (el.id == "lp-num") {
+                      el.color = el.color == COLOR.text ? COLOR.lpEditing : COLOR.text;
+                      if (el.color == COLOR.text) this.changingLifePoints = false;
+                    }
+                  }
+                }
+                if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id == "dice").length &&
+                  !closedCardList
+                ) {
+                  for (let el of this.screen.objectList) {
+                    if (el.id == "dice") this.rollDice();
+                  }
+                }
+                //replay buttons
+                if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id == "replay-btn-play").length
+                ) {
+                  this.resetField();
+                  setTimeout(() => {
+                    this.playReplayId();
+                  }, 300);
+                }
+              }
+              if (event.which == 3) {
+                //right click
+                if (
+                  this.screen
+                    .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                    .filter((a) => a.id == "snapzone-pd").length
+                ) {
+                  this.shuffleDeck();
+                } else {
+                  this.flipCard(
+                    this.screen
+                      .clickedObjects(this.mouseupPos.x, this.mouseupPos.y)
+                      .at(-1)
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+      wheel(event) {
+        this.scrollY += event.deltaY;
+        if (this.scrollY < 0) {
+          this.scrollY -= event.deltaY;
+        } else {
+          for (let obj of this.screen.objectList) {
+            if (obj.meta.list) {
+              obj.y -= event.deltaY;
+            }
+          }
+        }
+      }
+      keydown(event) {
+        if (!this.isMouseDown && !this.playingReplay) {
+          if (event.key == "r") {
+            this.resetField();
+          }
+          if (event.key == "s") {
+            this.shuffleDeck();
+          }
+          if (!isNaN(event.key)) {
+            for (let el of this.screen.objectList) {
+              if (el.id == "lp-num" && el.color != COLOR.text) {
+                if (this.changingLifePoints) {
+                  el.meta.text += event.key;
+                } else {
+                  this.changingLifePoints = true;
+                  el.meta.text = event.key;
+                }
+              }
+            }
+          }
+          if (event.key == "Backspace") {
+            for (let el of this.screen.objectList) {
+              if (el.id == "lp-num" && el.color != COLOR.text)
+                el.meta.text = el.meta.text.slice(0, -1);
+            }
+          }
+        }
+      }
+      changeMat(src) {
+        if (document.querySelector("ygol").getAttribute("matsrc") != src)
+          document.querySelector("ygol").setAttribute("matsrc", src);
+        document.getElementById("fieldbg").src = src;
+      }
+      changeSleeve(src) {
+        if (document.querySelector("ygol").getAttribute("sleevesrc") != src)
+          document.querySelector("ygol").setAttribute("sleevesrc", src);
+        for (let el of document
+          .getElementById("ygol-cnv-images")
+          .querySelectorAll("img")) {
+          if (el.src == this.noimage) el.src = src;
+        }
+        this.noimage = src;
+      }
+      rollDice(i) {
+        if (i != 5) {
+          let src = document.getElementById("dice").src;
+          while (src == document.getElementById("dice").src) {
+            src =
+              document.getElementById("dice").src.slice(0, -5) +
+              `${Math.floor(Math.random() * 6) + 1}.png`;
+          }
+          document.getElementById("dice").src = src;
+          setTimeout(() => {
+            this.rollDice(i ? i + 1 : 1);
+          }, 60);
+        }
+      }
+      //replay functions
+      moveCard(
+        cardname,
+        location1,
+        location2,
+        flip = false,
+        rotate = false,
+        duration = 0
+      ) {
+        this.movingCard = true;
+        let specialZones = [
+          { zone: "hand", x: "any", y: 545 },
+          { zone: "deck", x: 1134, y: 514 },
+          { zone: "gy", x: 1134, y: 326.5 },
+          { zone: "banish", x: 1134, y: 139 },
+          { zone: "extra", x: 26, y: 514 },
+          { zone: "field", x: 26, y: 327 },
+          { zone: "m1", x: 211, y: 233 },
+          { zone: "m2", x: 395.5, y: 233 },
+          { zone: "m3", x: 580, y: 233 },
+          { zone: "m4", x: 764.5, y: 233 },
+          { zone: "m5", x: 949, y: 233 },
+          { zone: "st1", x: 211, y: 420 },
+          { zone: "st2", x: 395.5, y: 420 },
+          { zone: "st3", x: 580, y: 420 },
+          { zone: "st4", x: 764.5, y: 420 },
+          { zone: "st5", x: 949, y: 420 },
+          { zone: "emz1", x: 393, y: 26 },
+          { zone: "emz2", x: 767, y: 26 },
+        ];
+        let x1 = specialZones.filter((a) => a.zone == location1)[0].x;
+        let y1 = specialZones.filter((a) => a.zone == location1)[0].y;
+        let x2 = specialZones.filter((a) => a.zone == location2)[0].x;
+        if (x2 == "any") x2 = this.screen.width / 2;
+        let y2 = specialZones.filter((a) => a.zone == location2)[0].y;
+        if (y2 == "any") y2 = this.screen.height / 2;
+        let i = 0;
+        for (let el of this.screen.objectList) {
+          if (
+            el.meta.cardname == cardname &&
+            (el.x == x1 || x1 == "any") &&
+            (el.y == y1 || y1 == "any")
+          ) {
+            if (flip) this.flipCard(el);
+            if (rotate) el.meta.angle = el.meta.angle == 270 ? 0 : 270;
+            let [newel] = this.screen.objectList.splice(i, 1);
+            this.screen.objectList.push(newel);
+            if (duration == 0) {
+              newel.x = x2;
+              newel.y = y2;
+            } else {
+              let frames = duration * this.fps;
+              let xstep = (x2 - newel.x) / frames;
+              let ystep = (y2 - newel.y) / frames;
+              const interval = setInterval(() => {
+                newel.x += xstep;
+                newel.y += ystep;
+                frames--;
+                if (frames == 0) {
+                  clearInterval(interval);
+                  newel.x = x2;
+                  newel.y = y2;
+                  this.spreadHand();
+                  this.movingCard = false;
+                } else if (!this.playingReplay) {
+                  clearInterval(interval);
+                  this.movingCard = false;
+                }
+              }, 1000 / this.fps);
+            }
+            break;
+          }
+          i++;
+        }
+      }
+      playReplay(input) {
+        this.playingReplay = true;
+        let replay = typeof input === "string" ? JSON.parse(input) : input;
+        let i = -1;
+        const interval = setInterval(() => {
+          if (!this.movingCard) {
+            this.movingCard = true;
+            i++;
+            if (i == replay.length) {
+              clearInterval(interval);
+              if (!this.simpleUI) {
+                this.screen.addObjectRect(
+                  "replay-btn-play",
+                  COLOR.lpBox,
+                  10,
+                  170,
+                  240,
+                  55
+                );
+                this.screen.addObjectText(
+                  "replay-txt-play",
+                  COLOR.text,
+                  20,
+                  180,
+                  1000,
+                  {
+                    text: "Play replay",
+                    fontSize: "30pt",
+                    fontFamily: FONT_STACK,
+                  }
+                );
+              }
+              this.movingCard = false;
+              this.playingReplay = false;
+            } else if (!this.playingReplay) {
+              clearInterval(interval);
+              this.movingCard = false;
+              this.resetField();
+              this.loadReplay(
+                document.querySelector("ygol").getAttribute("replay")
+              );
+            } else {
+              setTimeout(() => {
+                this.moveCard(
+                  replay[i].cardname,
+                  replay[i].location1,
+                  replay[i].location2,
+                  replay[i].flip,
+                  replay[i].rotate,
+                  0.25
+                );
+              }, 200);
+            }
+          }
+        }, 100);
+      }
+      loadReplay(id) {
+        let interval = setInterval(() => {
+          if (this.originalObjectList) {
+            clearInterval(interval);
+            this.replay = id;
+            if (this.autoplay) {
+              this.resetField();
+              setTimeout(() => {
+                this.playReplayId();
+              }, 300);
+            } else {
+              this.screen.addObjectRect(
+                "replay-btn-play",
+                COLOR.listBg,
+                0,
+                0,
+                1280,
+                720
+              );
+              this.screen.addObjectText(
+                "replay-txt-play",
+                COLOR.text,
+                375,
+                280,
+                1000,
+                {
+                  text: "Play replay",
+                  fontSize: "80pt",
+                  fontFamily: FONT_STACK,
+                }
+              );
+            }
+          }
+        }, 100);
+      }
+      playReplayId(id) {
+        if (id) this.replay = id;
+        let specialZones = [
+          "hand",
+          "deck",
+          "gy",
+          "banish",
+          "extra",
+          "field",
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5",
+          "st1",
+          "st2",
+          "st3",
+          "st4",
+          "st5",
+          "emz1",
+          "emz2",
+        ];
+        let noDupeNamelistArr = [];
+        let prevLine = "";
+        for (let line of this.namelist.split("\n")) {
+          if (
+            line != prevLine &&
+            line != "#main" &&
+            line != "#extra" &&
+            line != "!side" &&
+            line != ""
+          )
+            noDupeNamelistArr.push(line);
+          prevLine = line;
+        }
+        let byteString = atob(this.replay);
+        let binaryStr = [...byteString]
+          .map((char) => char.charCodeAt(0).toString(2).padStart(8, "0"))
+          .join("");
+        while (binaryStr.length % 19 !== 0 && binaryStr.length > 0)
+          binaryStr = binaryStr.slice(1);
+        let replay = [];
+        for (let action of binaryStr.match(/.{1,19}/g)) {
+          replay.push({
+            cardname: noDupeNamelistArr[parseInt(action.slice(0, 7), 2)],
+            location1: specialZones[parseInt(action.slice(7, 12), 2)],
+            location2: specialZones[parseInt(action.slice(12, 17), 2)],
+            flip: action.slice(17, 18) == "1",
+            rotate: action.slice(18, 19) == "1",
+          });
+        }
+        console.log({ replay });
+        console.log(JSON.stringify(replay));
+        this.playReplay(replay);
+      }
+    }
+
+    //=== Main: loads the card data arrays (data/), then starts the renderer ===
+    async function main() {
+      await addScript("data/ygolDb.js");
+      await addScript("data/ygolID.js");
+      let isRush = document.querySelector("ygol").getAttribute("rush");
+      const renderer = new Renderer(1280, 720, 60, 30, 0.5, cardDb, ygolID, isRush);
+      document.querySelector("ygol").appendChild(renderer.screen.canvas);
+      renderer.screen.canvas.oncontextmenu = () => false;
+      await renderer.loadField();
+      if (document.querySelector("ygol").getAttribute("yld")) {
+        renderer.loadYld(document.querySelector("ygol").getAttribute("yld"));
+      } else if (document.querySelector("ygol").getAttribute("ydk")) {
+        renderer.loadYdk(document.querySelector("ygol").getAttribute("ydk"));
+      } else if (document.querySelector("ygol").getAttribute("ydke")) {
+        renderer.loadYdke(document.querySelector("ygol").getAttribute("ydke"));
+      } else if (document.querySelector("ygol").getAttribute("dlf2pV2")) {
+        renderer.loadDlf2pV2(
+          document.querySelector("ygol").getAttribute("dlf2pV2")
+        );
+      }
+      if (document.querySelector("ygol").getAttribute("replay")) {
+        renderer.loadReplay(document.querySelector("ygol").getAttribute("replay"));
+      }
+      //document.addEventListener("keyup", (event) => {if (event.key == "") {}});
+    }
+    function addScript(name) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = name;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    main();
+  </script>
+  <script>
+    const params = new URL(document.location).searchParams;
+    const yld = params.get("yld"); //reads without the yld://
+    if (yld) document.querySelector("ygol").setAttribute("yld", yld);
+    const ydke = params.get("ydke"); //reads without the ydke://
+    if (ydke) document.querySelector("ygol").setAttribute("ydke", ydke);
+    const dlf2pV2 = params.get("dlf2pV2"); //reads without the 2_
+    if (dlf2pV2)
+      document.querySelector("ygol").setAttribute("dlf2pV2", dlf2pV2);
+    const matsrc = params.get("matsrc");
+    const replay = params.get("replay"); //replay id
+    if (replay) document.querySelector("ygol").setAttribute("replay", replay);
+    if (matsrc) document.querySelector("ygol").setAttribute("matsrc", matsrc);
+    const sleevesrc = params.get("sleevesrc");
+    if (sleevesrc)
+      document.querySelector("ygol").setAttribute("sleevesrc", sleevesrc);
+  </script>
+  <script src="data/ygol-nav.js"></script>
+</html>

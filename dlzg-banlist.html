@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="The custom banlist of our zero gem format in Duel Links."
+    />
+    <link rel="icon" type="image/x-icon" href="images/logo.png" />
+    <title>DLZG Banlist</title>
+    <style>
+      /* ===== colour scheme "Indigo": every colour in this page is defined here ===== */
+      :root {
+        --page-bg: #07060c;
+        --text: #dee0f7;
+        --text-muted: #98a1ec; /* secondary text and placeholders */
+        --frame-border: #8672cb; /* outline around the whole page */
+        --panel-bg: #0e0b1e; /* boxes inside the frame */
+        --panel-border: #8672cb;
+        --input-bg: #2a2e54;
+        --input-text: #dee0f7;
+        --btn-bg: #2a2e54;
+        --btn-border: #4a50be;
+        --btn-text: #dee0f7;
+        --highlight-bg: #4474c9; /* hovered/selected buttons (blues) */
+        --highlight-border: #93e3fa; /* also used for focus outlines */
+        --highlight-text: #cfeaff;
+        --highlight-glow: #2f58c2cc;
+        --popup-bg: #07060cf0; /* popups (semi-transparent) */
+        --skill-text: #ffff77;
+        --scroll-track: #0c0c24;
+        --scroll-thumb: #34358f;
+        --error-text: #ff8a8a; /* loading errors */
+      }
+      /* Barlow (SIL Open Font License, see fonts/OFL.txt), bundled so every system shows the same font */
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-300-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-300-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-500-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("fonts/barlow-latin-ext-500-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-400-normal.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Barlow Semi Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/barlow-semi-condensed-latin-ext-400-normal.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      :root {
+        --frame-border-w: max(0.14vw, 2px);
+        --panel-border-w: max(0.28vw, 2px);
+        /* Barlow is bundled in fonts/; the rest are each system's closest match if it can't load */
+        --font: "Barlow", "Bahnschrift", "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+        --card-w: 6.9vw;
+      }
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: var(--page-bg);
+        color: var(--text);
+        font-family: var(--font);
+        font-weight: lighter;
+        font-size: 1.25vw;
+        line-height: 1.5;
+        padding: 3vw 0;
+      }
+      img {
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      :focus-visible {
+        outline: max(0.14vw, 2px) solid var(--highlight-border);
+        outline-offset: max(0.14vw, 2px);
+      }
+
+      .frame {
+        width: 88vw;
+        margin: 0 auto;
+        border: var(--frame-border-w) solid var(--frame-border);
+        padding: 2.2vw;
+        display: flex;
+        flex-direction: column;
+        gap: 1.6vw;
+      }
+      header h1 {
+        font-weight: normal;
+        font-size: 2.6vw;
+        line-height: 1.1;
+      }
+      header p {
+        margin-top: 0.5vw;
+        color: var(--text-muted);
+      }
+
+      #lists {
+        display: flex;
+        flex-direction: column;
+        gap: 1.6vw;
+      }
+      /* one panel per row, like the editor's deck boxes */
+      .group {
+        background-color: var(--panel-bg);
+        border: var(--panel-border-w) solid var(--panel-border);
+        padding: 1.1vw 1.4vw 1.4vw;
+      }
+      .group h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.6vw;
+        font-weight: normal;
+        font-size: 1.7vw;
+        margin-bottom: 0.9vw;
+      }
+      .group h2 img {
+        height: 1.9vw;
+        width: auto;
+      }
+      .group h2 .count {
+        color: var(--text-muted);
+        font-size: 1.25vw;
+      }
+      .items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7vw;
+      }
+      .empty {
+        color: var(--text-muted);
+      }
+
+      /* banned skills: the editor's skill style */
+      .skill {
+        all: unset;
+        box-sizing: border-box;
+        padding: 0.5vw 1vw;
+        background-color: var(--btn-bg);
+        border: max(0.2vw, 2px) solid var(--btn-border);
+        color: var(--skill-text);
+        font-size: 1.4vw;
+        cursor: pointer;
+        /* fades both ways: lighting up on hover and dimming when the cursor leaves */
+        transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      .skill:hover {
+        background-color: var(--highlight-bg);
+        border-color: var(--highlight-border);
+        box-shadow: 0 0 max(0.7vw, 6px) var(--highlight-glow);
+      }
+      .skill:focus-visible {
+        outline: max(0.14vw, 2px) solid var(--highlight-border);
+        outline-offset: max(0.14vw, 2px);
+      }
+
+      /* card: DL rarity tag above, ban/limit icon in the top-left corner (as in the editor) */
+      .card {
+        all: unset;
+        box-sizing: border-box;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        width: var(--card-w);
+        cursor: pointer;
+      }
+      .card .rarity {
+        display: block;
+        width: calc(var(--card-w) * 2 / 3);
+        height: calc(var(--card-w) / 6);
+      }
+      .card .rarity.none {
+        visibility: hidden;
+      }
+      .card .art {
+        display: block;
+        width: var(--card-w);
+        aspect-ratio: 421 / 614;
+        object-fit: cover;
+        background-color: var(--btn-bg);
+        transition: transform 0.12s ease-out;
+      }
+      .card .ban {
+        position: absolute;
+        top: calc(var(--card-w) / 6);
+        left: 0;
+        width: calc(var(--card-w) / 3);
+        height: auto;
+      }
+      .card:hover .art,
+      .card:focus-visible .art {
+        transform: translateY(calc(var(--card-w) * -0.04));
+      }
+      .card:focus-visible {
+        outline: max(0.14vw, 2px) solid var(--highlight-border);
+        outline-offset: max(0.14vw, 2px);
+      }
+
+      html,
+      #popup {
+        scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+      }
+      .status {
+        color: var(--text-muted);
+      }
+      .status.error {
+        color: var(--error-text);
+      }
+
+      /* ===== popup, as in the editor: centered translucent box, click anywhere to close ===== */
+      #popupLayer {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+      #popupLayer.open {
+        display: flex;
+      }
+      #popup {
+        width: 55.6vw;
+        max-height: 80vh;
+        overflow-y: auto;
+        background-color: var(--popup-bg);
+        border: var(--panel-border-w) solid var(--panel-border);
+        padding: 1.4vw;
+        font-size: 1.1vw;
+      }
+      #popup .popup-art {
+        display: block;
+        /* about half the screen tall at most, so the name and text stay in view */
+        width: min(33.3vw, 34vh);
+        margin: 0 auto;
+      }
+      #popup .cardname {
+        margin-top: 1vw;
+        font-size: 1.4vw;
+        text-align: center;
+      }
+      #popup .cardname.skilltext {
+        color: var(--skill-text);
+      }
+      #popup .desc {
+        margin-top: 1vw;
+        white-space: pre-line;
+      }
+      #popup .ban-note {
+        margin-top: 0.4vw;
+        text-align: center;
+        color: var(--text-muted);
+      }
+
+      /* ===== portrait / phones, like the editor's mobile view ===== */
+      @media (max-aspect-ratio: 1/1) {
+        :root {
+          --card-w: 17.2vw; /* four cards per row */
+        }
+        body {
+          font-size: 3.8vw;
+          padding: 11vh 0 4vw; /* leaves room for ygol-nav.js if it's added */
+        }
+        .frame {
+          width: 94vw;
+          padding: 4vw;
+          gap: 4vw;
+        }
+        header h1 {
+          font-size: 7vw;
+        }
+        #lists {
+          gap: 4vw;
+        }
+        .group {
+          padding: 3vw 3vw 4vw;
+        }
+        .group h2 {
+          font-size: 5vw;
+          gap: 2vw;
+          margin-bottom: 3vw;
+        }
+        .group h2 img {
+          height: 5.5vw;
+        }
+        .group h2 .count {
+          font-size: 3.8vw;
+        }
+        .items {
+          gap: 2.2vw;
+        }
+        .skill {
+          font-size: 4.2vw;
+          padding: 1.5vw 3vw;
+        }
+        #popup {
+          width: 95vw;
+          padding: 4vw;
+          font-size: 3.5vw;
+        }
+        #popup .popup-art {
+          width: min(60vw, 34vh);
+        }
+        #popup .cardname {
+          font-size: 4.2vw;
+          margin-top: 3vw;
+        }
+        #popup .desc {
+          margin-top: 3vw;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .card .art,
+        .skill {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <header>
+        <h1>DLZG Banlist</h1>
+        <p>The Zero Gem banlist replaces the normal Duel Links banlist in DLZG format, and limits work the same way as the Duel Links banlist. For example, only 1 limited 1 card is allowed in your deck.</p>
+        <p>Select a card or skill to read its text.</p>
+      </header>
+      <main id="lists">
+        <p class="status" id="status">Loading card data...</p>
+      </main>
+    </div>
+
+    <div id="popupLayer">
+      <div id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle"></div>
+    </div>
+
+    <script>
+      const ERROR_IMAGE = "images/errorimage.jpg";
+      //rows from top to bottom
+      const CARD_GROUPS = [
+        { status: "Forbidden", title: "Banned cards" },
+        { status: "Limited 1", title: "Limited 1" },
+        { status: "Limited 2", title: "Limited 2" },
+        { status: "Limited 3", title: "Limited 3" },
+      ];
+
+      function addScript(name) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = name;
+          s.onload = resolve;
+          s.onerror = () => reject(new Error(`Could not load ${name}`));
+          document.head.appendChild(s);
+        });
+      }
+      //same file naming as the editor (images/cards/<name>.jpg)
+      function name_url(str) {
+        let fileName = str.replace(/[^a-zA-Z0-9\s_\-\.\(\)%]/g, "");
+        fileName = fileName.replace(/\s/g, "_");
+        return fileName.substring(0, 255);
+      }
+      function el(tag, props = {}, children = []) {
+        const e = document.createElement(tag);
+        for (const [k, v] of Object.entries(props)) {
+          if (k === "class") e.className = v;
+          else if (k === "text") e.textContent = v;
+          else e.setAttribute(k, v);
+        }
+        for (const c of children) e.append(c);
+        return e;
+      }
+      //card art: local image first, then the card's remote altimg, then the error image (as in the editor)
+      function cardArt(card, className) {
+        const img = el("img", { class: className, alt: card ? card.name : "", draggable: "false" });
+        const alt = card && card.altimg;
+        img.onerror = () => {
+          if (alt && img.src !== alt) img.src = alt;
+          else {
+            img.onerror = null;
+            img.src = ERROR_IMAGE;
+          }
+        };
+        img.src = card ? `images/cards/${name_url(card.name)}.jpg` : ERROR_IMAGE;
+        return img;
+      }
+
+      //=== popup ===
+      const layer = document.getElementById("popupLayer");
+      const popup = document.getElementById("popup");
+      let lastFocus = null;
+      function openPopup(children) {
+        popup.innerHTML = "";
+        popup.append(...children);
+        popup.scrollTop = 0;
+        lastFocus = document.activeElement;
+        layer.classList.add("open");
+        popup.tabIndex = -1;
+        popup.focus({ preventScroll: true });
+      }
+      function closePopup() {
+        if (!layer.classList.contains("open")) return;
+        layer.classList.remove("open");
+        if (lastFocus) lastFocus.focus({ preventScroll: true });
+      }
+      //like the editor, a click anywhere closes it
+      layer.addEventListener("click", closePopup);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closePopup();
+      });
+
+      function showCard(name, card, status) {
+        openPopup([
+          cardArt(card, "popup-art"),
+          el("p", { class: "cardname", id: "popupTitle", text: name }),
+          el("p", { class: "ban-note", text: status }),
+          el("p", {
+            class: "desc",
+            text: card ? card.description : "This card isn't in the card database.",
+          }),
+        ]);
+      }
+      function showSkill(name, skill) {
+        openPopup([
+          el("p", { class: "cardname skilltext", id: "popupTitle", text: `✦ ${name}` }),
+          el("p", { class: "ban-note", text: "Banned skill" }),
+          el("p", {
+            class: "desc",
+            text: skill ? skill.description : "This skill isn't in the skill database.",
+          }),
+        ]);
+      }
+
+      //=== rendering ===
+      function groupPanel(title, count, iconSrc, items, emptyText) {
+        const h2 = el("h2");
+        if (iconSrc) h2.append(el("img", { src: iconSrc, alt: "" }));
+        h2.append(title, " ", el("span", { class: "count", text: `(${count})` }));
+        const list = el("div", { class: "items" });
+        if (items.length) list.append(...items);
+        else list.append(el("p", { class: "empty", text: emptyText }));
+        return el("section", { class: "group" }, [h2, list]);
+      }
+      function render() {
+        const byName = new Map(cardDb.map((c) => [c.name, c]));
+        const skillsByName = new Map(skillDb.map((s) => [s.name, s]));
+        const lists = document.getElementById("lists");
+        lists.innerHTML = "";
+
+        //banned skills
+        const skills = [...banlistDlzgSkill].sort((a, b) => a.localeCompare(b));
+        lists.append(
+          groupPanel(
+            "Banned skills",
+            skills.length,
+            null,
+            skills.map((name) => {
+              const b = el("button", { class: "skill", type: "button", text: `✦ ${name}` });
+              b.addEventListener("click", (e) => {
+                e.stopPropagation();
+                showSkill(name, skillsByName.get(name));
+              });
+              return b;
+            }),
+            "No skills are banned."
+          )
+        );
+
+        //cards, one row per ban status
+        for (const group of CARD_GROUPS) {
+          const names = banlistDlzg
+            .filter((b) => b.banStatus === group.status)
+            .map((b) => b.name)
+            .sort((a, b) => a.localeCompare(b));
+          const items = names.map((name) => {
+            const card = byName.get(name);
+            const btn = el("button", { class: "card", type: "button", "aria-label": `${name} (${group.status})` });
+            const rarity = card && card.rarityDl;
+            btn.append(
+              rarity
+                ? el("img", { class: "rarity", src: `images/dltag${rarity}.png`, alt: "", draggable: "false" })
+                : el("span", { class: "rarity none" }),
+              cardArt(card, "art"),
+              el("img", { class: "ban", src: `images/${group.status}.png`, alt: "", draggable: "false" })
+            );
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              showCard(name, card, group.status);
+            });
+            return btn;
+          });
+          lists.append(groupPanel(group.title, names.length, `images/${group.status}.png`, items, "None."));
+        }
+      }
+
+      (async () => {
+        try {
+          await Promise.all(["data/ygolDb.js", "data/banlistDlzg.js", "data/skillDb.js"].map(addScript));
+          render();
+        } catch (e) {
+          const status = document.getElementById("status");
+          status.classList.add("error");
+          status.textContent = `${e.message}. Check that the data folder is next to this page.`;
+        }
+      })();
+    </script>
+    <script src="data/ygol-nav.js"></script>
+  </body>
+</html>
