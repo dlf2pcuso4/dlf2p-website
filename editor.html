@@ -433,6 +433,7 @@
           placeholder="Deck name..."
           autocomplete="off"
         />
+        <button class="filterbtn" id="switchModeDesktop" onclick="switchMode()">Mode: View</button>
         <button class="filterbtn" id="btnViewDeck" onclick="showControls()">
           View Deck</button
         ><br />
@@ -1603,7 +1604,7 @@
     let sort = "Popularity";
     let holdThreshold = 500;
     let _isMobile = window.innerHeight > window.innerWidth;
-    let editMode = "edit";
+    let editMode = "view"; //view: a short click shows card info; edit: it adds/removes the card
     //skill name and skill search only show in the Duel Links formats
     function updateSkillVisibility() {
       const dl = format.includes("dl");
@@ -1644,9 +1645,12 @@
         }
       }
       document.getElementById("controls").style.display = "none";
+      //phones use the mode toggle above the deck
+      document.getElementById("switchModeDesktop").style.display = "none";
     } else {
       document.getElementById("btnControl").style.display = "none";
       document.getElementById("btnViewDeck").style.display = "none";
+      //desktop uses the mode toggle next to the deck name
       document.getElementById("switchMode").style.display = "none";
     }
 
@@ -1660,14 +1664,12 @@
       }
     }
 
+    //cards can be dragged in either mode; only a short click differs
     function switchMode() {
-      if (editMode == "view") {
-        editMode = "edit";
-        document.getElementById("switchMode").innerHTML = "Mode: Edit";
-      } else {
-        editMode = "view";
-        document.getElementById("switchMode").innerHTML = "Mode: View";
-      }
+      editMode = editMode == "view" ? "edit" : "view";
+      const label = editMode == "view" ? "Mode: View" : "Mode: Edit";
+      for (const id of ["switchMode", "switchModeDesktop"])
+        document.getElementById(id).textContent = label;
     }
 
     document.addEventListener("mousedown", (event) => {
@@ -1718,7 +1720,8 @@
           deckBuilder.displayCard(
             currentCard,
             document.getElementById("popup"),
-            window.innerWidth / 3
+            //phones: a third of the screen; desktop: the same size as the click-and-hold popup
+            _isMobile ? window.innerWidth / 3 : 160
           );
         }
       }
@@ -1840,11 +1843,14 @@
           );
           searchResult.innerHTML = "";
           for (let item of results) {
-            if (format != "dlzg" || banlistDlzgSkill.indexOf(item.name) == -1)
-              searchResult.innerHTML += `<div class="skilltext" onclick="selectSkill('${item.name.replace(
-                /"/g,
-                "&quot;"
-              )}')">✦ ${item.name}</div>`;
+            if (format != "dlzg" || banlistDlzgSkill.indexOf(item.name) == -1) {
+              //built as an element (not an onclick string) so names with ' " & work
+              const el = document.createElement("div");
+              el.className = "skilltext";
+              el.textContent = `✦ ${item.name}`;
+              el.addEventListener("click", () => selectSkill(item.name));
+              searchResult.appendChild(el);
+            }
           }
         }
       }, 500);
@@ -2226,6 +2232,8 @@
       //pick a matching format: a skill means Duel Links; otherwise a side deck means TCG
       if (hasSkill) setFormat("dl");
       else if (deckBuilder.side.length) setFormat("tcg");
+      //phones: switch from the controls panel to the deck so the uploaded cards are shown
+      if (_isMobile && document.getElementById("controls").style.display != "none") showControls();
       reportMissingCards();
       return true;
     }
