@@ -30,6 +30,8 @@
         --skill-text: #ffff77;
         --scroll-track: #0c0c24;
         --scroll-thumb: #34358f;
+        --note-text: #93e3fa; /* notes in the copy/download format popup */
+        --overlay-bg: #07060c99; /* dims the page behind the copy/download popup */
       }
       /* Barlow (SIL Open Font License, see fonts/OFL.txt), bundled so every system shows the same font */
       @font-face {
@@ -284,6 +286,118 @@
       .white-out {
         filter: brightness(1000%);
       }
+      /* set skill above the deck: click it to read the skill's text */
+      #skillname:not(.set) {
+        cursor: default;
+      }
+      .skill-desc {
+        white-space: pre-line;
+      }
+      /* ===== copy/download format popup ===== */
+      #exportLayer {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--overlay-bg);
+      }
+      #exportLayer.open {
+        display: flex;
+      }
+      #exportBox {
+        width: min(30vw, 92vw);
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 1.2vw;
+        background-color: var(--popup-bg);
+        border: max(0.28vw, 2px) solid var(--panel-border);
+        font-size: 1vw;
+      }
+      #exportTitle {
+        margin: 0 0 0.8vw;
+        font-size: 1.4vw;
+      }
+      #exportBox button.export-option {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 0 0 0.6vw;
+        padding: 0.6vw 0.8vw;
+        text-align: left;
+        font-size: 1.2vw;
+      }
+      #exportBox .export-desc {
+        display: block;
+        margin-top: 0.2vw;
+        font-size: 0.9vw;
+        color: var(--text-muted);
+      }
+      #exportBox button.export-option:hover .export-desc,
+      #exportBox button.export-option.selected .export-desc {
+        color: var(--highlight-text);
+      }
+      #exportBox .export-note {
+        display: block;
+        margin-top: 0.2vw;
+        font-size: 0.9vw;
+        color: var(--note-text);
+      }
+      #exportBox button.export-option:hover .export-note,
+      #exportBox button.export-option.selected .export-note {
+        color: var(--highlight-text);
+      }
+      #exportBox textarea {
+        display: block;
+        width: 100%;
+        height: 10vw;
+        margin: 0 0 0.6vw;
+        padding: 0.5vw;
+        box-sizing: border-box;
+        resize: vertical;
+        font-family: var(--font);
+        font-size: 1vw;
+        color: var(--input-text);
+        background-color: var(--input-bg);
+        border: none;
+      }
+      #exportBox textarea:focus {
+        outline: max(0.14vw, 2px) solid var(--highlight-border);
+      }
+      #exportBox .export-hint {
+        margin: 0 0 0.6vw;
+        font-size: 0.9vw;
+        color: var(--text-muted);
+      }
+      @media (max-aspect-ratio: 1/1) {
+        #exportBox textarea {
+          height: 35vw;
+          font-size: 3.5vw;
+          padding: 2vw;
+        }
+        #exportBox .export-hint {
+          font-size: 3.3vw;
+        }
+        #exportBox {
+          width: 92vw;
+          padding: 4vw;
+          font-size: 3.5vw;
+        }
+        #exportTitle {
+          font-size: 4.5vw;
+          margin-bottom: 3vw;
+        }
+        #exportBox button.export-option {
+          font-size: 4.2vw;
+          padding: 2.5vw 3vw;
+          margin-bottom: 2.5vw;
+        }
+        #exportBox .export-desc,
+        #exportBox .export-note {
+          font-size: 3.3vw;
+        }
+      }
     </style>
   </head>
   <body>
@@ -295,7 +409,7 @@
     <div id="body">
       <div id="deck">
         <button id="btnFormat" class="minibtn" onclick="switchFormat()">
-          Format: TCG
+          Format: DL
         </button>
         <button class="minibtn" onclick="sortDeck()">Sort Deck</button>
         <button class="minibtn" id="btnControl" onclick="showControls()">
@@ -307,7 +421,7 @@
         <button id="switchMode" class="minibtn" onclick="switchMode()">
           Mode: View
         </button>
-        <div class="cardname skilltext" id="skillname">Skill Not Set</div>
+        <div class="cardname skilltext" id="skillname" onclick="showSkillInfo()">Skill Not Set</div>
         <div id="main" class="purple"></div>
         <div id="extra" class="purple"></div>
       </div>
@@ -338,18 +452,32 @@
           onkeyup="skillSearch()"
           autocomplete="off"
         />
+        <button class="filterbtn" id="skillClear" onclick="setSkill(null)">Clear</button>
         <div id="searchResult" class="purple"></div>
         <button id="testhands" onclick="testHands()">Test Hands</button>
-        <button id="copyYdke" onclick="copyYdke()">Copy ydke</button><br />
-        <button id="download" onclick="downloadDeck()">Download</button>
-        <button id="upload" onclick="uploadDeck()">Upload</button>
+        <button id="copyDeck" onclick="openExport('copy')">Copy</button><br />
+        <button id="upload" onclick="openUpload()">Upload</button>
+        <button id="download" onclick="openExport('download')">Download</button>
         <input
           id="uploadInput"
           type="file"
-          accept=".yld"
+          accept=".yld,.ydk,.txt"
           style="display: none"
           onchange="loadUploadedDeck(this)"
         />
+      </div>
+    </div>
+    <div id="exportLayer" onclick="closeExport()">
+      <div
+        id="exportBox"
+        tabindex="-1"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="exportTitle"
+        onclick="event.stopPropagation()"
+      >
+        <p id="exportTitle">Copy deck as</p>
+        <div id="exportOptions"></div>
       </div>
     </div>
   </body>
@@ -362,16 +490,20 @@
         this.isRush = isRush;
         //cards skipped by the last convert() because they aren't in the database
         this.missing = [];
+        //skill index (into skillDb) read by the last convert() from a yld code, or null
+        this.skill = null;
       }
       hasCard(name) {
         if (!this.dbNames) this.dbNames = new Set(this.db.map((a) => a.name));
         return this.dbNames.has(name);
       }
-      convert(d, format) {
+      //skill: optional skill index (into skillDb), only stored by the yld format
+      convert(d, format, skill = null) {
         this.missing = [];
+        this.skill = null;
         switch (format) {
           case "yld":
-            return this.namelist_to_yld(this.toNamelist(d));
+            return this.namelist_to_yld(this.toNamelist(d), skill);
           case "ydk":
             return this.namelist_to_ydk(this.toNamelist(d));
           case "ydke":
@@ -517,19 +649,24 @@
         if (!namelist.includes("!side")) arr.push("!side");
         return arr.join("\n");
       }
+      //yld code: "1" + main + "c" + extra + "c" + side + "c" + skill index, in base 13, then base 64.
+      //cards are 5-digit ygolID indexes, "a"/"b" repeat the previous card once/twice.
+      //every section after main is optional, so older codes (no side deck, no skill) still decode.
       yld_to_namelist(yld) {
-        let arr = this.base13Encode(this.base64Decode(yld.replace("yld://", "")))
-          .slice(1)
-          .replace(/a/g, "xxxxx")
-          .replace(/b/g, "xxxxxxxxxx")
-          .replace(/c/g, "yyyyy")
-          .match(/.{1,5}/g);
-        let d = "#main\n";
+        let raw = this.base13Encode(this.base64Decode(yld.replace("yld://", ""))).slice(1);
+        let sections = raw.split("c");
+        if (sections.length > 4) throw new Error("Invalid yld deck code");
+        const headers = ["#main", "#extra", "!side"];
+        let d = "";
         let prev = 0;
-        for (let el of arr) {
-          if (el == "yyyyy" && !d.includes("!side")) {
-            d += d.includes("#extra") ? "!side\n" : "#extra\n";
-          } else {
+        for (let s = 0; s < Math.min(sections.length, 3); s++) {
+          d += headers[s] + "\n";
+          let chunks =
+            sections[s]
+              .replace(/a/g, "xxxxx")
+              .replace(/b/g, "xxxxxxxxxx")
+              .match(/.{1,5}/g) || [];
+          for (let el of chunks) {
             //a chunk that isn't a 5-digit id means the code itself is corrupted
             if (el != "xxxxx" && !/^\d{5}$/.test(el))
               throw new Error("Invalid yld deck code");
@@ -544,9 +681,14 @@
             if (el != "xxxxx") prev = Number(el);
           }
         }
+        //4th section: the set skill
+        if (sections.length == 4 && sections[3] !== "") {
+          if (!/^\d+$/.test(sections[3])) throw new Error("Invalid yld deck code");
+          this.skill = Number(sections[3]);
+        }
         return d;
       }
-      namelist_to_yld(namelist) {
+      namelist_to_yld(namelist, skill = null) {
         let d = "1";
         let prev = "";
         for (let el of namelist.split("\n")) {
@@ -558,6 +700,11 @@
             prev = curr;
             d = d.replace("aa", "b");
           }
+        }
+        //the skill goes after the side deck, so add any missing extra/side separators first
+        if (Number.isInteger(skill) && skill >= 0) {
+          for (let seps = (d.match(/c/g) || []).length; seps < 2; seps++) d += "c";
+          d += "c" + skill;
         }
         return "yld://" + this.base64Encode(this.base13Decode(d));
       }
@@ -1436,7 +1583,7 @@
     let searchResult = document.getElementById("searchResult");
     let ygolDeck; //created in loadData()
     let deckBuilder; //created in loadData()
-    let format = "tcg";
+    let format = "dl"; //format when the page is first opened
     let currentCard = "";
     let currentCardEl = null;
     let cardDivId = "";
@@ -1457,8 +1604,15 @@
     let holdThreshold = 500;
     let _isMobile = window.innerHeight > window.innerWidth;
     let editMode = "edit";
-    document.getElementById("skillname").style.display = "none";
-    document.getElementById("skillInput").style.display = "none";
+    //skill name and skill search only show in the Duel Links formats
+    function updateSkillVisibility() {
+      const dl = format.includes("dl");
+      document.getElementById("skillname").style.display = dl ? "block" : "none";
+      //inline, so the Clear button sits next to the box like Options next to the card search
+      document.getElementById("skillInput").style.display = dl ? "" : "none";
+      document.getElementById("skillClear").style.display = dl ? "" : "none";
+    }
+    updateSkillVisibility();
 
     //mobile view
     if (_isMobile) {
@@ -1587,8 +1741,13 @@
       if (currentCardEl && mousedown) {
         currentCardEl.style.position = "absolute";
         currentCardEl.style.pointerEvents = "none";
-        currentCardEl.style.left = event.pageX - currentCardEl.width / 2 + "px";
-        currentCardEl.style.top = event.pageY - currentCardEl.height / 2 + "px";
+        //centre the card on the cursor; subtract its margins, because in formats with a
+        //rarity tag the card is pulled under the tag with a negative left margin
+        const cardStyle = getComputedStyle(currentCardEl);
+        currentCardEl.style.left =
+          event.pageX - currentCardEl.width / 2 - parseFloat(cardStyle.marginLeft) + "px";
+        currentCardEl.style.top =
+          event.pageY - currentCardEl.height / 2 - parseFloat(cardStyle.marginTop) + "px";
       }
     });
     document
@@ -1597,7 +1756,9 @@
         if (!selectingFilters) {
           document.getElementById("popupCss1").style.display = "none";
           let input = document.getElementById("searchInput").value;
-          if (input.length > 2 || filters.length) {
+          const wasSkillPopup = popupKind == "skill";
+          popupKind = "card";
+          if (!wasSkillPopup && (input.length > 2 || filters.length)) {
             deckBuilder.searchCard(
               input,
               searchResult,
@@ -1688,8 +1849,57 @@
         }
       }, 500);
     }
+    //the deck's set skill (a skillDb name), or null; shown in #skillname
+    let currentSkill = null;
+    function setSkill(name) {
+      currentSkill = name || null;
+      const el = document.getElementById("skillname");
+      el.textContent = currentSkill ? `✦ ${currentSkill}` : "Skill Not Set";
+      el.classList.toggle("set", !!currentSkill);
+    }
+    //clicking the set skill shows its text in the same popup as card info
+    let popupKind = "card";
+    function showSkillInfo() {
+      if (!currentSkill) return;
+      const skill = skillDb.find((a) => a.name == currentSkill);
+      if (!skill) return;
+      const popup = document.getElementById("popup");
+      popup.innerHTML = "";
+      const name = document.createElement("p");
+      name.className = "cardname skilltext";
+      name.textContent = `✦ ${skill.name}`;
+      const desc = document.createElement("p");
+      desc.className = "skill-desc";
+      desc.textContent = skill.description;
+      popup.append(name, desc);
+      popup.scrollTop = 0;
+      popupKind = "skill";
+      document.getElementById("popupCss1").style.display = "flex";
+    }
     function selectSkill(name) {
-      document.getElementById("skillname").innerHTML = `✦ ${name}`;
+      setSkill(name);
+    }
+    //index of the set skill in skillDb, or null if no skill is set
+    function currentSkillIndex() {
+      if (!currentSkill) return null;
+      const i = skillDb.findIndex((a) => a.name == currentSkill);
+      return i == -1 ? null : i;
+    }
+    //apply the skill read from a yld code (index or null); returns false if it isn't in skillDb
+    let missingSkill = null;
+    function applyDecodedSkill(index) {
+      missingSkill = null;
+      if (index === null) {
+        setSkill(null);
+        return true;
+      }
+      if (skillDb[index]) {
+        setSkill(skillDb[index].name);
+        return true;
+      }
+      missingSkill = index;
+      setSkill(null);
+      return false;
     }
     function openFilter() {
       document.getElementById("popup").innerHTML = editorFilters;
@@ -1723,9 +1933,15 @@
       document.getElementById("switchMainSide").innerHTML =
         deckBuilder.switchEditingDeck(main, extra, cardwidth);
     }
+    const FORMATS = ["dl", "dlzg", "md", "tcg", "ocg", "unlimited"];
+    //the format button: move to the next format
     function switchFormat() {
-      let arrFormats = ["dl", "dlzg", "md", "tcg", "ocg", "unlimited"];
-      format = arrFormats[(arrFormats.indexOf(format) + 1) % arrFormats.length];
+      setFormat(FORMATS[(FORMATS.indexOf(format) + 1) % FORMATS.length]);
+    }
+    //switch straight to a format (also used after uploading a deck)
+    function setFormat(newFormat) {
+      if (!FORMATS.includes(newFormat)) return;
+      format = newFormat;
       document.getElementById(
         "btnFormat"
       ).innerHTML = `Format: ${format.toUpperCase()}`;
@@ -1743,13 +1959,7 @@
         freeFilterAutoOn = false;
         freeFilterAutoRemoved = true;
       }
-      if (format.includes("dl")) {
-        document.getElementById("skillname").style.display = "block";
-        document.getElementById("skillInput").style.display = "block";
-      } else {
-        document.getElementById("skillname").style.display = "none";
-        document.getElementById("skillInput").style.display = "none";
-      }
+      updateSkillVisibility();
       if (deckBuilder.editingDeck == "main") {
         deckBuilder.appendDeck(main, extra, cardwidth);
       } else {
@@ -1775,34 +1985,163 @@
       if (!document.getElementById("deckName").value)
         document.getElementById("deckName").value = "Untitled Deck";
       let namelist = deckBuilder.exportNamelist();
+      //cards only: test-hands.html has its own yld decoder, which doesn't read skills
       let yld = ygolDeck.namelist_to_yld(namelist).replace("yld://", "");
       window.open(`test-hands.html?yld=${yld}`);
     }
-    function copyYdke() {
-      let input = document.createElement("textarea");
-      input.innerHTML = ygolDeck.convert(deckBuilder.exportNamelist(), "ydke");
-      document.body.appendChild(input);
-      input.select();
-      if (document.execCommand("copy")) {
-        document.body.removeChild(input);
-        document.getElementById("copyYdke").innerHTML = "Copied!";
-        setTimeout(() => {
-          document.getElementById("copyYdke").innerHTML = "Copy ydke";
-        }, 2000);
+    //=== copy/download: pick a deck code format first ===
+    const EXPORT_FORMATS = [
+      { id: "yld", label: "YLD", ext: ".yld", desc: "YGO Lightning deck code. Keeps the side deck and the skill." },
+      { id: "ydke", label: "YDKE", ext: ".txt", desc: "Deck code for YGOPro-based simulators." },
+      { id: "ydk", label: "YDK", ext: ".ydk", desc: "Deck file for YGOPro-based simulators." },
+      { id: "namelist", label: "Card names", ext: ".txt", desc: "One card name per line, in sections." },
+    ];
+    //the small popup used by Copy, Download and Upload: a title and a list of choices.
+    //choices: [{ label, desc (optional), notes, onSelect }]; highlight: label of the option to highlight, or null
+    function openChoicePopup(title, choices, highlight = null) {
+      document.getElementById("exportTitle").textContent = title;
+      const options = document.getElementById("exportOptions");
+      options.innerHTML = "";
+      for (const c of choices) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "export-option" + (c.label == highlight ? " selected" : "");
+        btn.innerHTML = `${c.label}${c.desc ? `<span class="export-desc">${c.desc}</span>` : ""}${(c.notes || [])
+          .map((n) => `<span class="export-note">${n}</span>`)
+          .join("")}`;
+        btn.addEventListener("click", () => {
+          closeExport();
+          c.onSelect();
+        });
+        options.appendChild(btn);
       }
+      document.getElementById("exportLayer").classList.add("open");
+      //focus the highlighted option, or the popup itself when nothing is highlighted
+      (options.querySelector(".selected") || document.getElementById("exportBox")).focus();
     }
-    function downloadDeck() {
+    function openExport(action) {
+      const deck = deckBuilder.exportNamelist();
+      const noId = cardsWithoutKonamiID(deck).length;
+      const choices = EXPORT_FORMATS.map((f) => {
+        //what this format would leave out of the current deck
+        const notes = [];
+        if ((f.id == "ydk" || f.id == "ydke") && noId)
+          notes.push(`${noId} ${noId == 1 ? "card has" : "cards have"} no Konami ID and will be left out.`);
+        if (f.id != "yld" && currentSkill) notes.push("The skill won't be saved.");
+        return {
+          label: f.label,
+          desc: f.desc,
+          notes,
+          onSelect: () => (action == "copy" ? copyDeckAs(f) : downloadDeckAs(f)),
+        };
+      });
+      //YLD is always highlighted
+      openChoicePopup(action == "copy" ? "Copy deck as" : "Download deck as", choices, "YLD");
+    }
+    //=== upload: from a file or from the clipboard (nothing highlighted) ===
+    function openUpload() {
+      openChoicePopup("Upload deck from", [
+        {
+          label: "File",
+          onSelect: () => document.getElementById("uploadInput").click(),
+        },
+        {
+          label: "Clipboard",
+          onSelect: uploadFromClipboard,
+        },
+      ]);
+    }
+    async function uploadFromClipboard() {
+      let text = null;
+      try {
+        text = await navigator.clipboard.readText();
+      } catch (e) {
+        //the browser blocked reading the clipboard (not https, or permission refused)
+      }
+      if (text === null) return openPasteBox();
+      if (!text.trim()) return alert("The clipboard is empty.");
+      loadDeckText(text, null, "clipboard");
+    }
+    //fallback when the clipboard can't be read directly: paste into a box instead
+    function openPasteBox() {
+      document.getElementById("exportTitle").textContent = "Paste deck";
+      const options = document.getElementById("exportOptions");
+      options.innerHTML = "";
+      const hint = document.createElement("p");
+      hint.className = "export-hint";
+      hint.textContent = "Your browser didn't allow reading the clipboard. Paste the deck here (Ctrl+V), then press Load.";
+      const box = document.createElement("textarea");
+      box.setAttribute("aria-label", "Deck code or card list");
+      const load = document.createElement("button");
+      load.type = "button";
+      load.className = "export-option";
+      load.textContent = "Load";
+      load.addEventListener("click", () => {
+        if (!box.value.trim()) return box.focus();
+        closeExport();
+        loadDeckText(box.value, null, "clipboard");
+      });
+      options.append(hint, box, load);
+      document.getElementById("exportLayer").classList.add("open");
+      box.focus();
+    }
+    function closeExport() {
+      document.getElementById("exportLayer").classList.remove("open");
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "Escape") closeExport();
+    });
+    //names (with repeats) of the deck's cards that have no Konami ID (can't go in ydk/ydke)
+    function cardsWithoutKonamiID(namelist) {
+      return namelist
+        .split("\n")
+        .filter((a) => a && a != "#main" && a != "#extra" && a != "!side")
+        .filter((name) => !(cardDb.find((c) => c.name == name) || {}).konamiID);
+    }
+    //the current deck as a code/file in the chosen format
+    function exportDeckAs(formatId) {
+      let namelist = deckBuilder.exportNamelist();
+      if (formatId == "ydk" || formatId == "ydke") {
+        //cards without a Konami ID would break these formats, so they're left out
+        const skip = new Set(cardsWithoutKonamiID(namelist));
+        namelist = namelist
+          .split("\n")
+          .filter((a) => !skip.has(a))
+          .join("\n");
+      }
+      return ygolDeck.convert(namelist, formatId, formatId == "yld" ? currentSkillIndex() : null);
+    }
+    async function copyDeckAs(f) {
+      const text = exportDeckAs(f.id);
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      } catch (e) {
+        //older browsers / non-https pages: copy through a hidden textarea
+        const input = document.createElement("textarea");
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        ok = document.execCommand("copy");
+        document.body.removeChild(input);
+      }
+      const btn = document.getElementById("copyDeck");
+      btn.textContent = ok ? `Copied ${f.label}!` : "Copy failed";
+      setTimeout(() => (btn.textContent = "Copy"), 2000);
+    }
+    function downloadDeckAs(f) {
       if (!document.getElementById("deckName").value)
         document.getElementById("deckName").value = "Untitled Deck";
       let name = document.getElementById("deckName").value;
-      let yld = ygolDeck.convert(deckBuilder.exportNamelist(), "yld");
+      let text = exportDeckAs(f.id);
       //strip characters that aren't allowed in file names
       let fileName =
-        name.replace(/[\/:*?"<>|]/g, "").trim() || "Untitled Deck";
-      const blob = new Blob([yld], { type: "text/plain" });
+        name.replace(/[\\/:*?"<>|]/g, "").trim() || "Untitled Deck";
+      const blob = new Blob([text], { type: "text/plain" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = fileName + ".yld";
+      a.download = fileName + f.ext;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1810,52 +2149,85 @@
     }
     //tell the user which cards were skipped by the last ygolDeck.convert()
     function reportMissingCards() {
-      if (!ygolDeck.missing.length) return;
-      let counts = {};
-      for (let name of ygolDeck.missing) counts[name] = (counts[name] || 0) + 1;
-      let lines = Object.entries(counts).map(
-        ([name, n]) => `- ${name}${n > 1 ? ` x${n}` : ""}`
-      );
-      if (lines.length > 20)
-        lines = lines.slice(0, 20).concat(`...and ${lines.length - 20} more`);
-      alert(
-        `${ygolDeck.missing.length} card(s) in this deck are not in the card database and were skipped:\n${lines.join("\n")}`
-      );
+      let parts = [];
+      if (ygolDeck.missing.length) {
+        let counts = {};
+        for (let name of ygolDeck.missing) counts[name] = (counts[name] || 0) + 1;
+        let lines = Object.entries(counts).map(
+          ([name, n]) => `- ${name}${n > 1 ? ` x${n}` : ""}`
+        );
+        if (lines.length > 20)
+          lines = lines.slice(0, 20).concat(`...and ${lines.length - 20} more`);
+        parts.push(
+          `${ygolDeck.missing.length} card(s) in this deck are not in the card database and were skipped:\n${lines.join("\n")}`
+        );
+      }
+      if (missingSkill !== null)
+        parts.push(`The deck's skill (ID ${missingSkill}) is not in the skill database, so no skill was set.`);
+      if (parts.length) alert(parts.join("\n\n"));
     }
-    function uploadDeck() {
-      document.getElementById("uploadInput").click();
+
+    //which deck format a piece of text is (same rules as YgolDeck.toNamelist)
+    function detectDeckFormat(text) {
+      if (text.includes("#main") || text.includes("#extra")) return "ydk/namelist";
+      if (text.includes("ydke://")) return "ydke";
+      if (text.includes("yld://")) return "yld";
+      return "dlf2pV2";
     }
+    //upload accepts every format the converter reads: yld, ydk, ydke, dlf2pV2 or a list of card names
+    //upload accepts every format the converter reads: yld, ydk, ydke, dlf2pV2 or a list of card names
     function loadUploadedDeck(input) {
       const file = input.files[0];
       input.value = ""; //allow re-uploading the same file
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = () => {
-        let yld = reader.result.trim();
-        let namelist;
-        try {
-          if (!yld.startsWith("yld://")) throw new Error();
-          namelist = ygolDeck.convert(yld, "namelist");
-          //unknown cards are skipped, but a file with no valid cards at all is rejected
-          let validCards = namelist
-            .split("\n")
-            .filter((a) => a && a != "#main" && a != "#extra" && a != "!side");
-          if (!validCards.length && ygolDeck.missing.length) throw new Error();
-        } catch (e) {
-          alert("Error: Invalid .yld file");
-          return;
-        }
-        //clear the current deck, then load the uploaded one
-        if (deckBuilder.editingDeck == "side") switchMainSide();
-        deckBuilder.cards = [];
-        deckBuilder.side = [];
-        deckBuilder.importNamelist(namelist, main, extra, cardwidth);
-        deckBuilder.appendDeck(main, extra, cardwidth);
-        document.getElementById("deckName").value =
-          file.name.replace(/\.yld$/i, "") || "Untitled Deck";
-        reportMissingCards();
-      };
+      reader.onload = () =>
+        loadDeckText(reader.result, file.name.replace(/\.(yld|ydk|ydke|txt)$/i, ""), "file");
       reader.readAsText(file);
+    }
+    //load a deck from text (a file's contents or the clipboard), replacing the current deck.
+    //name: deck name to show (null: "Untitled Deck"); source: "file" or "clipboard", for the error message
+    function loadDeckText(rawText, name, source) {
+      //Windows line endings would stick to card names, so normalise them first
+      let text = rawText.replace(/\r\n?/g, "\n").trim();
+      let namelist, skill = null;
+      try {
+        if (!text) throw new Error();
+        const kind = detectDeckFormat(text);
+        namelist = ygolDeck.convert(text, "namelist");
+        if (typeof namelist != "string") throw new Error();
+        if (kind == "yld") skill = ygolDeck.skill;
+        if (kind == "dlf2pV2") {
+          //dlf2pV2 is [2_]<cards>_<skill index>_<deck name>; -1 means no skill
+          const n = parseInt(text.replace(/^2_/, "").split("_")[1]);
+          if (n >= 0) skill = n;
+        }
+        //unknown cards are skipped, but a deck with no valid cards at all is rejected
+        let validCards = namelist
+          .split("\n")
+          .filter((a) => a && a != "#main" && a != "#extra" && a != "!side");
+        if (!validCards.length && ygolDeck.missing.length) throw new Error();
+      } catch (e) {
+        alert(
+          source == "clipboard"
+            ? "Error: The clipboard doesn't contain a deck the editor can read."
+            : "Error: This file isn't a deck file the editor can read."
+        );
+        return false;
+      }
+      //clear the current deck, then load the uploaded one
+      if (deckBuilder.editingDeck == "side") switchMainSide();
+      deckBuilder.cards = [];
+      deckBuilder.side = [];
+      deckBuilder.importNamelist(namelist, main, extra, cardwidth);
+      deckBuilder.appendDeck(main, extra, cardwidth);
+      document.getElementById("deckName").value = name || "Untitled Deck";
+      const hasSkill = applyDecodedSkill(skill) && skill !== null; //the uploaded deck's skill, or none
+      //pick a matching format: a skill means Duel Links; otherwise a side deck means TCG
+      if (hasSkill) setFormat("dl");
+      else if (deckBuilder.side.length) setFormat("tcg");
+      reportMissingCards();
+      return true;
     }
     const params = new URL(document.location).searchParams;
 
@@ -1897,8 +2269,7 @@
         format = "dl";
         deckBuilder.changeFormat("dl");
         document.getElementById("btnFormat").innerHTML = "Format: DL";
-        document.getElementById("skillname").style.display = "block";
-        document.getElementById("skillInput").style.display = "block";
+        updateSkillVisibility();
       }
       if (params.get("dlf2p") == "true" && params.get("d")) {
         document.getElementById("deckName").value = params
@@ -1914,8 +2285,7 @@
         reportMissingCards();
         //d is 2_<cards>_<skill index>_<deck name>; skill may be -1 or no longer exist
         let skill = skillDb[params.get("d").split("_")[2]];
-        if (skill)
-          document.getElementById("skillname").innerHTML = `✦ ${skill.name}`;
+        if (skill) setSkill(skill.name);
       }
       //normal ygol: load deck from ?yld=
       if (params.get("yld")) {
@@ -1926,7 +2296,9 @@
           alert("Error: Invalid deck code in URL");
         }
         if (namelist) {
+          const skill = ygolDeck.skill;
           deckBuilder.importNamelist(namelist, main, extra, cardwidth);
+          applyDecodedSkill(skill);
           reportMissingCards();
         }
       }
