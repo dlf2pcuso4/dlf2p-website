@@ -838,6 +838,8 @@
 
     //=== DeckBuilder: deck state, card search/filters, rendering ===
     class DeckBuilder {
+      //card name (URL-encoded) -> image address that loaded for it: local file, remote art or the error image
+      static loadedSrc = new Map();
       constructor(ygolDb, name = "Untitiled Deck", cards = [], side = []) {
         this.ygolDb = ygolDb;
         this.name = name;
@@ -928,7 +930,12 @@
           }
           targetDiv.insertAdjacentHTML(
             "beforeend",
-            `<img src="${this.url(`images/cards/${this.name_url(el.name)}.jpg`)}" alt="${
+            `<img src="${
+              //start from the address that worked last time (see loadedSrc), so a re-render
+              //doesn't retry a missing local image first and leave the card blank meanwhile
+              DeckBuilder.loadedSrc.get(encodeURIComponent(el.name)) ||
+              this.url(`images/cards/${this.name_url(el.name)}.jpg`)
+            }" data-key="${encodeURIComponent(el.name)}" onload="DeckBuilder.loadedSrc.set(this.dataset.key, this.src)" alt="${
               el.name
             }" cardno="${cardno}" location="${location}" style="width:${width}px;margin:${
               (this.format == "dl" ||
