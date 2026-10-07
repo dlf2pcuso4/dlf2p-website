@@ -1624,8 +1624,8 @@
         `<style>
           *{font-weight: 500;}
           #deck{width: 90vw;}
-          #main{width: 80vw; height: 50vh;}
-          #extra{width: 80vw; height: 20vh;}
+          #main{width: 80vw; height: 50vh; margin-left: auto; margin-right: auto;}
+          #extra{width: 80vw; height: 20vh; margin-left: auto; margin-right: auto;}
           input{width: 55vw; height: 5.5vw; font-size: 3.8vw;}
           .minibtn{width: 30vw; height: 7vw; font-size: 3.2vw;}
           .filterbtn{width: 20vw; height: 7vw; font-size: 2.7vw;}
@@ -1661,8 +1661,34 @@
       } else {
         document.getElementById("controls").style.display = "none";
         document.getElementById("deck").style.display = "block";
+        centerCardRows(); //the deck boxes can't be measured while hidden
       }
     }
+
+    //centre the block of cards in the main/extra deck boxes: rows stay left-aligned, but a full
+    //row has the same gap on both sides. Every card takes exactly cardwidth across a row, so the
+    //content area is narrowed to a whole number of cards and the rest is split between the left
+    //and right padding (the box's outer size doesn't change).
+    function centerCardRows() {
+      for (const box of [document.getElementById("main"), document.getElementById("extra")]) {
+        box.style.width = "";
+        box.style.paddingLeft = "";
+        box.style.paddingRight = "";
+        if (!box.clientWidth) continue; //hidden
+        const css = getComputedStyle(box);
+        const padL = parseFloat(css.paddingLeft);
+        const padR = parseFloat(css.paddingRight);
+        const room = box.clientWidth - padL - padR; //space for cards (scrollbar excluded)
+        const perRow = Math.max(1, Math.floor((room + 0.01) / cardwidth));
+        const slack = 0.5; //px left after the last card, so rounding can't push it to a new row
+        const spare = Math.max(0, room - perRow * cardwidth - slack);
+        box.style.width = parseFloat(css.width) - spare + "px";
+        //the slack sits on the right, so give the left a little more to keep both gaps equal
+        box.style.paddingLeft = padL + spare / 2 + slack / 2 + "px";
+        box.style.paddingRight = padR + spare / 2 - slack / 2 + "px";
+      }
+    }
+    window.addEventListener("resize", centerCardRows);
 
     //cards can be dragged in either mode; only a short click differs
     function switchMode() {
@@ -1689,8 +1715,8 @@
         currentCardEl.style.top = "0px";
       }
       if (
-        !mousehold &&
-        !mousemove &&
+        //phones: no dragging or holding, so every press on a card counts as a short click
+        (_isMobile || (!mousehold && !mousemove)) &&
         (cardDivId == "main" ||
           cardDivId == "extra" ||
           cardDivId == "searchResult")
@@ -1706,7 +1732,7 @@
                 }, 100);
               }
             }
-          } else if (!mousemovemode) {
+          } else if (_isMobile || !mousemovemode) {
             deckBuilder.removeCard(
               currentCardEl.getAttribute("cardno"),
               currentCardEl.getAttribute("location"),
@@ -1741,7 +1767,8 @@
       mouseMoveTimeout = setTimeout(() => {
         mousemove = false;
       }, 100);
-      if (currentCardEl && mousedown) {
+      //phones: cards can't be dragged
+      if (currentCardEl && mousedown && !_isMobile) {
         currentCardEl.style.position = "absolute";
         currentCardEl.style.pointerEvents = "none";
         //centre the card on the cursor; subtract its margins, because in formats with a
@@ -1774,7 +1801,8 @@
         selectingFilters = false;
       });
     setInterval(() => {
-      if (mousehold && currentCard && !poppingup) {
+      //phones: no hold-to-view popup (a press already shows the card in view mode)
+      if (mousehold && currentCard && !poppingup && !_isMobile) {
         poppingup = true;
         document.getElementById("popupCss1").style.display = "flex";
         deckBuilder.displayCard(
@@ -1804,6 +1832,7 @@
       cardDivId = divid;
     }
     function cardReleased(el) {
+      if (_isMobile) return; //phones: no dragging, so no swapping by dropping a card on another
       if (
         currentCardEl.getAttribute("location") == el.getAttribute("location") &&
         el.getAttribute("location") != "search"
@@ -2271,6 +2300,7 @@
       deckBuilder.addBanlist("ocg", banlistOcg);
       deckBuilder.addBanlist("unlimited", []);
       deckBuilder.changeFormat(format);
+      centerCardRows();
       //dlf2p.com special controls
       if (window.location.href.includes("dlf2p=true")) {
         document.getElementById("testhands").style.display = "none";
