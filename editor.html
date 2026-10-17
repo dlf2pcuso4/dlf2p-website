@@ -498,6 +498,16 @@
         if (!this.dbNames) this.dbNames = new Set(this.db.map((a) => a.name));
         return this.dbNames.has(name);
       }
+      //find a card by passcode: its main passcode first, then the passcodes of its other arts
+      findByPasscode(id) {
+        id = Number(id);
+        return (
+          this.db.find((a) => a.konamiID == id) ||
+          this.db.find(
+            (a) => a.altKonamiIDs && a.altKonamiIDs.some((alt) => Number(alt) == id)
+          )
+        );
+      }
       //skill: optional skill index (into skillDb), only stored by the yld format
       convert(d, format, skill = null) {
         this.missing = [];
@@ -622,7 +632,8 @@
               return ydk;
             } else {
               console.log(arr[i]);
-              let card = this.db.filter((a) => a.konamiID == Number(arr[i]));
+              let found = this.findByPasscode(arr[i]);
+              let card = found ? [found] : [];
               if (card.length) {
                 arr[i] = card[0].name;
               } else {
@@ -723,7 +734,7 @@
         let prev = null; //last decoded card, null if it was skipped
         for (let el of arr) {
           if (el != "xxxxxxxxxx") {
-            let card = this.db.filter((a) => a.konamiID == Number(el))[0];
+            let card = this.findByPasscode(el);
             prev = card ? card.name : null;
             if (!card) this.missing.push(`Unknown card (ID ${Number(el)})`);
           } else if (prev === null) {
