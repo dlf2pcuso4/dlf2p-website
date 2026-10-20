@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
       content="Deck builder for Duel Links, Master Duel, TCG or OCG in the browser. Includes a solo testing feature for test hands and practising combos."
@@ -32,6 +33,9 @@
         --scroll-thumb: #34358f;
         --note-text: #93e3fa; /* notes in the copy/download format popup */
         --overlay-bg: #07060c99; /* dims the page behind the copy/download popup */
+        --danger: #ff8a96; /* border of error messages */
+        --drop-glow: #93e3facc; /* the box a dragged card would be dropped in */
+        --badge-bg: #14163a; /* the "✓ N" copies badge on search results */
       }
       /* Barlow (SIL Open Font License, see fonts/OFL.txt), bundled so every system shows the same font */
       @font-face {
@@ -116,6 +120,8 @@
         font-weight: lighter;
         font-size: 1.7vw;
         color: var(--text);
+        /* phones: no double-tap zoom, so taps on cards and buttons respond straight away */
+        touch-action: manipulation;
       }
       #body {
         display: flex;
@@ -175,6 +181,12 @@
       }
       button:focus-visible {
         border-color: var(--highlight-border);
+      }
+      /* the deck name, card search and skill search boxes and the buttons to their right:
+         line them up by their middles (not their text baselines, which left the buttons lower) */
+      #controls input,
+      #controls .filterbtn {
+        vertical-align: middle;
       }
       input::placeholder {
         color: var(--text-muted);
@@ -238,6 +250,136 @@
         height: 50vh;
         overflow-y: scroll;
         margin-bottom: 1.3vh;
+        position: relative; /* the "✓ N" badges are placed over the cards */
+      }
+      /* the box a dragged card would go into */
+      #main.dropbox,
+      #extra.dropbox,
+      #searchResult.dropbox {
+        border-color: var(--highlight-border);
+        box-shadow: 0 0 max(0.9vw, 8px) var(--drop-glow);
+      }
+      /* the View Side/Main Deck button lights up like a hovered button when a card can go there */
+      #switchMainSide.dropbox {
+        background-color: var(--highlight-bg);
+        border-color: var(--highlight-border);
+        color: var(--highlight-text);
+        box-shadow: 0 0 max(0.9vw, 8px) var(--drop-glow);
+      }
+      /* hints and status messages inside the card boxes */
+      .emptynote {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 1vw;
+        font-size: 1.05vw;
+        line-height: 1.4;
+        text-align: center;
+        color: var(--text-muted);
+      }
+      /* card images: keep their size (and show a placeholder colour) while loading */
+      img.cimg {
+        aspect-ratio: 59 / 86;
+        object-fit: cover;
+        background-color: var(--input-bg);
+      }
+      /* copies of a search result already in the deck */
+      .owned {
+        position: absolute;
+        transform: translate(calc(-100% - 0.2vw), calc(-100% - 0.2vw));
+        padding: 0.05vw 0.35vw;
+        min-width: 1.5vw;
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 0.95vw;
+        font-weight: 500;
+        color: var(--note-text);
+        background: var(--badge-bg);
+        border: max(0.1vw, 1px) solid var(--btn-border);
+        pointer-events: none;
+      }
+      /* dragging a card: a copy follows the cursor, the card itself is dimmed */
+      #ghost {
+        position: fixed;
+        z-index: 9000;
+        display: none;
+        pointer-events: none;
+        filter: drop-shadow(0 0.5vw 0.6vw #000a);
+      }
+      #ghost img {
+        display: block;
+        width: 100%;
+      }
+      img.lifted {
+        opacity: 0.3;
+      }
+      body.dragging,
+      body.dragging * {
+        cursor: grabbing !important;
+      }
+      /* while a card is dragged, buttons under it don't light up as if hovered; only the View
+         Side/Main Deck button does, when the card can be dropped there (#switchMainSide.dropbox).
+         Selected buttons keep their look */
+      body.dragging button:hover:not(.selected):not(.dropbox) {
+        background-color: var(--btn-bg);
+        border-color: var(--btn-border);
+        color: var(--btn-text);
+        box-shadow: none;
+      }
+      /* short messages at the bottom of the page (instead of alert boxes) */
+      #toasts {
+        position: fixed;
+        left: 50%;
+        bottom: 2vh;
+        transform: translateX(-50%);
+        z-index: 10002;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6vh;
+        width: min(36vw, 92vw);
+        pointer-events: none;
+      }
+      .toast {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8vw;
+        box-sizing: border-box;
+        width: 100%;
+        max-height: 40vh;
+        overflow-y: auto;
+        padding: 0.6vw 0.9vw;
+        font-size: 1vw;
+        line-height: 1.4;
+        white-space: pre-line;
+        color: var(--text);
+        background: var(--popup-bg);
+        border: max(0.14vw, 2px) solid var(--highlight-border);
+        pointer-events: auto;
+      }
+      .toast.error {
+        border-color: var(--danger);
+      }
+      .toast .toast-text {
+        flex: 1;
+      }
+      .toast button {
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0.15vw 0.6vw;
+        font-size: 1vw;
+        border-width: max(0.14vw, 1px);
+        flex: none;
+      }
+      .toast button.toast-close {
+        border-color: transparent;
+        background: none;
+        box-shadow: none;
+        color: var(--text-muted);
+      }
+      /* phones: Deck / Search tabs (hidden on desktop) */
+      #tabs {
+        display: none;
       }
       #popupCss1 {
         width: 100vw;
@@ -282,9 +424,49 @@
       img {
         transition: filter 0.5s ease-out;
         user-select: none;
+        -webkit-user-select: none;
+        /* iOS: no "save image" menu when holding a card */
+        -webkit-touch-callout: none;
       }
-      .white-out {
-        filter: brightness(1000%);
+      /* card info popup */
+      #popup .cardmeta {
+        margin-top: 1vh;
+        text-align: center;
+        color: var(--text-muted);
+      }
+      /* banlist status and rarity, below the card text */
+      #popup .cardmeta.cardstatus {
+        margin-top: 0.4vh;
+        text-align: left;
+      }
+      #popup .cardmeta.cardstatus.first {
+        margin-top: 2vh;
+      }
+      #popup .cardmeta b {
+        font-weight: 500;
+        color: var(--text);
+      }
+      #popup .carddesc {
+        white-space: pre-line;
+      }
+      #popup .obtain {
+        margin-top: 0.5vh;
+        padding-left: 1.4vw;
+        color: var(--text-muted);
+      }
+      #popup h3 {
+        margin-top: 2vh;
+        font-size: 1.1vw;
+        font-weight: 500;
+      }
+      /* sticky Clear Filters / Done buttons at the bottom of the filter popup */
+      #popup .filterfoot {
+        position: sticky;
+        bottom: 10px;
+        text-align: end;
+      }
+      #popup .filterfoot button {
+        margin-left: 0.5vw;
       }
       /* set skill above the deck: click it to read the skill's text */
       #skillname:not(.set) {
@@ -371,6 +553,31 @@
         color: var(--text-muted);
       }
       @media (max-aspect-ratio: 1/1) {
+        #toasts {
+          width: 92vw;
+          bottom: 3vw;
+        }
+        .toast {
+          font-size: 3.5vw;
+          padding: 2.5vw 3vw;
+          gap: 2vw;
+        }
+        .toast button {
+          font-size: 3.5vw;
+          padding: 0.5vw 2vw;
+        }
+        .emptynote {
+          font-size: 3.6vw;
+          padding: 4vw;
+        }
+        .owned {
+          font-size: 3vw;
+          min-width: 5vw;
+          padding: 0 1vw;
+        }
+        #popup h3 {
+          font-size: 3.8vw;
+        }
         #exportBox textarea {
           height: 35vw;
           font-size: 3.5vw;
@@ -407,14 +614,17 @@
       </div>
     </div>
     <div id="body">
+      <!-- phones: switch between the deck and the search/controls -->
+      <div id="tabs">
+        <button data-screen="deck" onclick="showScreen('deck')">Deck</button>
+        <button data-screen="search" onclick="showScreen('search')">Search</button>
+      </div>
       <div id="deck">
         <button id="btnFormat" class="minibtn" onclick="switchFormat()">
           Format: DL
         </button>
         <button class="minibtn" onclick="sortDeck()">Sort Deck</button>
-        <button class="minibtn" id="btnControl" onclick="showControls()">
-          Editor Menu
-        </button>
+        <button class="minibtn" id="btnClearDeck" onclick="askClearDeck()">Clear Deck</button>
         <button id="switchMainSide" class="minibtn" onclick="switchMainSide()">
           View Side Deck
         </button>
@@ -422,7 +632,7 @@
           Mode: View
         </button>
         <div class="cardname skilltext" id="skillname" onclick="showSkillInfo()">Skill Not Set</div>
-        <div id="main" class="purple"></div>
+        <div id="main" class="purple"><div class="emptynote">Loading card data...</div></div>
         <div id="extra" class="purple"></div>
       </div>
       <div id="controls">
@@ -432,16 +642,14 @@
           type="text"
           placeholder="Deck name..."
           autocomplete="off"
+          maxlength="60"
         />
         <button class="filterbtn" id="switchModeDesktop" onclick="switchMode()">Mode: View</button>
-        <button class="filterbtn" id="btnViewDeck" onclick="showControls()">
-          View Deck</button
-        ><br />
+        <br />
         <input
           id="searchInput"
           type="text"
           placeholder="Search card..."
-          onkeyup="cardSearch()"
           autocomplete="off"
         />
         <button class="filterbtn" onclick="openFilter()">Options</button>
@@ -454,7 +662,7 @@
           autocomplete="off"
         />
         <button class="filterbtn" id="skillClear" onclick="setSkill(null)">Clear</button>
-        <div id="searchResult" class="purple"></div>
+        <div id="searchResult" class="purple"><div class="emptynote">Loading card data...</div></div>
         <button id="testhands" onclick="testHands()">Test Hands</button>
         <button id="copyDeck" onclick="openExport('copy')">Copy</button><br />
         <button id="upload" onclick="openUpload()">Upload</button>
@@ -481,6 +689,10 @@
         <div id="exportOptions"></div>
       </div>
     </div>
+    <!-- the copy of a card that follows the cursor while it's dragged -->
+    <div id="ghost"></div>
+    <!-- short messages (instead of alert boxes) -->
+    <div id="toasts" aria-live="polite"></div>
   </body>
   <script>
     //=== YgolDeck: deck format conversion (yld / ydk / ydke / dlf2pV2) ===
@@ -941,13 +1153,15 @@
           }
           targetDiv.insertAdjacentHTML(
             "beforeend",
-            `<img src="${
+            //class cimg: keeps the card's shape with a placeholder colour while it loads;
+            //loading="lazy": search results only load once they're scrolled into view
+            `<img class="cimg" loading="lazy" src="${
               //start from the address that worked last time (see loadedSrc), so a re-render
               //doesn't retry a missing local image first and leave the card blank meanwhile
               DeckBuilder.loadedSrc.get(encodeURIComponent(el.name)) ||
               this.url(`images/cards/${this.name_url(el.name)}.jpg`)
             }" data-key="${encodeURIComponent(el.name)}" onload="DeckBuilder.loadedSrc.set(this.dataset.key, this.src)" alt="${
-              el.name
+              escHtml(el.name)
             }" cardno="${cardno}" location="${location}" style="width:${width}px;margin:${
               (this.format == "dl" ||
                 this.format == "dlzg" ||
@@ -957,7 +1171,7 @@
                 : "0px"
             }" onmousedown="cardClicked(\`${targetDiv.id}\`,\`${this.htmlEncode(
               el.name
-            )}\`,this,event)" onmouseup="cardReleased(this,event)" onerror="if(this.src==\`${altSrc}\`){this.onerror=null; this.src=\`${
+            )}\`,this,event)" onerror="if(this.src==\`${altSrc}\`){this.onerror=null; this.src=\`${
               this.errorimage
             }\`;}else{this.src=\`${altSrc}\`}" draggable="false">`
           );
@@ -976,6 +1190,8 @@
           }
         }
       }
+      //every change to the deck ends with appendDeck or appendSide, which call onRender
+      //(set by the page: undo history, saving, the URL, the search badges)
       appendDeck(mainDiv, extraDiv, width) {
         mainDiv.innerHTML = "";
         extraDiv.innerHTML = "";
@@ -983,11 +1199,46 @@
         let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
         this.appendCards(main, mainDiv, width, "main");
         this.appendCards(extra, extraDiv, width, "extra");
+        if (!main.length) this.emptyHint(mainDiv, extra.length ? "The Main Deck is empty." : "The deck is empty.");
+        if (this.onRender) this.onRender();
       }
       appendSide(mainDiv, extraDiv, width) {
         mainDiv.innerHTML = "";
         extraDiv.innerHTML = "";
         this.appendCards(this.side, mainDiv, width, "side");
+        if (!this.side.length) this.emptyHint(mainDiv, "The Side Deck is empty.");
+        if (this.onRender) this.onRender();
+      }
+      //redraw whichever deck is shown
+      render(mainDiv, extraDiv, width) {
+        if (this.editingDeck == "main") this.appendDeck(mainDiv, extraDiv, width);
+        else this.appendSide(mainDiv, extraDiv, width);
+      }
+      emptyHint(div, first) {
+        const how =
+          typeof _isMobile != "undefined" && _isMobile
+            ? "Search for a card, switch to Edit mode, then tap it."
+            : "Search for a card, switch to Edit mode, then click it or drag it here.";
+        div.insertAdjacentHTML("beforeend", `<div class="emptynote">${first}<br>${how}</div>`);
+      }
+      //copies of a card in the whole deck (main, extra and side), for the 3-copy limit
+      copiesOf(name) {
+        let n = 0;
+        for (const c of this.cards) if (c.name == name) n++;
+        for (const c of this.side) if (c.name == name) n++;
+        return n;
+      }
+      //true if another copy of the card can't be added. this.refusal says why an add failed:
+      //"limit" (3 copies already), "extra" (Extra Deck monster dropped on the Main Deck),
+      //"main" (Main Deck card dropped on the Extra Deck) or "unknown"
+      atLimit(name) {
+        return this.copiesOf(name) >= 3 && !window.location.href.includes("UNLIMITED_MODE=ON");
+      }
+      //remove every card of the main+extra deck ("main"), the side deck ("side") or both ("all")
+      clearDeck(which, mainDiv, extraDiv, width) {
+        if (which == "main" || which == "all") this.cards = [];
+        if (which == "side" || which == "all") this.side = [];
+        this.render(mainDiv, extraDiv, width);
       }
       importNamelist(namelist, mainDiv, extraDiv, width) {
         for (let line of namelist.split("\n")) {
@@ -1022,54 +1273,99 @@
           this.appendSide(mainDiv, extraDiv, width);
         }
       }
-      swapCards(cardno1, cardno2, location, mainDiv, extraDiv, width) {
+      //move card number `from` of a deck box so it ends up at position `to` of the list
+      //without it (the cards in between shift over). Dragging a deck card within its box
+      moveCard(from, to, location, mainDiv, extraDiv, width) {
+        from = Number(from);
         let main = this.cards.filter((a) => a.priorityDl < 2000000000);
         let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
-        let side = this.side;
-        if (location == "side") {
-          let temp = side[cardno1];
-          side.splice(cardno1, 1);
-          side.splice(cardno2, 0, temp);
-          this.side = side;
-          mainDiv.innerHTML = "";
-          extraDiv.innerHTML = "";
-          this.appendCards(side, mainDiv, width, "side");
-        } else {
-          if (location == "main") {
-            let temp = main[cardno1];
-            main.splice(cardno1, 1);
-            main.splice(cardno2, 0, temp);
-          }
-          if (location == "extra") {
-            let temp = extra[cardno1];
-            extra.splice(cardno1, 1);
-            extra.splice(cardno2, 0, temp);
-          }
-          this.cards = main.concat(extra);
-          mainDiv.innerHTML = "";
-          extraDiv.innerHTML = "";
-          this.appendCards(main, mainDiv, width, "main");
-          this.appendCards(extra, extraDiv, width, "extra");
-        }
+        let list = location == "side" ? this.side : location == "main" ? main : extra;
+        if (!list[from]) return;
+        const [card] = list.splice(from, 1);
+        list.splice(Math.min(to, list.length), 0, card);
+        if (location != "side") this.cards = main.concat(extra);
+        this.render(mainDiv, extraDiv, width);
       }
+      //card info popup: picture, type and stats, banlist status in the current format,
+      //Duel Links / Master Duel rarity (and how to get it in Duel Links), then the text
       displayCard(name, targetDiv, width) {
-        let cardObj = this.ygolDb.filter((a) => a.name == this.htmlDecode(name))[0];
-        let altSrc = this.errorimage;
-        altSrc = cardObj.altimg;
-        //if (cardObj.konamiID) altSrc = `https://images.ygoprodeck.com/images/cards/${Number(cardObj.konamiID)}.jpg`;
+        const realName = this.htmlDecode(name);
+        const c = this.ygolDb.find((a) => a.name == realName);
+        if (!c) return;
         targetDiv.innerHTML = "";
+        //the picture: the address that already worked, else the local file, the card's
+        //online art and finally the error image
+        const box = document.createElement("div");
+        box.style.cssText = "display: flex; justify-content: center";
+        const img = document.createElement("img");
+        img.className = "cimg";
+        img.alt = c.name;
+        img.style.width = width + "px";
+        const tries = [
+          DeckBuilder.loadedSrc.get(encodeURIComponent(c.name)),
+          this.url(`images/cards/${this.name_url(c.name)}.jpg`),
+          c.altimg,
+          this.errorimage,
+        ].filter((v, i, a) => v && a.indexOf(v) == i);
+        img.onerror = () => {
+          tries.shift();
+          if (tries.length) img.src = tries[0];
+          else img.onerror = null;
+        };
+        img.src = tries[0];
+        box.appendChild(img);
+        targetDiv.appendChild(box);
+
+        const lines = [];
+        if (c.type == "Monster") {
+          const kinds = (c.monsterType || []).join(" / ");
+          lines.push(`[${escHtml(c.race || "")}${kinds ? " / " + escHtml(kinds) : ""}]`);
+          const stats = [];
+          if (c.attribute) stats.push(escHtml(c.attribute));
+          const isLink = (c.monsterType || []).includes("Link");
+          const isXyz = (c.monsterType || []).some((t) => t == "Xyz" || t == "XYZ");
+          if (isLink && c.linkRating) stats.push(`Link-${c.linkRating}`);
+          else if (c.level) stats.push(`${isXyz ? "Rank" : "Level"} ${c.level}`);
+          if (c.scale !== undefined && c.scale !== null) stats.push(`Scale ${c.scale}`);
+          if (c.atk !== undefined) stats.push(`ATK ${c.atk === null ? "?" : c.atk}`);
+          if (!isLink && c.def !== undefined) stats.push(`DEF ${c.def === null ? "?" : c.def}`);
+          if (isLink && c.linkArrows && c.linkArrows.length) stats.push(`Arrows: ${escHtml(c.linkArrows.join(", "))}`);
+          if (stats.length) lines.push(stats.join(" · "));
+        } else if (c.type) {
+          lines.push(`[${escHtml(c.race ? c.race + " " : "")}${escHtml(c.type)}]`);
+        }
+        //below the card text (left-aligned): banlist status in the current format (only when
+        //the card is on the banlist, not for unlimited cards), then the Duel Links / Master
+        //Duel rarity or "Not released"
+        const status = [];
+        const fmt = this.format;
+        if (fmt != "unlimited") {
+          const list = (this.banlists.find((b) => b.format == fmt) || { banlist: [] }).banlist;
+          const entry = list.find((b) => b.name == c.name);
+          if (entry) status.push(`${fmt.toUpperCase()} banlist: <b>${escHtml(entry.banStatus)}</b>`);
+        }
+        if ((fmt == "dl" || fmt == "dlzg") && c.rarityDl) status.push(`Duel Links rarity: <b>${escHtml(c.rarityDl)}</b>`);
+        if ((fmt == "dl" || fmt == "dlzg") && !c.rarityDl && !c.rush) status.push("Not released in Duel Links");
+        if (fmt == "md") status.push(c.rarityMd ? `Master Duel rarity: <b>${escHtml(c.rarityMd)}</b>` : "Not released in Master Duel");
         targetDiv.insertAdjacentHTML(
           "beforeend",
-          `<div style="display: flex; justify-content: center">
-            <img src="${this.url(
-              `images/cards/${this.name_url(name)}.jpg`
-            )}" alt="${name}" style="width:${width}px;" onerror="if(this.src==\`${altSrc}\`){this.onerror=null; this.src=\`${
-            this.errorimage
-          }\`;}else{this.src=\`${altSrc}\`}" >
-          </div>
-          <p class="cardname">${cardObj.name}</p>
-          <p>${cardObj.description}</p>`
+          `<p class="cardname">${escHtml(c.name)}</p>` +
+            lines.map((l) => `<p class="cardmeta">${l}</p>`).join("") +
+            `<p class="carddesc">${escHtml(c.description || "")}</p>` +
+            status.map((l, i) => `<p class="cardmeta cardstatus${i ? "" : " first"}">${l}</p>`).join("")
         );
+        //Duel Links formats: where the card comes from
+        if ((fmt == "dl" || fmt == "dlzg") && c.obtain && c.obtain.length) {
+          const kind = { sets: "Box", characters: "Character", otherSources: "Other" };
+          const items = c.obtain.map((o) => {
+            const src = (o.source && o.source.name) || "?";
+            const what = (o.source && o.source.type) || kind[o.type] || "";
+            const extra = [what, o.subSource].filter(Boolean).join(", ");
+            return `<li>${escHtml(src)}${extra ? ` <span>(${escHtml(extra)})</span>` : ""}</li>`;
+          });
+          targetDiv.insertAdjacentHTML("beforeend", `<h3>How to get it (Duel Links)</h3><ul class="obtain">${items.join("")}</ul>`);
+        }
+        targetDiv.scrollTop = 0;
       }
       searchCard(name, targetDiv, width, criterias = [], sort = "", limit = 300) {
         targetDiv.innerHTML = "";
@@ -1203,57 +1499,111 @@
         } else {
           filtered.sort((a, b) => a.name.localeCompare(b.name));
         }
-        if (filtered.length > limit) filtered.length = limit;
+        const more = filtered.length - limit;
+        if (more > 0) filtered.length = limit;
         this.appendCards(filtered, targetDiv, width, "search");
-      }
-      addCard(name, mainDiv, extraDiv, width) {
-        if (!this.ygolDb.some((a) => a.name == this.htmlDecode(name))) return;
-        if (
-          this.cards.filter((a) => a.name == this.htmlDecode(name)).length +
-            this.side.filter((a) => a.name == this.htmlDecode(name)).length <
-            3 ||
-          window.location.href.includes("UNLIMITED_MODE=ON")
-        ) {
-          if (this.editingDeck == "main") {
-            this.cards.push(
-              this.ygolDb.filter((a) => a.name == this.htmlDecode(name))[0]
-            );
-            this.appendDeck(mainDiv, extraDiv, width);
-          } else {
-            this.side.push(
-              this.ygolDb.filter((a) => a.name == this.htmlDecode(name))[0]
-            );
-            this.appendSide(mainDiv, extraDiv, width);
-          }
+        if (!filtered.length) {
+          targetDiv.insertAdjacentHTML("beforeend", `<div class="emptynote">No cards found.</div>`);
+        } else if (more > 0) {
+          targetDiv.insertAdjacentHTML(
+            "beforeend",
+            `<div class="emptynote">${more} more ${more == 1 ? "card" : "cards"} not shown. Narrow the search.</div>`
+          );
         }
+      }
+      //add a copy to the end of the shown deck; false (and this.refusal) if it can't be added
+      addCard(name, mainDiv, extraDiv, width) {
+        name = this.htmlDecode(name);
+        const card = this.ygolDb.find((a) => a.name == name);
+        if (!card) {
+          this.refusal = "unknown";
+          return false;
+        }
+        if (this.atLimit(name)) {
+          this.refusal = "limit";
+          return false;
+        }
+        if (this.editingDeck == "main") {
+          this.cards.push(card);
+          this.appendDeck(mainDiv, extraDiv, width);
+        } else {
+          this.side.push(card);
+          this.appendSide(mainDiv, extraDiv, width);
+        }
+        return true;
       }
       //add a copy of a card at position index of the shown deck: location is "main" or "extra"
       //while the main deck is shown, "side" while the side deck is shown. Nothing is added if
       //the card doesn't belong there (e.g. a Fusion dropped on the main deck) or has 3 copies
       insertCardAt(name, location, index, mainDiv, extraDiv, width) {
         name = this.htmlDecode(name);
-        let card = this.ygolDb.find((a) => a.name == name);
-        if (!card) return;
-        if (
-          this.cards.filter((a) => a.name == name).length +
-            this.side.filter((a) => a.name == name).length >=
-            3 &&
-          !window.location.href.includes("UNLIMITED_MODE=ON")
-        )
-          return;
+        const card = this.ygolDb.find((a) => a.name == name);
+        this.refusal = this.dropRefusal(card, location);
+        if (this.refusal) return false;
         if (location == "side") {
-          if (this.editingDeck != "side") return;
           this.side.splice(index, 0, card);
           this.appendSide(mainDiv, extraDiv, width);
-          return;
+          return true;
         }
-        if (this.editingDeck != "main") return;
-        if ((location == "extra") != (card.priorityDl >= 2000000000)) return;
         let main = this.cards.filter((a) => a.priorityDl < 2000000000);
         let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
         (location == "main" ? main : extra).splice(index, 0, card);
         this.cards = main.concat(extra);
         this.appendDeck(mainDiv, extraDiv, width);
+        return true;
+      }
+      //why a card can't be dropped in a deck box ("main"/"extra" while the main deck is shown,
+      //"side" while the side deck is shown), or null if it can
+      dropRefusal(card, location) {
+        if (!card) return "unknown";
+        if ((location == "side") != (this.editingDeck == "side")) return "unknown";
+        if (location != "side") {
+          const isExtra = card.priorityDl >= 2000000000;
+          if (location == "main" && isExtra) return "extra";
+          if (location == "extra" && !isExtra) return "main";
+        }
+        if (this.atLimit(card.name)) return "limit";
+        return null;
+      }
+      //the deck that isn't shown: "side" while the main deck is shown, "main" while the side is
+      otherDeck() {
+        return this.editingDeck == "main" ? "side" : "main";
+      }
+      //move card number `cardno` of a deck box ("main", "extra" or "side") to the end of the
+      //other deck (main/extra <-> side). The number of copies doesn't change, so no limit check
+      moveToOtherDeck(cardno, location, mainDiv, extraDiv, width) {
+        cardno = Number(cardno);
+        let main = this.cards.filter((a) => a.priorityDl < 2000000000);
+        let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
+        let list = location == "side" ? this.side : location == "main" ? main : extra;
+        const card = list[cardno];
+        if (!card) return null;
+        list.splice(cardno, 1);
+        if (location == "side") {
+          this.cards.push(card);
+        } else {
+          this.cards = main.concat(extra);
+          this.side.push(card);
+        }
+        this.render(mainDiv, extraDiv, width);
+        return card;
+      }
+      //add a copy to the end of the deck that isn't shown; false (and this.refusal) if it can't
+      addToOtherDeck(name, mainDiv, extraDiv, width) {
+        name = this.htmlDecode(name);
+        const card = this.ygolDb.find((a) => a.name == name);
+        if (!card) {
+          this.refusal = "unknown";
+          return false;
+        }
+        if (this.atLimit(name)) {
+          this.refusal = "limit";
+          return false;
+        }
+        if (this.editingDeck == "main") this.side.push(card);
+        else this.cards.push(card);
+        this.render(mainDiv, extraDiv, width);
+        return true;
       }
       //add another copy of a deck card right after it (to its right), keeping the 3-copy limit
       insertCopyAfter(cardno, location, mainDiv, extraDiv, width) {
@@ -1262,48 +1612,30 @@
         let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
         let list = location == "side" ? this.side : location == "main" ? main : extra;
         let card = list[cardno];
-        if (!card) return;
-        if (
-          this.cards.filter((a) => a.name == card.name).length +
-            this.side.filter((a) => a.name == card.name).length >=
-            3 &&
-          !window.location.href.includes("UNLIMITED_MODE=ON")
-        )
-          return;
-        list.splice(cardno + 1, 0, card);
-        mainDiv.innerHTML = "";
-        extraDiv.innerHTML = "";
-        if (location == "side") {
-          this.appendCards(this.side, mainDiv, width, "side");
-        } else {
-          this.cards = main.concat(extra);
-          this.appendCards(main, mainDiv, width, "main");
-          this.appendCards(extra, extraDiv, width, "extra");
+        if (!card) {
+          this.refusal = "unknown";
+          return false;
         }
+        if (this.atLimit(card.name)) {
+          this.refusal = "limit";
+          return false;
+        }
+        list.splice(cardno + 1, 0, card);
+        if (location != "side") this.cards = main.concat(extra);
+        this.render(mainDiv, extraDiv, width);
+        return true;
       }
       removeCard(cardno1, location, mainDiv, extraDiv, width) {
         let main = this.cards.filter((a) => a.priorityDl < 2000000000);
         let extra = this.cards.filter((a) => a.priorityDl >= 2000000000);
-        let side = this.side;
         if (location == "side") {
-          side.splice(cardno1, 1);
-          this.side = side;
-          mainDiv.innerHTML = "";
-          extraDiv.innerHTML = "";
-          this.appendCards(side, mainDiv, width, "side");
+          this.side.splice(cardno1, 1);
         } else {
-          if (location == "main") {
-            main.splice(cardno1, 1);
-          }
-          if (location == "extra") {
-            extra.splice(cardno1, 1);
-          }
+          if (location == "main") main.splice(cardno1, 1);
+          if (location == "extra") extra.splice(cardno1, 1);
           this.cards = main.concat(extra);
-          mainDiv.innerHTML = "";
-          extraDiv.innerHTML = "";
-          this.appendCards(main, mainDiv, width, "main");
-          this.appendCards(extra, extraDiv, width, "extra");
         }
+        this.render(mainDiv, extraDiv, width);
       }
       exportNamelist() {
         let main = "#main\n";
@@ -1639,16 +1971,95 @@
       Not Released (MD)
     </button>
     <br />
-    <div style="position: sticky; text-align: end; bottom: 10px; right: 10px;">
+    <div class="filterfoot">
       <button onmousedown="clearFilters()">
         Clear Filters
       </button>
+      <!-- releasing the mouse on anything that isn't a filter/sort button closes the popup
+           and runs the search, so Done needs no handler of its own -->
+      <button>Done</button>
     </div>
     `;
   </script>
   <script>
     //=== Editor page ===
-    //1438 772
+    //text put into the page's HTML (card names can contain " & < etc.)
+    function escHtml(s) {
+      return String(s).replace(
+        /[&<>"']/g,
+        (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+      );
+    }
+    //typed names: no control characters (they'd break file names), at most max characters
+    function cleanText(s, max) {
+      return String(s).replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, max);
+    }
+    const DEFAULT_DECK_NAME = "Untitled Deck";
+    const PAGE_TITLE = document.title;
+
+    //=== short messages at the bottom of the page (instead of alert boxes) ===
+    //opts: { error: true, action: { label, onClick }, duration (ms) }
+    //the same message again restarts its timer instead of stacking a copy
+    function showToast(message, opts = {}) {
+      const box = document.getElementById("toasts");
+      for (const t of box.children) {
+        if (t.dataset.text == message) {
+          t.restart();
+          return t;
+        }
+      }
+      const t = document.createElement("div");
+      t.className = "toast" + (opts.error ? " error" : "");
+      t.dataset.text = message;
+      t.setAttribute("role", opts.error ? "alert" : "status");
+      const text = document.createElement("div");
+      text.className = "toast-text";
+      text.textContent = message;
+      t.appendChild(text);
+      const close = () => {
+        clearTimeout(t.timer);
+        t.remove();
+      };
+      if (opts.action) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.textContent = opts.action.label;
+        b.addEventListener("click", () => {
+          close();
+          opts.action.onClick();
+        });
+        t.appendChild(b);
+      }
+      const x = document.createElement("button");
+      x.type = "button";
+      x.className = "toast-close";
+      x.setAttribute("aria-label", "Close");
+      x.textContent = "✕";
+      x.addEventListener("click", close);
+      t.appendChild(x);
+      //longer messages stay longer; hovering keeps a message open
+      const duration = opts.duration || Math.min(12000, 3500 + message.length * 40);
+      t.restart = () => {
+        clearTimeout(t.timer);
+        t.timer = setTimeout(close, duration);
+      };
+      t.addEventListener("mouseenter", () => clearTimeout(t.timer));
+      t.addEventListener("mouseleave", t.restart);
+      t.restart();
+      box.appendChild(t);
+      //at most 3 at a time: the oldest goes
+      while (box.children.length > 3) box.firstChild.remove();
+      return t;
+    }
+    //why a card couldn't be added (deckBuilder.refusal), as a message
+    function explainRefusal(name) {
+      const n = deckBuilder.htmlDecode(name);
+      const r = deckBuilder.refusal;
+      if (r == "limit") showToast(`You already have 3 copies of “${n}”.`);
+      else if (r == "extra") showToast(`“${n}” is an Extra Deck monster: drop it in the Extra Deck.`);
+      else if (r == "main") showToast(`“${n}” goes in the Main Deck.`);
+    }
+
     //hold click to view card
     let cardwidth = window.innerWidth * 0.043; //65px when vw is 14141px
     let main = document.getElementById("main");
@@ -1662,10 +2073,12 @@
     let cardDivId = "";
     let mousedown = false;
     let mousehold = false;
-    let mousemove = false;
-    let mousemovemode = false;
+    //dragging: a card was pressed and moved at least DRAG_PX (smaller moves still count as a
+    //click); dragStart: where the card was pressed
+    const DRAG_PX = 6;
+    let dragging = false;
+    let dragStart = null;
     let clicksInHoldThreshold = 0;
-    let mouseMoveTimeout;
     let poppingup = false;
     let selectingFilters = false;
     let filters = [];
@@ -1709,6 +2122,11 @@
           #searchResult{width: 80vw; height: 62vh;}
           #popup{width: 95vw;}
           .filterheader {font-size: 4.2vw;}
+          /* room at the top for the site menu icon */
+          body{box-sizing: border-box; padding-top: calc(max(1vw, 1.78vh) * 4.4);}
+          #body{flex-direction: column; align-items: center;}
+          #tabs{display: flex; gap: 2vw; width: 90vw; margin: 0 0 1vw !important;}
+          #tabs button{flex: 1; width: auto; height: 9vw; margin: 0;}
         </style>`
       );
       for (let el of document.querySelectorAll("button")) {
@@ -1716,26 +2134,24 @@
           el.style.width = "27vw";
         }
       }
-      document.getElementById("controls").style.display = "none";
       //phones use the mode toggle above the deck
       document.getElementById("switchModeDesktop").style.display = "none";
     } else {
-      document.getElementById("btnControl").style.display = "none";
-      document.getElementById("btnViewDeck").style.display = "none";
       //desktop uses the mode toggle next to the deck name
       document.getElementById("switchMode").style.display = "none";
     }
 
-    function showControls() {
-      if (document.getElementById("controls").style.display == "none") {
-        document.getElementById("controls").style.display = "block";
-        document.getElementById("deck").style.display = "none";
-      } else {
-        document.getElementById("controls").style.display = "none";
-        document.getElementById("deck").style.display = "block";
-        centerCardRows(); //the deck boxes can't be measured while hidden
-      }
+    //phones: show the deck ("deck") or the search and controls ("search"), picked with the tabs
+    function showScreen(name) {
+      if (!_isMobile) return;
+      document.getElementById("controls").style.display = name == "search" ? "block" : "none";
+      document.getElementById("deck").style.display = name == "deck" ? "block" : "none";
+      for (const b of document.querySelectorAll("#tabs button"))
+        b.classList.toggle("selected", b.dataset.screen == name);
+      if (name == "deck") centerCardRows(); //the deck boxes can't be measured while hidden
+      if (name == "search") refreshBadges(); //neither can the search results
     }
+    showScreen("deck");
 
     //centre the block of cards in the main/extra deck boxes: rows stay left-aligned, but a full
     //row has the same gap on both sides. Every card takes exactly cardwidth across a row, so the
@@ -1751,7 +2167,7 @@
       extraBox.style.display = "";
       if (!deckBuilder || deckBuilder.editingDeck != "side") return;
       //measure the normal layout first (zero while the deck is hidden: it's measured again
-      //when it's shown, see showControls)
+      //when it's shown, see showScreen)
       const top = mainBox.getBoundingClientRect().top;
       const bottom = extraBox.getBoundingClientRect().bottom;
       extraBox.style.display = "none";
@@ -1821,40 +2237,110 @@
         editMode == "edit" &&
         (location == "main" || location == "extra" || location == "side")
       ) {
-        deckBuilder.insertCopyAfter(
+        const added = deckBuilder.insertCopyAfter(
           cardEl.getAttribute("cardno"),
           location,
           main,
           extra,
           cardwidth
         );
+        if (!added) explainRefusal(name);
         return;
       }
+      showCardInfo(name);
+    });
+    //the card info popup (short click in view mode, click and hold, right click)
+    function showCardInfo(name) {
+      popupKind = "card";
       document.getElementById("popupCss1").style.display = "flex";
       deckBuilder.displayCard(
         name,
         document.getElementById("popup"),
+        //phones: a third of the screen; desktop: the same size as the click-and-hold popup
         _isMobile ? window.innerWidth / 3 : 160
       );
-    });
+    }
 
     document.addEventListener("mousedown", (event) => {
       if (isSecondaryClick(event)) return;
       mousedown = true;
       clicksInHoldThreshold += 1;
       setTimeout(() => {
-        if (mousedown && clicksInHoldThreshold == 1 && !mousemove)
+        //a small wobble while holding still counts as holding
+        if (mousedown && clicksInHoldThreshold == 1 && !dragging)
           mousehold = true;
         clicksInHoldThreshold -= 1;
       }, holdThreshold);
     });
-    //=== dragging between the search results and the deck (edit mode) ===
-    //the card box (main/extra/searchResult) under the cursor. The dragged card has
+    //=== dragging cards ===
+    //edit mode: search result -> deck adds a copy where it's dropped; deck card -> search
+    //results removes it. Either mode: a deck card dropped in its own box moves there.
+    //The card stays in place (dimmed) and a copy of it follows the cursor.
+    function startDrag() {
+      dragging = true;
+      const ghost = document.getElementById("ghost");
+      const rect = currentCardEl.getBoundingClientRect();
+      ghost.style.width = rect.width + "px";
+      ghost.innerHTML = "";
+      const img = document.createElement("img");
+      img.src = currentCardEl.currentSrc || currentCardEl.src;
+      img.alt = "";
+      ghost.appendChild(img);
+      ghost.style.display = "block";
+      currentCardEl.classList.add("lifted");
+      document.body.classList.add("dragging");
+    }
+    function moveDrag(event) {
+      const ghost = document.getElementById("ghost");
+      ghost.style.left = event.clientX - ghost.offsetWidth / 2 + "px";
+      ghost.style.top = event.clientY - ghost.offsetHeight / 2 + "px";
+      //light up the box the card would go into
+      const target = dropTargetAt(event.clientX, event.clientY);
+      for (const box of [main, extra, searchResult, switchMainSideBtn])
+        box.classList.toggle("dropbox", !!target && target.ok && target.box == box);
+    }
+    function endDrag() {
+      dragging = false;
+      document.getElementById("ghost").style.display = "none";
+      document.body.classList.remove("dragging");
+      for (const el of document.querySelectorAll(".lifted")) el.classList.remove("lifted");
+      for (const box of [main, extra, searchResult, switchMainSideBtn]) box.classList.remove("dropbox");
+    }
+    //what dropping the dragged card at (x, y) would do:
+    //{ box, action: "insert" | "remove" | "move" | "toOther", location, ok } or null for nothing
+    function dropTargetAt(x, y) {
+      const box = dropBoxAt(x, y);
+      if (!box || !currentCardEl) return null;
+      const from = currentCardEl.getAttribute("location");
+      const sideShown = deckBuilder.editingDeck == "side";
+      //the View Side/Main Deck button (edit mode): a deck card moves to the other deck, a
+      //search result is added to it
+      if (box == switchMainSideBtn) {
+        if (editMode != "edit") return null;
+        const card = deckBuilder.ygolDb.find((a) => a.name == deckBuilder.htmlDecode(currentCard));
+        const ok = from != "search" || !!(card && !deckBuilder.atLimit(card.name));
+        return { box, action: "toOther", location: from, ok };
+      }
+      if (from == "search") {
+        if (editMode != "edit" || box == searchResult) return null;
+        if (sideShown && box == extra) return null;
+        const location = sideShown ? "side" : box.id;
+        const card = deckBuilder.ygolDb.find((a) => a.name == deckBuilder.htmlDecode(currentCard));
+        return { box, action: "insert", location, ok: !deckBuilder.dropRefusal(card, location) };
+      }
+      if (box == searchResult) return editMode == "edit" ? { box, action: "remove", location: from, ok: true } : null;
+      //a deck card moves within its own box only (the side deck is in the main box)
+      const ownBox = from == "extra" ? extra : main;
+      if (box == ownBox) return { box, action: "move", location: from, ok: true };
+      return null;
+    }
+    //the card box (main/extra/searchResult) under the cursor. The dragged copy has
     //pointer-events: none, so it isn't hit; elementsFromPoint also looks through the
     //click-and-hold popup's overlay
+    const switchMainSideBtn = document.getElementById("switchMainSide");
     function dropBoxAt(x, y) {
       for (const el of document.elementsFromPoint(x, y)) {
-        const box = el.closest && el.closest("#main, #extra, #searchResult");
+        const box = el.closest && el.closest("#main, #extra, #searchResult, #switchMainSide");
         if (box) return box;
       }
       return null;
@@ -1870,80 +2356,88 @@
       }
       return index;
     }
-    //search result dropped on the deck: add a copy where it was dropped. While the side deck is
-    //shown it is in the main box, so the extra box takes nothing.
-    //deck card dropped on the search results: remove it.
-    //returns true if the drag ended on one of those boxes, so it doesn't also count as a click
+    //the dragged card was released: add, remove or move it (see dropTargetAt)
     function handleCardDrop(event) {
-      const from = currentCardEl.getAttribute("location");
-      const box = dropBoxAt(event.clientX, event.clientY);
-      if (!box) return false;
-      if (from == "search" && (box.id == "main" || box.id == "extra")) {
-        const sideShown = deckBuilder.editingDeck == "side";
-        if (!(sideShown && box.id == "extra"))
-          deckBuilder.insertCardAt(
-            currentCard,
-            sideShown ? "side" : box.id,
-            dropIndexAt(box, event.clientX, event.clientY),
-            main,
-            extra,
-            cardwidth
-          );
-        return true;
-      }
-      if (from != "search" && box.id == "searchResult") {
-        deckBuilder.removeCard(
-          currentCardEl.getAttribute("cardno"),
-          from,
+      const target = dropTargetAt(event.clientX, event.clientY);
+      if (!target) return;
+      if (target.action == "insert") {
+        const added = deckBuilder.insertCardAt(
+          currentCard,
+          target.location,
+          dropIndexAt(target.box, event.clientX, event.clientY),
           main,
           extra,
           cardwidth
         );
-        return true;
+        if (!added) explainRefusal(currentCard);
+      } else if (target.action == "toOther") {
+        //the other deck isn't on screen, so say what happened (and which box the card is in)
+        const toName = (card) =>
+          deckBuilder.otherDeck() == "side"
+            ? "Side Deck"
+            : card && card.priorityDl >= 2000000000
+            ? "Extra Deck"
+            : "Main Deck";
+        if (target.location == "search") {
+          const name = deckBuilder.htmlDecode(currentCard);
+          const card = deckBuilder.ygolDb.find((a) => a.name == name);
+          const to = toName(card); //before adding: adding doesn't switch the deck shown
+          if (deckBuilder.addToOtherDeck(currentCard, main, extra, cardwidth))
+            showToast(`Added “${name}” to the ${to}.`);
+          else explainRefusal(currentCard);
+        } else {
+          const to = deckBuilder.otherDeck();
+          const card = deckBuilder.moveToOtherDeck(
+            currentCardEl.getAttribute("cardno"),
+            target.location,
+            main,
+            extra,
+            cardwidth
+          );
+          if (card)
+            showToast(
+              `Moved “${card.name}” to the ${
+                to == "side" ? "Side Deck" : card.priorityDl >= 2000000000 ? "Extra Deck" : "Main Deck"
+              }.`
+            );
+        }
+      } else if (target.action == "remove") {
+        deckBuilder.removeCard(currentCardEl.getAttribute("cardno"), target.location, main, extra, cardwidth);
+      } else if (target.action == "move") {
+        deckBuilder.moveCard(
+          currentCardEl.getAttribute("cardno"),
+          dropIndexAt(target.box, event.clientX, event.clientY),
+          target.location,
+          main,
+          extra,
+          cardwidth
+        );
       }
-      return false;
+    }
+    //a short click on a search result in edit mode: add it to the shown deck
+    function addFromSearch(name) {
+      if (!deckBuilder.addCard(name, main, extra, cardwidth)) explainRefusal(name);
     }
 
     document.addEventListener("mouseup", (event) => {
       if (isSecondaryClick(event)) return;
-      if (currentCardEl) {
-        currentCardEl.style.position = "static";
-        currentCardEl.style.pointerEvents = "auto";
-        currentCardEl.style.left = "0px";
-        currentCardEl.style.top = "0px";
-      }
-      //phones: cards can't be dragged
-      const dropped =
-        !_isMobile &&
-        editMode == "edit" &&
-        mousemovemode &&
-        currentCardEl &&
-        (cardDivId == "main" || cardDivId == "extra" || cardDivId == "searchResult") &&
+      const wasDragging = dragging;
+      if (wasDragging) {
         handleCardDrop(event);
+        endDrag();
+      }
       if (
-        !dropped &&
+        !wasDragging &&
         //phones: no dragging or holding, so every press on a card counts as a short click
-        (_isMobile || (!mousehold && !mousemove)) &&
+        (_isMobile || !mousehold) &&
         (cardDivId == "main" ||
           cardDivId == "extra" ||
           cardDivId == "searchResult")
       ) {
         if (editMode == "edit") {
           if (cardDivId == "searchResult") {
-            //a drag that ends outside the deck doesn't add the card, like dragging a deck card
-            //doesn't remove it (it used to be added to the end of the deck)
-            if (_isMobile || !mousemovemode) {
-              deckBuilder.addCard(currentCard, main, extra, cardwidth);
-              for (let el of document.querySelectorAll("img")) {
-                if (el.alt == currentCard) {
-                  el.classList.add("white-out");
-                  setTimeout(() => {
-                    el.classList.remove("white-out");
-                  }, 100);
-                }
-              }
-            }
-          } else if (_isMobile || !mousemovemode) {
+            addFromSearch(currentCard);
+          } else {
             deckBuilder.removeCard(
               currentCardEl.getAttribute("cardno"),
               currentCardEl.getAttribute("location"),
@@ -1953,77 +2447,52 @@
             );
           }
         } else {
-          document.getElementById("popupCss1").style.display = "flex";
-          deckBuilder.displayCard(
-            currentCard,
-            document.getElementById("popup"),
-            //phones: a third of the screen; desktop: the same size as the click-and-hold popup
-            _isMobile ? window.innerWidth / 3 : 160
-          );
+          showCardInfo(currentCard);
         }
       }
-      if (poppingup)
-        document.getElementById("popupCss1").style.display = "none";
+      if (poppingup) closeInfoPopup();
       mousedown = false;
-      mousemovemode = false;
       mousehold = false;
       poppingup = false;
+      dragStart = null;
       currentCard = "";
       cardDivId = "";
     });
     document.addEventListener("mousemove", (event) => {
-      mousemove = true;
-      if (mousedown) mousemovemode = true;
-      clearTimeout(mouseMoveTimeout);
-      mouseMoveTimeout = setTimeout(() => {
-        mousemove = false;
-      }, 100);
       //phones: cards can't be dragged
-      if (currentCardEl && mousedown && !_isMobile) {
-        currentCardEl.style.position = "absolute";
-        currentCardEl.style.pointerEvents = "none";
-        //centre the card on the cursor; subtract its margins, because in formats with a
-        //rarity tag the card is pulled under the tag with a negative left margin
-        const cardStyle = getComputedStyle(currentCardEl);
-        currentCardEl.style.left =
-          event.pageX - currentCardEl.width / 2 - parseFloat(cardStyle.marginLeft) + "px";
-        currentCardEl.style.top =
-          event.pageY - currentCardEl.height / 2 - parseFloat(cardStyle.marginTop) + "px";
+      if (_isMobile || !mousedown || !cardDivId || !currentCardEl || !dragStart) return;
+      if (!dragging) {
+        //not while the click-and-hold popup is open, and only past a few pixels, so a
+        //slightly shaky click is still a click
+        if (mousehold || poppingup) return;
+        if (Math.hypot(event.clientX - dragStart.x, event.clientY - dragStart.y) < DRAG_PX) return;
+        //view mode: search results can't go anywhere, so they aren't dragged
+        if (cardDivId == "searchResult" && editMode != "edit") return;
+        startDrag();
       }
+      moveDrag(event);
     });
+    //close the card/skill/filter popup; closing the filter popup runs the search
+    function closeInfoPopup() {
+      document.getElementById("popupCss1").style.display = "none";
+      const wasFilter = popupKind == "filter";
+      popupKind = "card";
+      if (wasFilter) runCardSearch();
+    }
     document
       .getElementById("popupCss1")
       .addEventListener("mouseup", (event) => {
         //releasing a right click must not close the popup it just opened
         //(on macOS/Linux the context menu opens on press, before the release)
         if (isSecondaryClick(event)) return;
-        if (!selectingFilters) {
-          document.getElementById("popupCss1").style.display = "none";
-          let input = document.getElementById("searchInput").value;
-          const wasSkillPopup = popupKind == "skill";
-          popupKind = "card";
-          if (!wasSkillPopup && (input.length > 2 || filters.length)) {
-            deckBuilder.searchCard(
-              input,
-              searchResult,
-              cardwidth,
-              filters,
-              sort
-            );
-          }
-        }
+        if (!selectingFilters) closeInfoPopup();
         selectingFilters = false;
       });
     setInterval(() => {
       //phones: no hold-to-view popup (a press already shows the card in view mode)
-      if (mousehold && currentCard && !poppingup && !_isMobile) {
+      if (mousehold && currentCard && !poppingup && !_isMobile && !dragging) {
         poppingup = true;
-        document.getElementById("popupCss1").style.display = "flex";
-        deckBuilder.displayCard(
-          currentCard,
-          document.getElementById("popup"),
-          160
-        );
+        showCardInfo(currentCard);
       }
     }, 100);
     //a filter/sort button's label without the whitespace from its HTML layout
@@ -2045,35 +2514,42 @@
       currentCard = cardname;
       currentCardEl = el;
       cardDivId = divid;
+      dragStart = event ? { x: event.clientX, y: event.clientY } : null;
     }
-    function cardReleased(el, event) {
-      if (isSecondaryClick(event)) return;
-      if (_isMobile) return; //phones: no dragging, so no swapping by dropping a card on another
-      if (
-        currentCardEl.getAttribute("location") == el.getAttribute("location") &&
-        el.getAttribute("location") != "search"
-      ) {
-        deckBuilder.swapCards(
-          currentCardEl.getAttribute("cardno"),
-          el.getAttribute("cardno"),
-          el.getAttribute("location"),
-          main,
-          extra,
-          cardwidth
-        );
+    //=== card search: runs as you type (300 ms after the last change), Enter runs it at once ===
+    //lastSearchKey: what the results on screen are for, so Enter knows if they're up to date
+    let lastSearchKey = null;
+    let searchTimer = null;
+    function searchKey() {
+      return [document.getElementById("searchInput").value, filters.join("|"), sort, format].join("\n");
+    }
+    function runCardSearch() {
+      clearTimeout(searchTimer);
+      if (!deckBuilder) return; //still loading ("Loading card data..." is shown)
+      const input = document.getElementById("searchInput").value;
+      if (input.length > 2 || filters.length) {
+        deckBuilder.searchCard(input, searchResult, cardwidth, filters, sort);
+        searchResult.scrollTop = 0;
+      } else {
+        searchResult.innerHTML = `<div class="emptynote">Type at least 3 letters, or pick a filter in Options.</div>`;
       }
+      lastSearchKey = searchKey();
+      refreshBadges();
     }
     function cardSearch() {
-      let input = document.getElementById("searchInput").value;
-      setTimeout(() => {
-        if (
-          (input.length > 2 || filters.length) &&
-          input == document.getElementById("searchInput").value
-        ) {
-          deckBuilder.searchCard(input, searchResult, cardwidth, filters, sort);
-        }
-      }, 500);
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(runCardSearch, 300);
     }
+    document.getElementById("searchInput").addEventListener("input", cardSearch);
+    //Enter: search now; if the results are already for this search, Edit mode adds the first one
+    document.getElementById("searchInput").addEventListener("keydown", (e) => {
+      if (e.key != "Enter" || !deckBuilder) return;
+      e.preventDefault();
+      if (searchKey() != lastSearchKey) return runCardSearch();
+      if (editMode != "edit") return;
+      const first = searchResult.querySelector("img[data-key]");
+      if (first) addFromSearch(deckBuilder.htmlEncode(decodeURIComponent(first.dataset.key)));
+    });
     function skillSearch() {
       let input = document.getElementById("skillInput").value;
       setTimeout(() => {
@@ -2087,6 +2563,7 @@
               a.description.toLowerCase().includes(input.toLowerCase())
           );
           searchResult.innerHTML = "";
+          lastSearchKey = null; //the box shows skills now, not card results
           for (let item of results) {
             if (format != "dlzg" || banlistDlzgSkill.indexOf(item.name) == -1) {
               //built as an element (not an onclick string) so names with ' " & work
@@ -2097,6 +2574,8 @@
               searchResult.appendChild(el);
             }
           }
+          if (!searchResult.children.length)
+            searchResult.innerHTML = `<div class="emptynote">No skills found.</div>`;
         }
       }, 500);
     }
@@ -2107,6 +2586,7 @@
       const el = document.getElementById("skillname");
       el.textContent = currentSkill ? `✦ ${currentSkill}` : "Skill Not Set";
       el.classList.toggle("set", !!currentSkill);
+      scheduleDeckChange(); //the skill is part of the deck: undo, saving, the URL
     }
     //clicking the set skill shows its text in the same popup as card info
     let popupKind = "card";
@@ -2154,6 +2634,8 @@
     }
     function openFilter() {
       document.getElementById("popup").innerHTML = editorFilters;
+      document.getElementById("popup").scrollTop = 0;
+      popupKind = "filter";
       document.getElementById("popupCss1").style.display = "flex";
       updateFilterDisplay();
     }
@@ -2168,17 +2650,20 @@
         filters.push(innerHTML);
       }
       updateFilterDisplay();
+      saveSoon();
     }
     function clearFilters() {
       selectingFilters = true;
       filters.length = 0;
       freeFilterAutoOn = false;
       updateFilterDisplay();
+      saveSoon();
     }
     function selectSort(innerHTMLWithSpaces) {
       selectingFilters = true;
       sort = filterLabel(innerHTMLWithSpaces);
       updateFilterDisplay();
+      saveSoon();
     }
     function switchMainSide() {
       document.getElementById("switchMainSide").innerHTML =
@@ -2213,14 +2698,10 @@
         freeFilterAutoRemoved = true;
       }
       updateSkillVisibility();
-      if (deckBuilder.editingDeck == "main") {
-        deckBuilder.appendDeck(main, extra, cardwidth);
-      } else {
-        deckBuilder.appendSide(main, extra, cardwidth);
-      }
+      deckBuilder.render(main, extra, cardwidth);
       let input = document.getElementById("searchInput").value;
       if (input.length > 2 || filters.length) {
-        deckBuilder.searchCard(input, searchResult, cardwidth, filters, sort);
+        runCardSearch();
       } else if (
         format.includes("dl") &&
         document.getElementById("skillInput").value.length > 2
@@ -2228,11 +2709,45 @@
         skillSearch();
       } else if (freeFilterAutoRemoved) {
         //the results were only showing because of the automatic filter
-        searchResult.innerHTML = "";
+        runCardSearch();
       }
+      saveSoon();
     }
     function sortDeck() {
       deckBuilder.sortDeck(main, extra, cardwidth, format);
+    }
+    //=== Clear Deck: asks first, and the clear can be undone ===
+    function askClearDeck() {
+      if (!deckBuilder) return;
+      const nMain = deckBuilder.cards.length;
+      const nSide = deckBuilder.side.length;
+      const cards = (n) => `${n} ${n == 1 ? "card" : "cards"}`;
+      if (!nMain && !nSide) return showToast("The deck is already empty.");
+      const choices = [];
+      const clear = (which, what) => () => {
+        deckBuilder.clearDeck(which, main, extra, cardwidth);
+        showToast(`${what} cleared.`, { action: { label: "Undo", onClick: undo } });
+      };
+      if (nMain)
+        choices.push({
+          label: "Clear Main & Extra Deck",
+          desc: `Removes ${cards(nMain)}. The Side Deck stays.`,
+          onSelect: clear("main", "Main & Extra Deck"),
+        });
+      if (nSide)
+        choices.push({
+          label: "Clear Side Deck",
+          desc: `Removes ${cards(nSide)}. The Main & Extra Deck stay.`,
+          onSelect: clear("side", "Side Deck"),
+        });
+      if (nMain && nSide)
+        choices.push({
+          label: "Clear everything",
+          desc: `Removes all ${cards(nMain + nSide)}.`,
+          onSelect: clear("all", "Deck"),
+        });
+      choices.push({ label: "Cancel", onSelect: () => {} });
+      openChoicePopup("Clear deck?", choices, "Cancel");
     }
     function testHands() {
       if (!document.getElementById("deckName").value)
@@ -2272,15 +2787,34 @@
       //focus the highlighted option, or the popup itself when nothing is highlighted
       (options.querySelector(".selected") || document.getElementById("exportBox")).focus();
     }
+    //Copy only: the page address with the deck in it (?yld=), which loads the deck when opened
+    const LINK_FORMAT = {
+      id: "link",
+      label: "Link",
+      desc: "The address of this page with the deck in it. Opening it loads the deck.",
+    };
+    function deckLink() {
+      const url = new URL(window.location.href);
+      url.hash = "";
+      url.searchParams.set("yld", exportDeckAs("yld").replace("yld://", ""));
+      url.searchParams.delete("d"); //a dlf2p.com deck would be loaded as well
+      return url.href;
+    }
     function openExport(action) {
+      if (!deckBuilder) return;
       const deck = deckBuilder.exportNamelist();
       const noId = cardsWithoutKonamiID(deck).length;
-      const choices = EXPORT_FORMATS.map((f) => {
+      const formats = action == "copy" ? [EXPORT_FORMATS[0], LINK_FORMAT, ...EXPORT_FORMATS.slice(1)] : EXPORT_FORMATS;
+      const choices = formats.map((f) => {
         //what this format would leave out of the current deck
         const notes = [];
         if ((f.id == "ydk" || f.id == "ydke") && noId)
           notes.push(`${noId} ${noId == 1 ? "card has" : "cards have"} no Konami ID and will be left out.`);
-        if (f.id != "yld" && currentSkill) notes.push("The skill won't be saved.");
+        if (f.id != "yld" && f.id != "link" && currentSkill) notes.push("The skill won't be saved.");
+        if (f.id == "link") {
+          const len = deckLink().length;
+          if (len > 2000) notes.push(`Long link (${len.toLocaleString()} characters): some apps and sites may cut it short.`);
+        }
         return {
           label: f.label,
           desc: f.desc,
@@ -2312,7 +2846,7 @@
         //the browser blocked reading the clipboard (not https, or permission refused)
       }
       if (text === null) return openPasteBox();
-      if (!text.trim()) return alert("The clipboard is empty.");
+      if (!text.trim()) return showToast("The clipboard is empty.", { error: true });
       loadDeckText(text, null, "clipboard");
     }
     //fallback when the clipboard can't be read directly: paste into a box instead
@@ -2341,9 +2875,6 @@
     function closeExport() {
       document.getElementById("exportLayer").classList.remove("open");
     }
-    document.addEventListener("keydown", (e) => {
-      if (e.key == "Escape") closeExport();
-    });
     //names (with repeats) of the deck's cards that have no Konami ID (can't go in ydk/ydke)
     function cardsWithoutKonamiID(namelist) {
       return namelist
@@ -2365,7 +2896,7 @@
       return ygolDeck.convert(namelist, formatId, formatId == "yld" ? currentSkillIndex() : null);
     }
     async function copyDeckAs(f) {
-      const text = exportDeckAs(f.id);
+      const text = f.id == "link" ? deckLink() : exportDeckAs(f.id);
       let ok = false;
       try {
         await navigator.clipboard.writeText(text);
@@ -2417,7 +2948,7 @@
       }
       if (missingSkill !== null)
         parts.push(`The deck's skill (ID ${missingSkill}) is not in the skill database, so no skill was set.`);
-      if (parts.length) alert(parts.join("\n\n"));
+      if (parts.length) showToast(parts.join("\n\n"), { error: true });
     }
 
     //which deck format a piece of text is (same rules as YgolDeck.toNamelist)
@@ -2463,10 +2994,11 @@
           .filter((a) => a && a != "#main" && a != "#extra" && a != "!side");
         if (!validCards.length && ygolDeck.missing.length) throw new Error();
       } catch (e) {
-        alert(
+        showToast(
           source == "clipboard"
-            ? "Error: The clipboard doesn't contain a deck the editor can read."
-            : "Error: This file isn't a deck file the editor can read."
+            ? "The clipboard doesn't contain a deck the editor can read."
+            : "This file isn't a deck file the editor can read.",
+          { error: true }
         );
         return false;
       }
@@ -2476,14 +3008,18 @@
       deckBuilder.side = [];
       deckBuilder.importNamelist(namelist, main, extra, cardwidth);
       deckBuilder.appendDeck(main, extra, cardwidth);
-      document.getElementById("deckName").value = name || "Untitled Deck";
+      document.getElementById("deckName").value = cleanText(name || "", 60).trim() || DEFAULT_DECK_NAME;
+      updateTitle();
       const hasSkill = applyDecodedSkill(skill) && skill !== null; //the uploaded deck's skill, or none
       //pick a matching format: a skill means Duel Links; otherwise a side deck means TCG
       if (hasSkill) setFormat("dl");
       else if (deckBuilder.side.length) setFormat("tcg");
       //phones: switch from the controls panel to the deck so the uploaded cards are shown
-      if (_isMobile && document.getElementById("controls").style.display != "none") showControls();
+      showScreen("deck");
       pushDeckUrl(prevName, prevFormat);
+      showToast(`Loaded “${document.getElementById("deckName").value}”.`, {
+        action: { label: "Undo", onClick: undo },
+      });
       reportMissingCards();
       return true;
     }
@@ -2568,7 +3104,7 @@
         try {
           namelist = ygolDeck.convert("yld://" + params.get("yld"), "namelist");
         } catch (e) {
-          alert("Error: Invalid deck code in URL");
+          showToast("The deck code in the page address isn't valid.", { error: true });
         }
         if (namelist) {
           const skill = ygolDeck.skill;
@@ -2584,7 +3120,225 @@
         }
       }
       if (clear && deckName) document.getElementById("deckName").value = deckName;
+      updateTitle();
     }
+
+    //=== after every deck change: undo history, the "✓ N" badges, the page address, saving ===
+    //DeckBuilder calls scheduleDeckChange after each redraw (deckBuilder.onRender) and setSkill
+    //calls it too; changes made in one go (e.g. loading a deck card by card) are handled once.
+    //A snapshot is the deck's cards, side deck, skill and name; only the first three count as
+    //a change (typing a name isn't an undo step), but undo brings the name back with them.
+    let lastSnap = null; //the deck after the last change (null until the first load is done)
+    const undoStack = [];
+    const redoStack = [];
+    const MAX_UNDO = 100;
+    let deckChangeQueued = false;
+    let cardByName = new Map(); //card name -> card object (set in loadData)
+    function deckSnapshot() {
+      return {
+        main: deckBuilder.cards.map((c) => c.name),
+        side: deckBuilder.side.map((c) => c.name),
+        skill: currentSkill,
+        name: document.getElementById("deckName").value,
+      };
+    }
+    const snapKey = (s) => JSON.stringify([s.main, s.side, s.skill]);
+    function scheduleDeckChange() {
+      if (!deckBuilder || deckChangeQueued) return;
+      deckChangeQueued = true;
+      queueMicrotask(flushDeckChange);
+    }
+    function flushDeckChange() {
+      deckChangeQueued = false;
+      const snap = deckSnapshot();
+      if (lastSnap && snapKey(snap) != snapKey(lastSnap)) {
+        undoStack.push(lastSnap);
+        if (undoStack.length > MAX_UNDO) undoStack.shift();
+        redoStack.length = 0;
+      }
+      lastSnap = snap;
+      refreshBadges();
+      syncDeckUrl();
+      updateTitle();
+      saveSoon();
+    }
+    //put a snapshot back (undo/redo)
+    function applySnapshot(s) {
+      lastSnap = s; //so the redraw below doesn't count as a new change
+      deckBuilder.cards = s.main.map((n) => cardByName.get(n)).filter(Boolean);
+      deckBuilder.side = s.side.map((n) => cardByName.get(n)).filter(Boolean);
+      document.getElementById("deckName").value = s.name;
+      setSkill(s.skill);
+      deckBuilder.render(main, extra, cardwidth);
+    }
+    function undo() {
+      if (!deckBuilder) return;
+      if (!undoStack.length) return showToast("Nothing to undo.", { duration: 1800 });
+      redoStack.push(deckSnapshot());
+      applySnapshot(undoStack.pop());
+      showToast("Undone.", { duration: 1500 });
+    }
+    function redo() {
+      if (!deckBuilder) return;
+      if (!redoStack.length) return showToast("Nothing to redo.", { duration: 1800 });
+      undoStack.push(deckSnapshot());
+      applySnapshot(redoStack.pop());
+      showToast("Redone.", { duration: 1500 });
+    }
+
+    //the deck's code for the page address: "" for an empty deck with no skill
+    function deckUrlCode() {
+      if (!deckBuilder.cards.length && !deckBuilder.side.length && currentSkillIndex() === null) return "";
+      return exportDeckAs("yld").replace("yld://", "");
+    }
+    //keep ?yld= in the address bar matching the deck (no new history entry), so a reload,
+    //bookmark or going back to this entry never loses changes
+    function syncDeckUrl() {
+      try {
+        const url = new URL(window.location.href);
+        const code = deckUrlCode();
+        if (code) url.searchParams.set("yld", code);
+        else url.searchParams.delete("yld");
+        url.searchParams.delete("d"); //a dlf2p.com deck would be loaded as well on reload
+        if (url.href != window.location.href) history.replaceState(history.state, "", url);
+        loadedUrlDeck = urlDeckKey();
+      } catch (e) {
+        console.error("Could not update the URL", e);
+      }
+    }
+    //browser tab title: the deck's name once it has one
+    function updateTitle() {
+      const name = document.getElementById("deckName").value.trim();
+      document.title = name && name != DEFAULT_DECK_NAME ? `${name} · ${PAGE_TITLE}` : PAGE_TITLE;
+    }
+
+    //=== saving in the browser: the deck, its name and skill, the format, sort and filters ===
+    const STORAGE_KEY = "ygol.editor.v1";
+    let saveTimer = null;
+    function saveSoon() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveNow, 300);
+    }
+    function saveNow() {
+      clearTimeout(saveTimer);
+      if (!deckBuilder || !lastSnap) return; //not before the first load is done
+      const name = document.getElementById("deckName").value;
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            v: 1,
+            name,
+            main: deckBuilder.cards.map((c) => c.name),
+            side: deckBuilder.side.map((c) => c.name),
+            skill: currentSkill,
+            yld: deckUrlCode(), //to tell a reload of this deck from a link to another one
+            format,
+            sort,
+            filters,
+            freeFilterAutoOn,
+          })
+        );
+      } catch (e) {
+        //storage blocked or full: the page still works, it just won't remember
+      }
+      //the deck name of this history entry, for going back/forward (see pushDeckUrl)
+      try {
+        if (!history.state || history.state.deckName != name)
+          history.replaceState(Object.assign({}, history.state, { deckName: name }), "");
+      } catch (e) {}
+    }
+    window.addEventListener("pagehide", saveNow);
+    function loadSaved() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        return data && data.v == 1 ? data : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    //=== deck name: Enter confirms, an empty name becomes "Untitled Deck" ===
+    const deckNameInput = document.getElementById("deckName");
+    deckNameInput.addEventListener("input", () => {
+      const clean = cleanText(deckNameInput.value, 60);
+      if (clean != deckNameInput.value) {
+        const pos = deckNameInput.selectionStart;
+        deckNameInput.value = clean;
+        deckNameInput.setSelectionRange(pos, pos);
+      }
+      if (lastSnap) lastSnap.name = deckNameInput.value;
+      updateTitle();
+      saveSoon();
+    });
+    deckNameInput.addEventListener("blur", () => {
+      deckNameInput.value = cleanText(deckNameInput.value, 60).trim() || DEFAULT_DECK_NAME;
+      if (lastSnap) lastSnap.name = deckNameInput.value;
+      updateTitle();
+      saveSoon();
+    });
+    deckNameInput.addEventListener("keydown", (e) => {
+      if (e.key == "Enter") deckNameInput.blur();
+    });
+
+    //=== "✓ N" on search results: copies already in the deck (main, extra and side) ===
+    function refreshBadges() {
+      for (const b of searchResult.querySelectorAll(".owned")) b.remove();
+      if (!deckBuilder) return;
+      const counts = new Map();
+      for (const c of deckBuilder.cards.concat(deckBuilder.side))
+        counts.set(c.name, (counts.get(c.name) || 0) + 1);
+      if (!counts.size) return;
+      for (const img of searchResult.querySelectorAll("img[data-key]")) {
+        const n = counts.get(decodeURIComponent(img.dataset.key));
+        if (!n) continue;
+        const b = document.createElement("span");
+        b.className = "owned";
+        b.textContent = `✓ ${n}`;
+        //bottom-right corner of the card (the CSS shifts it up and left by its own size)
+        b.style.left = img.offsetLeft + img.offsetWidth + "px";
+        b.style.top = img.offsetTop + img.offsetHeight + "px";
+        searchResult.appendChild(b);
+      }
+    }
+    window.addEventListener("resize", refreshBadges);
+
+    //=== keyboard ===
+    //Escape: close popups. Outside text boxes: Ctrl+Z undo, Ctrl+Y / Ctrl+Shift+Z redo
+    //(Cmd on a Mac), "/" jumps to the card search, E switches View/Edit mode
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "Escape") {
+        closeExport();
+        if (document.getElementById("popupCss1").style.display == "flex") closeInfoPopup();
+        return;
+      }
+      const t = e.target;
+      const typing = t && (t.tagName == "INPUT" || t.tagName == "TEXTAREA" || t.isContentEditable);
+      if (typing || !deckBuilder) return;
+      if (document.getElementById("exportLayer").classList.contains("open")) return;
+      const mod = e.ctrlKey || e.metaKey;
+      const k = e.key.toLowerCase();
+      if (mod && !e.altKey && k == "z") {
+        e.preventDefault();
+        return e.shiftKey ? redo() : undo();
+      }
+      if (mod && !e.altKey && k == "y") {
+        e.preventDefault();
+        return redo();
+      }
+      if (mod || e.altKey) return;
+      if (e.key == "/") {
+        e.preventDefault();
+        showScreen("search");
+        const s = document.getElementById("searchInput");
+        s.focus();
+        s.select();
+      } else if (k == "e" && !e.shiftKey) {
+        e.preventDefault();
+        switchMode();
+      }
+    });
+
     const params = new URL(document.location).searchParams;
 
     //load the card/skill/banlist data arrays, then initialise
@@ -2612,6 +3366,8 @@
       );
       ygolDeck = new YgolDeck(cardDb, ygolID, false);
       deckBuilder = new DeckBuilder(cardDb);
+      deckBuilder.onRender = scheduleDeckChange;
+      for (const c of cardDb) if (!cardByName.has(c.name)) cardByName.set(c.name, c);
       deckBuilder.addBanlist("dl", banlistDl);
       deckBuilder.addBanlist("dlzg", banlistDlzg);
       deckBuilder.addBanlist("md", banlistMd);
@@ -2620,15 +3376,40 @@
       deckBuilder.addBanlist("unlimited", []);
       deckBuilder.changeFormat(format);
       centerCardRows();
+      const dlf2p = window.location.href.includes("dlf2p=true");
+      //what was saved in this browser last time: sort, filters and format first
+      const saved = loadSaved();
+      if (saved) {
+        if (typeof saved.sort == "string") sort = saved.sort;
+        if (Array.isArray(saved.filters)) filters = saved.filters.filter((f) => typeof f == "string");
+        freeFilterAutoOn = !!saved.freeFilterAutoOn && filters.includes(FREE_DL_FILTER);
+        if (!dlf2p && FORMATS.includes(saved.format)) setFormat(saved.format);
+      }
       //dlf2p.com special controls
-      if (window.location.href.includes("dlf2p=true")) {
+      if (dlf2p) {
         document.getElementById("testhands").style.display = "none";
         format = "dl";
         deckBuilder.changeFormat("dl");
         document.getElementById("btnFormat").innerHTML = "Format: DL";
         updateSkillVisibility();
       }
-      loadDeckFromUrl();
+      //the deck: a link with a different deck in it (?yld= or dlf2p.com's ?d=) loads that deck;
+      //otherwise (no deck in the address, or a reload of the saved deck) the saved deck comes back
+      const urlYld = params.get("yld");
+      const urlD = dlf2p && params.get("d");
+      const reloadOfSaved = saved && urlYld && !urlD && urlYld == saved.yld;
+      if ((urlYld || urlD) && !reloadOfSaved) {
+        loadDeckFromUrl();
+      } else if (saved) {
+        deckBuilder.cards = (saved.main || []).map((n) => cardByName.get(n)).filter(Boolean);
+        deckBuilder.side = (saved.side || []).map((n) => cardByName.get(n)).filter(Boolean);
+        if (saved.skill && skillDb.some((s) => s.name == saved.skill)) setSkill(saved.skill);
+        document.getElementById("deckName").value =
+          cleanText(saved.name || "", 60).trim() || DEFAULT_DECK_NAME;
+      }
+      deckBuilder.render(main, extra, cardwidth);
+      updateTitle();
+      runCardSearch();
     }
     loadData();
   </script>
