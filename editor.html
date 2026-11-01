@@ -459,6 +459,12 @@
       #popup .cardmeta.cardstatus.first {
         margin-top: 2vh;
       }
+      #popup .cardmeta.cardprice {
+        margin-top: 2vh;
+      }
+      #popup a {
+        color: var(--highlight-border);
+      }
       #popup .cardmeta b {
         font-weight: 500;
         color: var(--text);
@@ -1333,6 +1339,7 @@
         box.appendChild(img);
         targetDiv.appendChild(box);
 
+        const fmt0 = this.format;
         const lines = [];
         if (c.type == "Monster") {
           const kinds = (c.monsterType || []).join(" / ");
@@ -1351,6 +1358,10 @@
         } else if (c.type) {
           lines.push(`[${escHtml(c.race ? c.race + " " : "")}${escHtml(c.type)}]`);
         }
+        //the card text: "description" is the TCG/OCG text; Duel Links formats use the Duel Links
+        //text ("descriptionDl", only in the database when it differs)
+        const dlFormat = fmt0 == "dl" || fmt0 == "dlzg";
+        const text = (dlFormat && c.descriptionDl) || c.description || "";
         //below the card text (left-aligned): banlist status in the current format (only when
         //the card is on the banlist, not for unlimited cards), then the Duel Links / Master
         //Duel rarity or "Not released"
@@ -1368,7 +1379,7 @@
           "beforeend",
           `<p class="cardname">${escHtml(c.name)}</p>` +
             lines.map((l) => `<p class="cardmeta">${l}</p>`).join("") +
-            `<p class="carddesc">${escHtml(c.description || "")}</p>` +
+            `<p class="carddesc">${escHtml(text)}</p>` +
             status.map((l, i) => `<p class="cardmeta cardstatus${i ? "" : " first"}">${l}</p>`).join("")
         );
         //Duel Links formats: where the card comes from
@@ -1382,6 +1393,43 @@
           });
           targetDiv.insertAdjacentHTML("beforeend", `<h3>How to get it (Duel Links)</h3><ul class="obtain">${items.join("")}</ul>`);
         }
+        //Master Duel: where the card comes from (obtainMd: { name, kind, rarity, sub, amount })
+        if (fmt == "md" && c.obtainMd && c.obtainMd.length) {
+          const items = c.obtainMd.map((o) => {
+            const extra = [o.kind, o.sub, o.rarity].filter(Boolean).join(", ");
+            return `<li>${escHtml(o.name)}${extra ? ` <span>(${escHtml(extra)})</span>` : ""}</li>`;
+          });
+          targetDiv.insertAdjacentHTML("beforeend", `<h3>How to get it (Master Duel)</h3><ul class="obtain">${items.join("")}</ul>`);
+        }
+        //TCG and OCG: the sets it's printed in, one line per set with its rarities (and set
+        //codes for the TCG). Unlimited shows both. A card may have neither list: the database
+        //leaves them out when the TCG and OCG printings couldn't be told apart reliably
+        const printings = (list, title) => {
+          if (!list || !list.length) return;
+          const bySet = new Map(); //set name -> { rarities, codes }, in order
+          for (const o of list) {
+            if (!bySet.has(o.name)) bySet.set(o.name, { rarities: [], codes: [] });
+            const e = bySet.get(o.name);
+            if (o.rarity && !e.rarities.some((x) => x.toLowerCase() == o.rarity.toLowerCase())) e.rarities.push(o.rarity);
+            if (o.code && !e.codes.includes(o.code)) e.codes.push(o.code);
+          }
+          const items = [...bySet].map(([set, e]) => {
+            const extra = [e.codes.join(", "), e.rarities.join(", ")].filter(Boolean).join(" · ");
+            return `<li>${escHtml(set)}${extra ? ` <span>(${escHtml(extra)})</span>` : ""}</li>`;
+          });
+          targetDiv.insertAdjacentHTML("beforeend", `<h3>${title}</h3><ul class="obtain">${items.join("")}</ul>`);
+        };
+        if (fmt == "tcg" || fmt == "unlimited") printings(c.obtainTcg, "Printed in (TCG)");
+        if (fmt == "ocg" || fmt == "unlimited") printings(c.obtainOcg, "Printed in (OCG)");
+        //price (any format): the cheapest printing on TCGplayer
+        const price =
+          typeof c.usdPrice == "number" && c.usdPrice > 0
+            ? `<b>US$${c.usdPrice.toFixed(2)}</b>` +
+              (c.tcgPlayerUrl && /^https:\/\//.test(c.tcgPlayerUrl)
+                ? ` · <a href="${escHtml(c.tcgPlayerUrl)}" target="_blank" rel="noopener">TCGplayer</a>`
+                : "")
+            : "not available";
+        targetDiv.insertAdjacentHTML("beforeend", `<p class="cardmeta cardstatus cardprice">Price: ${price}</p>`);
         targetDiv.scrollTop = 0;
       }
       //does card a match one filter option (a button label from the filter popup)?
