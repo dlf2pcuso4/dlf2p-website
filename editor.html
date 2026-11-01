@@ -567,6 +567,41 @@
         background-color: var(--input-bg);
         border: none;
       }
+      /* Accessories popup: a labelled URL box and a small preview per image */
+      #exportBox .acc-row {
+        display: block;
+        margin: 0 0 0.9vw;
+      }
+      #exportBox .acc-label {
+        display: block;
+        margin-bottom: 0.3vw;
+        font-size: 1vw;
+        color: var(--text-muted);
+      }
+      #exportBox .acc-row input {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        font-size: 1vw;
+        padding: 0.45vw;
+      }
+      #exportBox .acc-preview {
+        display: flex;
+        align-items: center;
+        gap: 0.6vw;
+        min-height: 1.6vw;
+        margin-top: 0.4vw;
+      }
+      #exportBox .acc-preview img {
+        max-height: 5vw;
+        max-width: 60%;
+        border: max(0.1vw, 1px) solid var(--btn-border);
+      }
+      #exportBox .acc-status {
+        font-size: 0.9vw;
+        color: var(--text-muted);
+      }
       #exportBox textarea:focus {
         outline: max(0.14vw, 2px) solid var(--highlight-border);
       }
@@ -608,6 +643,21 @@
         }
         #exportBox .export-hint {
           font-size: 3.3vw;
+        }
+        #exportBox .acc-label,
+        #exportBox .acc-row input,
+        #exportBox .acc-status {
+          font-size: 3.5vw;
+        }
+        #exportBox .acc-row input {
+          padding: 2vw;
+          height: auto;
+        }
+        #exportBox .acc-row {
+          margin-bottom: 3vw;
+        }
+        #exportBox .acc-preview img {
+          max-height: 20vw;
         }
         #exportBox {
           width: 92vw;
@@ -689,7 +739,8 @@
         <button id="testhands" onclick="testHands()">Test Hands</button>
         <button id="copyDeck" onclick="openExport('copy')">Copy</button><br />
         <button id="upload" onclick="openUpload()">Upload</button>
-        <button id="download" onclick="openExport('download')">Download</button>
+        <button id="download" onclick="openExport('download')">Download</button><br />
+        <button id="accessories" onclick="openAccessories()">Accessories</button>
         <input
           id="uploadInput"
           type="file"
@@ -2853,7 +2904,118 @@
       let namelist = deckBuilder.exportNamelist();
       //cards only: test-hands.html has its own yld decoder, which doesn't read skills
       let yld = ygolDeck.namelist_to_yld(namelist).replace("yld://", "");
-      window.open(`test-hands.html?yld=${yld}`);
+      //the playmat and sleeve images set in Accessories (test-hands.html reads matsrc/sleevesrc)
+      const params = new URLSearchParams({ yld });
+      const acc = accessoriesFallback || loadAccessories();
+      if (acc.mat) params.set("matsrc", acc.mat);
+      if (acc.sleeve) params.set("sleevesrc", acc.sleeve);
+      window.open(`test-hands.html?${params}`);
+    }
+
+    //=== Accessories: playmat and sleeve images for Test Hands, remembered in this browser ===
+    const ACCESSORIES_KEY = "ygol.editor.accessories";
+    function loadAccessories() {
+      try {
+        const a = JSON.parse(localStorage.getItem(ACCESSORIES_KEY) || "{}");
+        return {
+          mat: typeof a.mat == "string" ? a.mat : "",
+          sleeve: typeof a.sleeve == "string" ? a.sleeve : "",
+        };
+      } catch (e) {
+        return { mat: "", sleeve: "" };
+      }
+    }
+    function saveAccessories(acc) {
+      try {
+        localStorage.setItem(ACCESSORIES_KEY, JSON.stringify(acc));
+      } catch (e) {
+        //storage blocked: the images still apply until the page is closed
+        accessoriesFallback = acc;
+      }
+    }
+    let accessoriesFallback = null;
+    function openAccessories() {
+      const acc = accessoriesFallback || loadAccessories();
+      document.getElementById("exportTitle").textContent = "Accessories";
+      const options = document.getElementById("exportOptions");
+      options.innerHTML = "";
+      const hint = document.createElement("p");
+      hint.className = "export-hint";
+      hint.textContent =
+        "Image addresses (URLs) for the playmat and card sleeves used by Test Hands. Leave a box empty for the default. They're saved in this browser.";
+      options.appendChild(hint);
+      const fields = {};
+      for (const [key, label] of [
+        ["mat", "Playmat image URL"],
+        ["sleeve", "Sleeve image URL"],
+      ]) {
+        const row = document.createElement("label");
+        row.className = "acc-row";
+        const name = document.createElement("span");
+        name.className = "acc-label";
+        name.textContent = label;
+        const input = document.createElement("input");
+        input.type = "url";
+        input.placeholder = "https://...";
+        input.autocomplete = "off";
+        input.spellcheck = false;
+        input.value = acc[key];
+        //a small preview, so a wrong address shows straight away
+        const preview = document.createElement("div");
+        preview.className = "acc-preview";
+        const img = document.createElement("img");
+        img.alt = "";
+        const status = document.createElement("span");
+        status.className = "acc-status";
+        preview.append(img, status);
+        const showPreview = () => {
+          const url = input.value.trim();
+          img.style.display = "none";
+          status.textContent = url ? "Loading preview..." : "Default";
+          if (!url) return;
+          img.onload = () => {
+            img.style.display = "";
+            status.textContent = "";
+          };
+          img.onerror = () => {
+            status.textContent = "This image couldn't be loaded. Check the address.";
+          };
+          img.src = url;
+        };
+        let timer = null;
+        input.addEventListener("input", () => {
+          const next = { ...(accessoriesFallback || loadAccessories()), [key]: input.value.trim() };
+          saveAccessories(next);
+          clearTimeout(timer);
+          timer = setTimeout(showPreview, 400);
+        });
+        input.addEventListener("keydown", (e) => {
+          if (e.key == "Enter") closeExport();
+        });
+        showPreview();
+        row.append(name, input, preview);
+        options.appendChild(row);
+        fields[key] = input;
+      }
+      const clear = document.createElement("button");
+      clear.type = "button";
+      clear.className = "export-option";
+      clear.textContent = "Use the defaults";
+      clear.addEventListener("click", () => {
+        saveAccessories({ mat: "", sleeve: "" });
+        for (const input of Object.values(fields)) {
+          input.value = "";
+          input.dispatchEvent(new Event("input"));
+        }
+      });
+      const done = document.createElement("button");
+      done.type = "button";
+      done.className = "export-option selected";
+      done.textContent = "Done";
+      done.addEventListener("click", closeExport);
+      options.append(clear, done);
+      document.getElementById("exportLayer").classList.add("open");
+      fields.mat.focus();
     }
     //=== copy/download: pick a deck code format first ===
     const EXPORT_FORMATS = [
