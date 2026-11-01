@@ -276,6 +276,23 @@
         text-align: center;
         color: var(--text-muted);
       }
+      /* "Load more" under the search results: clickable text */
+      .loadmore {
+        color: var(--highlight-border);
+        text-decoration: underline;
+        text-underline-offset: 0.25em;
+        cursor: pointer;
+      }
+      .loadmore:hover,
+      .loadmore:focus-visible {
+        color: var(--highlight-text);
+        outline: none;
+      }
+      .loadmore-count {
+        display: block;
+        margin-top: 0.3vh;
+        font-size: 0.85em;
+      }
       /* card images: keep their size (and show a placeholder colour) while loading */
       img.cimg {
         aspect-ratio: 59 / 86;
@@ -1367,117 +1384,98 @@
         }
         targetDiv.scrollTop = 0;
       }
-      searchCard(name, targetDiv, width, criterias = [], sort = "", limit = 300) {
+      //does card a match one filter option (a button label from the filter popup)?
+      static termMatches(term, a) {
+        const types = a.monsterType || [];
+        const isExtra =
+          types.includes("Fusion") || types.includes("Synchro") || types.includes("Xyz") || types.includes("Link");
+        if (term.includes("Monster")) {
+          if (a.type != "Monster") return false;
+          if (term == "Monster") return true;
+          const t = term.replace(" Monster", "");
+          if (t == "Main Deck") return !isExtra;
+          if (t == "Extra Deck") return isExtra;
+          if (t == "Non-Effect") return !types.includes("Effect");
+          return types.includes(t);
+        }
+        if (term.includes("Spell") && !term.includes("caster")) {
+          if (a.type != "Spell") return false;
+          return term == "Spell" || (a.race || "").includes(term.replace(" Spell", ""));
+        }
+        if (term.includes("Trap")) {
+          if (a.type != "Trap") return false;
+          return term == "Trap" || (a.race || "").includes(term.replace(" Trap", ""));
+        }
+        if (term.includes("Level/Rank")) return a.level == term.replace("Level/Rank ", "");
+        if (term.includes("Link")) return a.linkRating == term.replace("Link ", "");
+        if (term.includes("(DL)")) {
+          if (term.includes("Free")) return !!a.zeroGem;
+          if (term.includes("Not Released")) return !a.rarityDl;
+          if (term.includes("Released")) return !!a.rarityDl;
+          return a.rarityDl == term.replace(" (DL)", "");
+        }
+        if (term.includes("(MD)")) {
+          if (term.includes("Not Released")) return !a.rarityMd;
+          if (term.includes("Released")) return !!a.rarityMd;
+          return a.rarityMd == term.replace(" (MD)", "");
+        }
+        if (term == "Handtrap") return !!a.handtrap;
+        if (term == "Floodgate") return !!a.floodgate;
+        if (term.toUpperCase() == term) return a.attribute == term;
+        return a.race == term;
+      }
+      searchCard(name, targetDiv, width, criterias = [], sort = "") {
         targetDiv.innerHTML = "";
         let filtered = this.ygolDb.filter((a) => {
           let n = a.name.toLowerCase();
           let d = a.description.toLowerCase();
           return n.includes(name.toLowerCase()) || d.includes(name.toLowerCase());
         });
-        //apply filters
-        let showall = false;
-        for (let term of criterias) {
-          if (term.includes("Monster")) {
-            filtered = filtered.filter((a) => a.type == "Monster");
-            if (term != "Monster") {
-              let monsterType = term.replace(" Monster", "");
-              if (monsterType == "Main Deck") {
-                filtered = filtered.filter(
-                  (a) =>
-                    !(
-                      a.monsterType.includes("Fusion") ||
-                      a.monsterType.includes("Synchro") ||
-                      a.monsterType.includes("Xyz") ||
-                      a.monsterType.includes("Link")
-                    )
-                );
-              } else if (monsterType == "Extra Deck") {
-                filtered = filtered.filter(
-                  (a) =>
-                    a.monsterType.includes("Fusion") ||
-                    a.monsterType.includes("Synchro") ||
-                    a.monsterType.includes("Xyz") ||
-                    a.monsterType.includes("Link")
-                );
-              } else if (monsterType == "Non-Effect") {
-                filtered = filtered.filter(
-                  (a) => !a.monsterType.includes("Effect")
-                );
-              } else {
-                filtered = filtered.filter((a) =>
-                  a.monsterType.includes(monsterType)
-                );
-              }
-            }
-          } else if (term.includes("Spell") && !term.includes("caster")) {
-            filtered = filtered.filter((a) => a.type == "Spell");
-            if (term != "Spell") {
-              let spellType = term.replace(" Spell", "");
-              filtered = filtered.filter((a) => (a.race || "").includes(spellType));
-            }
-          } else if (term.includes("Trap")) {
-            filtered = filtered.filter((a) => a.type == "Trap");
-            if (term != "Trap") {
-              let trapType = term.replace(" Trap", "");
-              filtered = filtered.filter((a) => (a.race || "").includes(trapType));
-            }
-          } else if (term.includes("Level/Rank")) {
-            let levelrank = term.replace("Level/Rank ", "");
-            filtered = filtered.filter((a) => a.level == levelrank);
-          } else if (term.includes("Link")) {
-            let link = term.replace("Link ", "");
-            filtered = filtered.filter((a) => a.linkRating == link);
-          } else if (term.includes("(DL)")) {
-            if (term.includes("Free")) {
-              filtered = filtered.filter((a) => a.zeroGem);
-            } else if (term.includes("Released")) {
-              if (term.includes("Not")) {
-                filtered = filtered.filter((a) => !a.rarityDl);
-              } else {
-                filtered = filtered.filter((a) => a.rarityDl);
-              }
-            } else {
-              filtered = filtered.filter(
-                (a) => a.rarityDl == term.replace(" (DL)", "")
-              );
-            }
-          } else if (term.includes("(MD)")) {
-            if (term.includes("Released")) {
-              if (term.includes("Not")) {
-                filtered = filtered.filter((a) => !a.rarityMd);
-              } else {
-                filtered = filtered.filter((a) => a.rarityMd);
-              }
-            } else {
-              filtered = filtered.filter(
-                (a) => a.rarityMd == term.replace(" (MD)", "")
-              );
-            }
-          } else if (term == "Handtrap") {
-            filtered = filtered.filter((a) => a.handtrap);
-          } else if (term == "Floodgate") {
-            filtered = filtered.filter((a) => a.floodgate);
-          } else if (term == "Show Rush") {
-            filtered = filtered.filter((a) => a.rush);
-            showall = true;
-          } else if (term == "Show All") {
-            showall = true;
-          } else if (term.toUpperCase() == term) {
-            filtered = filtered.filter((a) => a.attribute == term);
-          } else {
-            filtered = filtered.filter((a) => a.race == term);
+        //apply filters: options from the same section of the filter popup are combined with
+        //OR (LIGHT + DARK: cards that are either), different sections with AND (LIGHT + DARK +
+        //Fusion Monster: LIGHT or DARK Fusion Monsters). See filterGroupOf
+        const groups = new Map();
+        let showRush = false;
+        let showAll = false;
+        for (const term of criterias) {
+          if (term == "Show Rush") showRush = true;
+          else if (term == "Show All") showAll = true;
+          else {
+            const g = filterGroupOf(term);
+            if (!groups.has(g)) groups.set(g, []);
+            groups.get(g).push(term);
           }
         }
-        if (!showall) filtered = filtered.filter((a) => !a.rush);
+        const sections = [...groups.values()];
+        if (sections.length)
+          filtered = filtered.filter((a) =>
+            sections.every((terms) => terms.some((t) => DeckBuilder.termMatches(t, a)))
+          );
+        //Rush cards: hidden unless "Show Rush" (only Rush cards) or "Show All" (everything)
+        if (!showAll) filtered = filtered.filter((a) => (showRush ? a.rush : !a.rush));
         if (sort == "Popularity") {
-          if (format == "dl" || format == "dlzg")
-            filtered.sort((a, b) => a.popularityDl - b.popularityDl);
-          if (format == "md")
-            filtered.sort((a, b) => a.popularityMd - b.popularityMd);
-          if (format == "tcg")
-            filtered.sort((a, b) => a.popularityTcg - b.popularityTcg);
-          if (format == "ocg")
-            filtered.sort((a, b) => a.popularityOcg - b.popularityOcg);
+          //rank 1 is the most used card. Cards without a rank go last: the database gives them
+          //a very large number, but cards missing from a format's ranking data entirely came
+          //out as 0 (which would put them first), so anything that isn't a positive number
+          //counts as unranked
+          const field =
+            format == "dl" || format == "dlzg"
+              ? "popularityDl"
+              : format == "md"
+              ? "popularityMd"
+              : format == "tcg"
+              ? "popularityTcg"
+              : format == "ocg"
+              ? "popularityOcg"
+              : null;
+          if (field) {
+            const rank = (a) => (typeof a[field] == "number" && a[field] > 0 ? a[field] : Infinity);
+            filtered.sort((a, b) => {
+              const x = rank(a);
+              const y = rank(b);
+              return x < y ? -1 : x > y ? 1 : 0;
+            });
+          }
         } else if (sort == "Rarity") {
           const rarityOrder = ["UR", "SR", "R", "N"];
           if (format == "dl" || format == "dlzg")
@@ -1499,16 +1497,40 @@
         } else {
           filtered.sort((a, b) => a.name.localeCompare(b.name));
         }
-        const more = filtered.length - limit;
-        if (more > 0) filtered.length = limit;
-        this.appendCards(filtered, targetDiv, width, "search");
+        //show the first SEARCH_PAGE results; "Load more" below them adds the next ones
+        this.searchResults = filtered;
+        this.searchShown = 0;
         if (!filtered.length) {
           targetDiv.insertAdjacentHTML("beforeend", `<div class="emptynote">No cards found.</div>`);
-        } else if (more > 0) {
+        } else {
+          this.showMoreResults(targetDiv, width);
+        }
+      }
+      //add the next SEARCH_PAGE results of the last search to the box, then a "Load more"
+      //link if there are still more
+      showMoreResults(targetDiv, width) {
+        const all = this.searchResults || [];
+        for (const el of targetDiv.querySelectorAll(".loadmore-row")) el.remove();
+        const next = all.slice(this.searchShown, this.searchShown + SEARCH_PAGE);
+        this.appendCards(next, targetDiv, width, "search");
+        this.searchShown += next.length;
+        const left = all.length - this.searchShown;
+        if (left > 0) {
           targetDiv.insertAdjacentHTML(
             "beforeend",
-            `<div class="emptynote">${more} more ${more == 1 ? "card" : "cards"} not shown. Narrow the search.</div>`
+            `<div class="emptynote"><span class="loadmore" role="button" tabindex="0">Load more</span>` +
+              `<span class="loadmore-count">${left} more ${left == 1 ? "card" : "cards"}</span></div>`
           );
+          const div = targetDiv.lastElementChild;
+          const link = div.querySelector(".loadmore");
+          link.addEventListener("click", () => loadMoreResults());
+          link.addEventListener("keydown", (e) => {
+            if (e.key == "Enter" || e.key == " ") {
+              e.preventDefault();
+              loadMoreResults();
+            }
+          });
+          div.classList.add("loadmore-row");
         }
       }
       //add a copy to the end of the shown deck; false (and this.refusal) if it can't be added
@@ -1993,6 +2015,34 @@
     //typed names: no control characters (they'd break file names), at most max characters
     function cleanText(s, max) {
       return String(s).replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, max);
+    }
+    //search results are shown this many at a time ("Load more" adds the next ones)
+    const SEARCH_PAGE = 200;
+    //the filter popup section a filter option belongs to, e.g. "LIGHT" -> "Attribute", read
+    //from the popup's own layout (editorFilters). Options of the same section are combined
+    //with OR, sections with AND. "Free (DL)" is its own section: it's a different question
+    //from the rarity buttons next to it (and DLZG switches it on by itself), so
+    //"Free (DL)" + "UR (DL)" means free UR cards, not free cards or UR cards
+    let filterGroups = null;
+    function filterGroupOf(term) {
+      if (!filterGroups) {
+        filterGroups = new Map();
+        const parts = editorFilters.split(/<p class="filterheader">([\s\S]*?)<\/p>/);
+        for (let i = 1; i < parts.length; i += 2) {
+          const section = parts[i].trim();
+          const re = /onmousedown="selectFilter\(this\.innerHTML\)">([\s\S]*?)<\/button>/g;
+          let m;
+          while ((m = re.exec(parts[i + 1]))) filterGroups.set(filterLabel(m[1]), section);
+        }
+      }
+      if (term == FREE_DL_FILTER) return term;
+      return filterGroups.get(term) || term;
+    }
+    //the "Load more" link under the search results
+    function loadMoreResults() {
+      if (!deckBuilder) return;
+      deckBuilder.showMoreResults(searchResult, cardwidth);
+      refreshBadges();
     }
     const DEFAULT_DECK_NAME = "Untitled Deck";
     const PAGE_TITLE = document.title;
