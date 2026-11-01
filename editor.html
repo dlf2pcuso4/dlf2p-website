@@ -459,6 +459,13 @@
       #popup .cardmeta.cardstatus.first {
         margin-top: 2vh;
       }
+      /* "Show more" / "Show less" under the card text in the card popup */
+      #popup .showmore {
+        margin-top: 1.6vh;
+      }
+      #popup .cardmore[hidden] {
+        display: none;
+      }
       #popup .cardmeta.cardprice {
         margin-top: 2vh;
       }
@@ -1431,7 +1438,16 @@
           `<p class="cardname">${escHtml(c.name)}</p>` +
             lines.map((l) => `<p class="cardmeta">${l}</p>`).join("") +
             `<p class="carddesc">${escHtml(text)}</p>` +
-            status.map((l, i) => `<p class="cardmeta cardstatus${i ? "" : " first"}">${l}</p>`).join("")
+            ""
+        );
+        //everything below the card text (banlist status, rarity, where to get it, price) goes
+        //in a section that's hidden until "Show more" is clicked
+        const more = document.createElement("div");
+        more.className = "cardmore";
+        more.hidden = true;
+        more.insertAdjacentHTML(
+          "beforeend",
+          status.map((l, i) => `<p class="cardmeta cardstatus${i ? "" : " first"}">${l}</p>`).join("")
         );
         //Duel Links formats: where the card comes from
         if ((fmt == "dl" || fmt == "dlzg") && c.obtain && c.obtain.length) {
@@ -1442,7 +1458,7 @@
             const extra = [what, o.subSource].filter(Boolean).join(", ");
             return `<li>${escHtml(src)}${extra ? ` <span>(${escHtml(extra)})</span>` : ""}</li>`;
           });
-          targetDiv.insertAdjacentHTML("beforeend", `<h3>How to get it (Duel Links)</h3><ul class="obtain">${items.join("")}</ul>`);
+          more.insertAdjacentHTML("beforeend", `<h3>How to get it (Duel Links)</h3><ul class="obtain">${items.join("")}</ul>`);
         }
         //Master Duel: where the card comes from (obtainMd: { name, kind, rarity, sub, amount })
         if (fmt == "md" && c.obtainMd && c.obtainMd.length) {
@@ -1450,7 +1466,7 @@
             const extra = [o.kind, o.sub, o.rarity].filter(Boolean).join(", ");
             return `<li>${escHtml(o.name)}${extra ? ` <span>(${escHtml(extra)})</span>` : ""}</li>`;
           });
-          targetDiv.insertAdjacentHTML("beforeend", `<h3>How to get it (Master Duel)</h3><ul class="obtain">${items.join("")}</ul>`);
+          more.insertAdjacentHTML("beforeend", `<h3>How to get it (Master Duel)</h3><ul class="obtain">${items.join("")}</ul>`);
         }
         //TCG and OCG: the sets it's printed in, one line per set with its rarities (and set
         //codes for the TCG). Unlimited shows both. A card may have neither list: the database
@@ -1468,7 +1484,7 @@
             const extra = [e.codes.join(", "), e.rarities.join(", ")].filter(Boolean).join(" · ");
             return `<li>${escHtml(set)}${extra ? ` <span>(${escHtml(extra)})</span>` : ""}</li>`;
           });
-          targetDiv.insertAdjacentHTML("beforeend", `<h3>${title}</h3><ul class="obtain">${items.join("")}</ul>`);
+          more.insertAdjacentHTML("beforeend", `<h3>${title}</h3><ul class="obtain">${items.join("")}</ul>`);
         };
         if (fmt == "tcg" || fmt == "unlimited") printings(c.obtainTcg, "Printed in (TCG)");
         if (fmt == "ocg" || fmt == "unlimited") printings(c.obtainOcg, "Printed in (OCG)");
@@ -1480,7 +1496,31 @@
                 ? ` · <a href="${escHtml(c.tcgPlayerUrl)}" target="_blank" rel="noopener">TCGplayer</a>`
                 : "")
             : "not available";
-        targetDiv.insertAdjacentHTML("beforeend", `<p class="cardmeta cardstatus cardprice">Price: ${price}</p>`);
+        more.insertAdjacentHTML("beforeend", `<p class="cardmeta cardstatus cardprice">Price: ${price}</p>`);
+        if (more.children.length) {
+          const toggle = document.createElement("p");
+          toggle.className = "showmore";
+          const link = document.createElement("span");
+          link.className = "loadmore";
+          link.setAttribute("role", "button");
+          link.tabIndex = 0;
+          link.setAttribute("aria-expanded", "false");
+          link.textContent = "Show more";
+          const flip = () => {
+            more.hidden = !more.hidden;
+            link.textContent = more.hidden ? "Show more" : "Show less";
+            link.setAttribute("aria-expanded", String(!more.hidden));
+          };
+          link.addEventListener("click", flip);
+          link.addEventListener("keydown", (e) => {
+            if (e.key == "Enter" || e.key == " ") {
+              e.preventDefault();
+              flip();
+            }
+          });
+          toggle.appendChild(link);
+          targetDiv.append(toggle, more);
+        }
         targetDiv.scrollTop = 0;
       }
       //does card a match one filter option (a button label from the filter popup)?
@@ -2634,6 +2674,8 @@
         //releasing a right click must not close the popup it just opened
         //(on macOS/Linux the context menu opens on press, before the release)
         if (isSecondaryClick(event)) return;
+        //"Show more" / "Show less" in the card popup opens or closes its section instead
+        if (event.target.closest && event.target.closest(".showmore")) return;
         if (!selectingFilters) closeInfoPopup();
         selectingFilters = false;
       });
